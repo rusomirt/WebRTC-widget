@@ -1,35 +1,63 @@
+// CSS classes naming conventions - BEM (https://en.bem.info/methodology):
+// block-name
+// block-name--block-modifier-name
+// block-name__element-name
+// block-name__element-name--element-modifier-name
+
+// SCSS variables suffixes contain abbreviated CSS properties or their parts:
+// -p - padding
+// -m - margin
+// -h - height
+// -w - width
+// -t - top
+// -l - left
+// -r - right
+// -b - bottom
+// -pt - padding-top
+// -pl - padding-left
+// -pr - padding-right
+// -pb - padding-bottom
+// -px - horizontal padding (-left & -right)
+// -py - vertical padding (-top & -bottom)
+
+$webchat-r: 20px;
+$webchat-b: 20px;
+$webchat-select-btn-size: 60px;
+$webchat-chat-btn-size: 40px;
+// Distance between chat type buttons (video, voice or text) and chat select button:
+$webchat-chat-btn-shift: 40px;
+
 .webchat {
   position: fixed;
-  right: 20px;
-  bottom: 20px;
-  display: inline-block;
+  right: $webchat-r;
+  bottom: $webchat-b;
 
+  display: inline-block;
   width: 0;
   height: 0;
-  background-color: #f0ad4e;
 
-  .webchat__start-btn {
+  .webchat__select-btn {
     position: absolute;
     right: 0;
     bottom: 0;
 
-    width: 50px;
-    height: 50px;
+    width: $webchat-select-btn-size;
+    height: $webchat-select-btn-size;
     border-radius: 50%;
     padding: 0;
     border: none;
     outline: none;
     cursor: pointer;
 
-    background-color: red;
+    background-color: red;    // change to icon
   }
   .webchat__chat-btn {
     position: absolute;
     right: 0;
     bottom: 0;
 
-    width: 30px;
-    height: 30px;
+    width: $webchat-chat-btn-size;
+    height: $webchat-chat-btn-size;
     border-radius: 50%;
     padding: 0;
     border: none;
@@ -39,22 +67,146 @@
     display: none;  // initially hidden
   }
   .webchat__chat-btn--showed {
-    display: block; // displayed after click on 'start-btn'
+    display: block; // displayed after click on 'select-btn'
   }
+
   .webchat__chat-btn--video {
-    right: 75px;
-    bottom: 10px;
+    right: $webchat-chat-btn-shift + $webchat-select-btn-size;
+    bottom: ($webchat-select-btn-size - $webchat-chat-btn-size) * 0.5;
   }
   .webchat__chat-btn--voice {
-    right: 53px;
-    bottom: 53px;
+    right: ($webchat-chat-btn-shift + $webchat-select-btn-size) * 0.707;
+    bottom: ($webchat-chat-btn-shift + $webchat-select-btn-size) * 0.707;
   }
   .webchat__chat-btn--text {
-    right: 10px;
-    bottom: 75px;
+    right: ($webchat-select-btn-size - $webchat-chat-btn-size) * 0.5;
+    bottom: $webchat-chat-btn-shift + $webchat-select-btn-size;
   }
-  .webchat__start-img {
+}
+
+.webchat__btn-icon {
+  width: 100%;
+  height: 100%;
+}
+
+$modal-bg-transparency: 0.5;
+$modal-inner-w: 300px;
+$modal-inner-h: 500px;
+
+.modal {
+  position: fixed;
+  top: 0;           // covers whole screen
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, $modal-bg-transparency);
+
+  .modal__inner {
+    width: $modal-inner-w;
+    height: $modal-inner-h;
+
+    //background-color: blue;   // debug
+
+    .modal__copyright {
+      color: white;
+      text-align: center;
+    }
+  }
+}
+
+$chat-video-out-w: 60px;
+$chat-video-out-h: 90px;
+$chat-panel-h: 40px;
+$chat-panel-mx: 10px;
+$chat-panel-mb: 20px;
+$chat-btns-group-mx: $chat-panel-h * 0.25;
+
+.chat {
+  position: relative;   /* for abs-positioned .chat__panel*/
+  border-top: 10px solid red;
+  height: 100%;
+
+  .chat__info {
+    .chat__status {
+      padding: 40px 0;
+      background: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .chat__status-txt {
+        color: #00cccc;
+      }
+    }
+    .chat__tips-hdr {
+      padding: 40px 0;
+      background: red;
+      color: white;
+      text-align: center;
+    }
+    .chat__tips-body {
+      padding: 40px 0;
+      background: white;
+      text-align: center;
+    }
+  }
+
+  .chat__video-in {
     width: 100%;
     height: 100%;
+    background: green  // debug
+  }
+  .chat__video-out {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: $chat-video-out-w;
+    height: $chat-video-out-h;
+    background: yellow  // debug
+  }
+  .chat__panel {
+    position: absolute;
+    bottom: 0;
+    margin: 0 $chat-panel-mx $chat-panel-mb;
+
+    width: calc(100% - #{$chat-panel-mx}*2);
+    height: $chat-panel-h;
+    border-radius: $chat-panel-h * 0.5;
+
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    background: white;  // debug
+
+    .chat__btns-group { /* contains 1 or 2 buttons (.chat__btn-small) */
+      // Needs to have any size value to not be shrinked when contains 1 button:
+      flex: 1 1 0;
+      margin: 0 $chat-btns-group-mx;
+
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .chat__btn {
+      border-radius: 50%;   // Round shape
+      padding: 0;
+      border: none;
+      outline: none;
+      cursor: pointer;
+    }
+    .chat__btn--small {
+      width: $chat-panel-h;
+      height: $chat-panel-h;
+    }
+    .chat__btn--big {
+      width: $chat-panel-h * 1.5;
+      height: $chat-panel-h * 1.5;
+    }
   }
 }
