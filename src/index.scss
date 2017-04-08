@@ -20,6 +20,7 @@
 // -px - horizontal padding (-left & -right)
 // -py - vertical padding (-top & -bottom)
 
+
 $webchat-r: 20px;
 $webchat-b: 20px;
 $webchat-select-btn-size: 60px;
@@ -90,8 +91,8 @@ $webchat-chat-btn-shift: 40px;
 }
 
 $modal-bg-transparency: 0.5;
-$modal-inner-w: 300px;
-$modal-inner-h: 500px;
+$modal-inner-w: 400px;
+//$modal-inner-h: 300px;
 
 .modal {
   position: fixed;
@@ -107,9 +108,6 @@ $modal-inner-h: 500px;
 
   .modal__inner {
     width: $modal-inner-w;
-    height: $modal-inner-h;
-
-    //background-color: blue;   // debug
 
     .modal__copyright {
       color: white;
@@ -118,8 +116,7 @@ $modal-inner-h: 500px;
   }
 }
 
-$chat-video-out-w: 60px;
-$chat-video-out-h: 90px;
+$chat-video-out-w: 20%; // 20% of .chat width
 $chat-panel-h: 40px;
 $chat-panel-mx: 10px;
 $chat-panel-mb: 20px;
@@ -165,7 +162,6 @@ $chat-btns-group-mx: $chat-panel-h * 0.25;
     top: 10px;
     right: 10px;
     width: $chat-video-out-w;
-    height: $chat-video-out-h;
     background: yellow  // debug
   }
   .chat__panel {
