@@ -1,5 +1,5 @@
-// // Load VoxImplant SDK:
-// import * as VoxImplant from 'voximplant-websdk';
+// Load VoxImplant SDK:
+import * as VoxImplant from 'voximplant-websdk';
 // create VoxImplant instance
 let voxAPI = VoxImplant.getInstance();
 
@@ -45,10 +45,7 @@ ready(function() {
     voxAPI.addEventListener(VoxImplant.Events.ConnectionEstablished, onConnectionEstablished);
     voxAPI.addEventListener(VoxImplant.Events.ConnectionFailed, onConnectionFailed);
     voxAPI.addEventListener(VoxImplant.Events.ConnectionClosed, onConnectionClosed);
-    voxAPI.addEventListener(VoxImplant.Events.AuthResult, onAuthResult);
     voxAPI.addEventListener(VoxImplant.Events.IncomingCall, onIncomingCall);
-    voxAPI.addEventListener(VoxImplant.Events.MicAccessResult, onMicAccessResult);
-    voxAPI.addEventListener(VoxImplant.Events.SourcesInfoUpdated, onSourcesInfoUpdated);
 
     // initialize SDK
     voxAPI.init({
@@ -87,18 +84,6 @@ function onConnectionClosed() {
   setTimeout(function() {voxAPI.connect();}, 1000);
 }
 
-// Handle authorization result
-function onAuthResult(e) {}
-
-// Camera/mic access result
-function onMicAccessResult(e) {}
-
-// Audio & video sources info available
-function onSourcesInfoUpdated() {
-  let audioSources = voxAPI.audioSources(),
-      videoSources = voxAPI.videoSources();
-}
-
 // Incoming call
 function onIncomingCall(e) {
   currentCall = e.call;
@@ -109,16 +94,6 @@ function onIncomingCall(e) {
   console.log("---------- Incoming call from: "+currentCall.number());
   // Answer automatically
   currentCall.answer();
-}
-
-// Progress tone play start
-function onProgressToneStart(e) {
-  console.log("---------- ProgessToneStart for call id: "+currentCall.id());
-}
-
-// Progres tone play stop
-function onProgressToneStop(e) {
-  console.log("---------- ProgessToneStop for call id: "+currentCall.id());
 }
 
 // Disconnect current call
@@ -167,7 +142,6 @@ export function createVideoCallTo2nd() {
 
   ready(function() {
     window.stop();
-    console.log(document.getElementById('callButton'));
     document.getElementById('callButton').addEventListener('click', function () {
       currentCall.hangup();
     });
@@ -177,7 +151,7 @@ export function createVideoCallTo2nd() {
   currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
   currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
   currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
-  currentCall.setVideoSettings({width: 720});
+  // currentCall.setVideoSettings({width: 720});
 }
 
 // Call connected
