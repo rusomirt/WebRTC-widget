@@ -9,7 +9,7 @@ let APP_DIR = path.resolve(__dirname, 'src');
 let config = {
     entry: APP_DIR + '/index.js',
     output: {
-        publicPath: '/build/',
+        publicPath: 'build/',
         path: BUILD_DIR,
         filename: 'bundle.js'
     },
