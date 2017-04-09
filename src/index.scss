@@ -116,10 +116,11 @@ $modal-inner-w: 400px;
   }
 }
 
-$chat-video-out-w: 20%; // 20% of .chat width
+$chat-video-out-w: 20%;       // 20% of .chat width
+$chat-panel-width: 90%;       // 90% of .chat width
+$chat-panel-max-width: 300px;
 $chat-panel-h: 40px;
-$chat-panel-mx: 10px;
-$chat-panel-mb: 20px;
+$chat-panel-b: 20px;
 $chat-btns-group-mx: $chat-panel-h * 0.25;
 
 .chat {
@@ -166,10 +167,12 @@ $chat-btns-group-mx: $chat-panel-h * 0.25;
   }
   .chat__panel {
     position: absolute;
-    bottom: 0;
-    margin: 0 $chat-panel-mx $chat-panel-mb;
+    bottom: $chat-panel-b;
+    left: 50%;
+    transform: translateX(-50%);
 
-    width: calc(100% - #{$chat-panel-mx}*2);
+    width: $chat-panel-width;
+    max-width: $chat-panel-max-width;
     height: $chat-panel-h;
     border-radius: $chat-panel-h * 0.5;
 
