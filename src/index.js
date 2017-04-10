@@ -8,7 +8,6 @@ import videoChatImg from './img/video-chat.png';
 import voiceChatImg from './img/voice-chat.png';
 import textChatImg from './img/text-chat.png';
 
-
 class Webchat extends Component {
   constructor() {
     super();
