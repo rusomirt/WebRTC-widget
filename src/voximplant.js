@@ -97,7 +97,7 @@ function sendVideo(flag) {
 }
 
 // Create outbound call
-export function createVideoCallTo2nd() {
+export function createVideoCallToServer() {
 
   ready(function() {
     console.log('---------- createVideoCall to 2nd');

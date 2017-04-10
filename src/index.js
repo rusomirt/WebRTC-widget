@@ -39,7 +39,7 @@ class Webchat extends Component {
 
   componentDidUpdate() {
     if (this.state.isCalling) {
-      vox.createVideoCallTo2nd();
+      vox.createVideoCallToServer();
     }
   }
 
