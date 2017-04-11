@@ -1,6 +1,6 @@
 export default  {
     "application_name": "videochat",
-    "user": "skalatskyalexey",
+    "client_user": "skalatskyalexey",
     "password": "qwerty",
-    "dest_user": "skalatskyalexey-2nd"
+    "server_user": "skalatskyalexey-2nd"
 };
