@@ -1,5 +1,7 @@
 // Load VoxImplant SDK:
 import * as VoxImplant from 'voximplant-websdk';
+// Load VoxImplant connection parameters:
+import connectionParams from 'params';
 // create VoxImplant instance
 let voxAPI = VoxImplant.getInstance();
 
@@ -26,62 +28,86 @@ function getHashParams() {
   return hashParams;
 }
 
-const hashparams = getHashParams(),
-      username = hashparams.username,
-      password = 'qwerty',
-      application_name = 'videochat',
-      account_name = 'xlucidity';
+const hashParams = getHashParams(),
+      mode = hashParams.mode,
+      client_username = connectionParams.client_user,
+      server_username = connectionParams.server_user,
+      password = connectionParams.password,
+      application_name = connectionParams.application_name,
+      account_name = connectionParams.account_name;
 
 let currentCall = null,
     outboundCall = null;
 
+let username,
+    dest_username;
+switch (mode) {
+  case 'client':
+    username = client_username;
+    dest_username = server_username;
+    break;
+  case 'server':
+    username = server_username;
+    dest_username = client_username;
+    break;
+}
 
 ready(function() {
 
-  try {
+  if (mode === 'server') {    // server is always waiting for an incoming call
+    try {
 
-    // assign handlers
-    voxAPI.addEventListener(VoxImplant.Events.SDKReady, onSdkReady);
-    voxAPI.addEventListener(VoxImplant.Events.ConnectionEstablished, onConnectionEstablished);
-    voxAPI.addEventListener(VoxImplant.Events.ConnectionFailed, onConnectionFailed);
-    voxAPI.addEventListener(VoxImplant.Events.ConnectionClosed, onConnectionClosed);
-    voxAPI.addEventListener(VoxImplant.Events.IncomingCall, onIncomingCall);
+      // assign handlers
+      voxAPI.addEventListener(VoxImplant.Events.SDKReady, onSdkReady);
+      voxAPI.addEventListener(VoxImplant.Events.ConnectionEstablished, onConnectionEstablished);
+      voxAPI.addEventListener(VoxImplant.Events.ConnectionFailed, onConnectionFailed);
+      voxAPI.addEventListener(VoxImplant.Events.ConnectionClosed, onConnectionClosed);
+      voxAPI.addEventListener(VoxImplant.Events.AuthResult, onAuthResultServer);
+      voxAPI.addEventListener(VoxImplant.Events.IncomingCall, onIncomingCall);
 
-    // initialize SDK
-    voxAPI.init({
-      useFlashOnly: false,
-      micRequired: true,  // force microphone/camera access request
-      videoSupport: true, // enable video support
-      progressTone: true  // play progress tone
-    });
+      // initialize SDK
+      voxAPI.init({
+        useFlashOnly: false,
+        micRequired: true,  // force microphone/camera access request
+        videoSupport: true, // enable video support
+        progressTone: true  // play progress tone
+      });
 
-
-  } catch (e) {
-    console.log('---------- ---------- caught error: -------------');
-    console.log(e.message);
-    console.log('---------- ---------------------------------------');
+    } catch (e) {
+      console.log('---------- ---------- caught error: -------------');
+      console.log(e.message);
+      console.log('---------- ---------------------------------------');
+    }
   }
 
 });
 
 // SDK ready - functions can be called now
 function onSdkReady(){
+  console.log('---------- onSdkReady()');
   voxAPI.connect();
 }
 
 // Connection with VoxImplant established
 function onConnectionEstablished() {
+  console.log('---------- onConnectionEstablished()');
   voxAPI.login(username+"@"+application_name+"."+account_name+".voximplant.com", password);
 }
 
 // Connection with VoxImplant failed
 function onConnectionFailed() {
+  console.log('---------- onConnectionFailed()');
   setTimeout(function() {voxAPI.connect();}, 1000);
 }
 
 // Connection with VoxImplant closed
 function onConnectionClosed() {
+  console.log('---------- onConnectionClosed()');
   setTimeout(function() {voxAPI.connect();}, 1000);
+}
+
+function onAuthResultServer(e) {
+  console.log("---------- AuthResultServer: " + e.result);
 }
 
 // Incoming call
@@ -136,18 +162,57 @@ function sendVideo(flag) {
 }
 
 // Create outbound call
-export function createVideoCallTo2nd() {
+export function createVideoCall() {
 
-  console.log('---------- createVideoCall to 2nd');
+  console.log('---------- createVideoCall');
 
   ready(function() {
-    window.stop();
-    document.getElementById('callButton').addEventListener('click', function () {
-      currentCall.hangup();
-    });
+
+    if (mode === 'client') {
+      try {
+
+        // assign handlers
+        voxAPI.addEventListener(VoxImplant.Events.SDKReady, onSdkReady);
+        voxAPI.addEventListener(VoxImplant.Events.ConnectionEstablished, onConnectionEstablished);
+        voxAPI.addEventListener(VoxImplant.Events.ConnectionFailed, onConnectionFailed);
+        voxAPI.addEventListener(VoxImplant.Events.ConnectionClosed, onConnectionClosed);
+        voxAPI.addEventListener(VoxImplant.Events.AuthResult, onAuthResultClient);
+        voxAPI.addEventListener(VoxImplant.Events.IncomingCall, onIncomingCall);
+
+        // initialize SDK
+        voxAPI.init({
+          useFlashOnly: false,
+          micRequired: true,  // force microphone/camera access request
+          videoSupport: true, // enable video support
+          progressTone: true  // play progress tone
+        });
+
+        // setTimeout(function () {
+        //   outboundCall = currentCall = voxAPI.call(dest_username, true, "TEST CUSTOM DATA", {"X-DirectCall": "true"});
+        //   currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
+        //   currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
+        //   currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
+        //   // currentCall.setVideoSettings({width: 720});
+        // }, 2000);
+
+        document.getElementById('callButton').addEventListener('click', function () {
+          currentCall.hangup();
+        });
+
+      } catch (e) {
+        console.log('---------- ---------- caught error: -------------');
+        console.log(e.message);
+        console.log('---------- ---------------------------------------');
+      }
+    }
+
   });
 
-  outboundCall = currentCall = voxAPI.call('skalatskyalexey-2nd', true, "TEST CUSTOM DATA", {"X-DirectCall": "true"});
+}
+
+function onAuthResultClient(e) {
+  console.log("---------- AuthResultClient: "+e.result);
+  outboundCall = currentCall = voxAPI.call(dest_username, true, "TEST CUSTOM DATA", {"X-DirectCall": "true"});
   currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
   currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
   currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
