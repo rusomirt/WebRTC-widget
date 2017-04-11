@@ -34,7 +34,10 @@ class Webchat extends Component {
   }
 
   exitChat() {
-    this.setState({isCalling: false});
+    this.setState({
+      isCalling: false,
+      isChatBtnsOpen: false
+    });
   }
 
   componentDidUpdate() {
