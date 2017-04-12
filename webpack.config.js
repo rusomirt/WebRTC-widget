@@ -7,11 +7,14 @@ let BUILD_DIR = path.resolve(__dirname, 'public/build');
 let APP_DIR = path.resolve(__dirname, 'src');
 
 let config = {
-    entry: APP_DIR + '/index.js',
+    entry: {
+        "client": APP_DIR + '/index.js',
+        "test-emul": APP_DIR + '/api/voximplant-test-emul.js'
+    },
     output: {
         publicPath: 'build/',
         path: BUILD_DIR,
-        filename: 'bundle.js'
+        filename: '[name]-bundle.js'
     },
     module: {
         loaders: [

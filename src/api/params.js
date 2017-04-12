@@ -2,6 +2,7 @@ export default  {
   "account_name": "xlucidity",
   "application_name": "videochat",
   "client_user": "skalatskyalexey",
-  "password": "qwerty",
-  "server_user": "skalatskyalexey-2nd"
+  "client_password": "qwerty",
+  "test_emul_user": "skalatskyalexey-2nd",
+  "test_emul_password": "qwerty"
 };

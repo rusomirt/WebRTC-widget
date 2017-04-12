@@ -1,7 +1,7 @@
 import {h, render, Component} from 'preact';
 import cn from 'classnames';
 
-import * as vox from './voximplant';
+import * as vox from 'api/voximplant';
 
 import styles from './index.scss';
 import videoChatImg from './img/video-chat.png';
@@ -19,7 +19,7 @@ class Webchat extends Component {
     // This binding is necessary to make `this` work in the callback
     this.toggleChatButtons = this.toggleChatButtons.bind(this);
     this.startVideoChat = this.startVideoChat.bind(this);
-    this.exitChat = this.exitChat.bind(this);
+    this.stopVideoChat = this.stopVideoChat.bind(this);
   }
 
   toggleChatButtons() {
@@ -29,24 +29,28 @@ class Webchat extends Component {
   }
 
   startVideoChat() {
-    console.log('video chat');
+    console.log('start video chat');
+    vox.createVideoCall();
     this.setState({isCalling: true});
   }
 
-  exitChat() {
+  stopVideoChat() {
+    console.log('stop video chat');
+    vox.stopVideoCall();
     this.setState({
       isCalling: false,
       isChatBtnsOpen: false
     });
   }
 
-  componentDidUpdate() {
-    if (this.state.isCalling) {
-      vox.createVideoCall();
-    }
+  componentDidMount() {
+    vox.init();
   }
 
-  
+  componentWillUnmount() {
+    vox.uninit();
+  }
+
   render(props, state) {
     if (!this.state.isCalling) {
       return (
@@ -104,7 +108,7 @@ class Webchat extends Component {
               <button
                 id="callButton"
                 className={cn(styles['chat__btn'], styles['chat__btn--big'])}
-                onClick={this.exitChat}>
+                onClick={this.stopVideoChat}>
                 <img className={styles['webchat__btn-icon']} src={voiceChatImg}/>
               </button>
               <div className={styles['chat__btns-group']}>
