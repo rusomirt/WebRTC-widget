@@ -141,11 +141,24 @@ function sendVideo(flag) {
 export function createVideoCall() {
   console.log("------------------------------");
   console.log('createVideoCall');
+  console.log("! currentCall: ");
+  console.log(currentCall);
   console.log('before connect in createVideoCall');
   console.log("VI connected: " + voxAPI.connected());
-  voxAPI.connect();
+  if (!voxAPI.connected()) {
+    voxAPI.connect();
+  } else {
+    currentCall = voxAPI.call(dest_username, true, "TEST CUSTOM DATA", {"X-DirectCall": "true"});
+    currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
+    currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
+    currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
+    // currentCall.setVideoSettings({width: 720});
+    console.log("voxAPI.call called");
+  }
   console.log('after connect in createVideoCall');
   console.log("VI connected: " + voxAPI.connected());
+  console.log("! currentCall: ");
+  console.log(currentCall);
 }
 
 // Hangup outbound call
@@ -178,13 +191,7 @@ function onCallDisconnected(e) {
   console.log("------------------------------");
   console.log("CallDisconnected: "+currentCall.id()+" Call state: "+currentCall.state());
   console.log("VI connected: " + voxAPI.connected());
-
   currentCall = null;
-  //   console.log('before VoxAPI disconnected');
-  //   console.log("VI connected: " + voxAPI.connected());
-  //   voxAPI.disconnect();
-  //   console.log('after VoxAPI disconnected');
-  //   console.log("VI connected: " + voxAPI.connected());
 }
 
 // Call failed
@@ -192,12 +199,6 @@ function onCallFailed(e) {
   console.log("------------------------------");
   console.log("CallFailed: "+currentCall.id()+" code: "+e.code+" reason: "+e.reason);
   console.log("VI connected: " + voxAPI.connected());
-
   currentCall = null;
-  //   console.log('before VoxAPI disconnected');
-  //   console.log("VI connected: " + voxAPI.connected());
-  //   voxAPI.disconnect();
-  //   console.log('after VoxAPI disconnected');
-  //   console.log("VI connected: " + voxAPI.connected());
 }
 
