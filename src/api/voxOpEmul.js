@@ -6,36 +6,37 @@
 
 // Load VoxImplant SDK:
 import * as VoxImplant from 'voximplant-websdk';
-// Load VoxImplant connection parameters:
-import connectionParams from './params';
 
 //=============================================================================
-// VoxImplant connection parameters
+// VoxImplant globals
 //=============================================================================
 
-const username = connectionParams.test_emul_user,
-      password = connectionParams.test_emul_password,
-      application_name = connectionParams.application_name,
-      account_name = connectionParams.account_name;
+let username,             // VoxImplant connection parameters
+    password,
+    application_name,
+    account_name;
+
+let currentCall = null;   // call global instances
+
+let voxAPI;               // object for VoxImplant instance
 
 //=============================================================================
-// Call global instances
+// Initialization & deinitialization of VoxImplant API
 //=============================================================================
 
-let currentCall = null;
-
-//=============================================================================
-// Global VoxImplant instance
-//=============================================================================
-
-let voxAPI;   // object for VoxImplant instance
-
-(function init() {
+export function init(settings) {
   console.log("------------------------------");
   console.log('init()');
+  console.log(settings);
 
   // Create VoxImplant instance
   voxAPI = VoxImplant.getInstance();
+
+  // VoxImplant connection parameters
+  account_name      = settings.account_name;
+  application_name  = settings.application_name;
+  username          = settings.op_username;
+  password          = settings.op_password;
 
   // Assign handlers
   voxAPI.addEventListener(VoxImplant.Events.SDKReady, onSdkReady);
@@ -52,8 +53,12 @@ let voxAPI;   // object for VoxImplant instance
     videoSupport: true, // enable video support
     progressTone: true  // play progress tone
   });
-})();
+}
 
+export function uninit() {
+  // Clear VoxImplant instance
+  voxAPI = null;
+}
 
 //=============================================================================
 // Global VoxImplant instance event handlers
@@ -132,7 +137,18 @@ function onCallDisconnected(e) {
   console.log("------------------------------");
   console.log("CallDisconnected: "+currentCall.id()+" Call state: "+currentCall.state());
   console.log("VI connected: " + voxAPI.connected());
+
+  console.log('----- video removing');
+  const body = document.getElementsByTagName('body')[0];
+  console.log(body);
+  console.log(currentCall);
+  console.log(currentCall.getVideoElementId());
+  const video = document.getElementById(currentCall.getVideoElementId());
+  console.log(video);
+  body.removeChild(video);
+
   currentCall = null;
+
 }
 
 // Call failed

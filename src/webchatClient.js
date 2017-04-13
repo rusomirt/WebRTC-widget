@@ -1,14 +1,14 @@
 import {h, render, Component} from 'preact';
 import cn from 'classnames';
 
-import * as vox from 'api/voximplant';
+import * as vox from 'api/voxClient';
 
-import styles from './index.scss';
+import styles from './webchatClient.scss';
 import videoChatImg from './img/video-chat.png';
 import voiceChatImg from './img/voice-chat.png';
 import textChatImg from './img/text-chat.png';
 
-class Webchat extends Component {
+class WebchatClient extends Component {
   constructor() {
     super();
     this.state = {
@@ -44,7 +44,7 @@ class Webchat extends Component {
   }
 
   componentDidMount() {
-    vox.init();
+    vox.init(this.props.settings);
   }
 
   componentWillUnmount() {
@@ -129,4 +129,6 @@ class Webchat extends Component {
   }
 }
 
-render(<Webchat />, document.body);
+module.exports = function createWidget(node, settings) {
+  render(<WebchatClient settings={settings} />, node);
+};

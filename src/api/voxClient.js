@@ -6,37 +6,39 @@
 
 // Load VoxImplant SDK:
 import * as VoxImplant from 'voximplant-websdk';
-// Load VoxImplant connection parameters:
-import connectionParams from './params';
 
 //=============================================================================
-// VoxImplant connection parameters
+// VoxImplant globals
 //=============================================================================
 
-const username = connectionParams.client_user,
-      password = connectionParams.client_password,
-      dest_username = connectionParams.test_emul_user,
-      application_name = connectionParams.application_name,
-      account_name = connectionParams.account_name;
+let username,             // VoxImplant connection parameters
+    password,
+    dest_username,
+    application_name,
+    account_name;
+
+let currentCall = null;   // call global instances
+
+let voxAPI;               // object for VoxImplant instance
 
 //=============================================================================
-// Call global instances
+// Initialization & deinitialization of VoxImplant API
 //=============================================================================
 
-let currentCall = null;
-
-//=============================================================================
-// Global VoxImplant instance
-//=============================================================================
-
-let voxAPI;   // object for VoxImplant instance
-
-export function init() {
+export function init(settings) {
   console.log("------------------------------");
   console.log('init()');
+  console.log(settings);
 
   // Create VoxImplant instance
   voxAPI = VoxImplant.getInstance();
+
+  // VoxImplant connection parameters
+  account_name      = settings.account_name;
+  application_name  = settings.application_name;
+  username          = settings.client_username;
+  password          = settings.client_password;
+  dest_username     = settings.op_username;
 
   // Assign handlers
   voxAPI.addEventListener(VoxImplant.Events.SDKReady, onSdkReady);
@@ -145,9 +147,10 @@ export function createVideoCall() {
   console.log(currentCall);
   console.log('before connect in createVideoCall');
   console.log("VI connected: " + voxAPI.connected());
-  if (!voxAPI.connected()) {
+
+  if (!voxAPI.connected()) {    // 1st call
     voxAPI.connect();
-  } else {
+  } else {                      // 2nd and subsequent calls
     currentCall = voxAPI.call(dest_username, true, "TEST CUSTOM DATA", {"X-DirectCall": "true"});
     currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
     currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
@@ -155,6 +158,7 @@ export function createVideoCall() {
     // currentCall.setVideoSettings({width: 720});
     console.log("voxAPI.call called");
   }
+  
   console.log('after connect in createVideoCall');
   console.log("VI connected: " + voxAPI.connected());
   console.log("! currentCall: ");

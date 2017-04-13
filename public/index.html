@@ -8,6 +8,17 @@
 </head>
 <body>
 
-    <script src="build/client-bundle.js"></script>
+    <script src="build/webchatClientBundle.js"></script>
+    <script>
+        // webchatClientCreate - from config.output.library in webpack.config.js
+        webchatClientCreate(document.body, {
+          account_name:     "xlucidity",
+          application_name: "videochat",
+          client_username:  "skalatskyalexey",
+          client_password:  "qwerty",
+          op_username:      "skalatskyalexey-2nd"
+        });
+    </script>
+
 </body>
 </html>

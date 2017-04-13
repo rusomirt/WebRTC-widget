@@ -8,13 +8,14 @@ let APP_DIR = path.resolve(__dirname, 'src');
 
 let config = {
     entry: {
-        "client": APP_DIR + '/index.js',
-        "test-emul": APP_DIR + '/api/voximplant-test-emul.js'
+        "webchatClient": APP_DIR + '/webchatClient.js',
+        "webchatOpEmul": APP_DIR + '/webchatOpEmul.js'
     },
     output: {
         publicPath: 'build/',
+        library: '[name]Create',
         path: BUILD_DIR,
-        filename: '[name]-bundle.js'
+        filename: '[name]Bundle.js'
     },
     module: {
         loaders: [
@@ -39,7 +40,7 @@ let config = {
                 test: /\.scss$/,
                 loaders: [
                     'style?sourceMap',
-                    'css?modules&importLoaders=1&localIdentName=[name]--[local]',
+                    'css?modules&importLoaders=1&localIdentName=[name]__[local][hash:base64:5]',
                     'sass?sourceMap'
                 ],
                 exclude: /node_modules/
