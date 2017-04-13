@@ -20,6 +20,7 @@ class WebchatClient extends Component {
     this.toggleChatButtons = this.toggleChatButtons.bind(this);
     this.startVideoChat = this.startVideoChat.bind(this);
     this.stopVideoChat = this.stopVideoChat.bind(this);
+    this.getHashParams = this.getHashParams.bind(this);
   }
 
   toggleChatButtons() {
@@ -44,12 +45,40 @@ class WebchatClient extends Component {
   }
 
   componentDidMount() {
-    vox.init(this.props.settings);
+    const hashParams = this.getHashParams();
+    console.log(hashParams);
+    const voxParams = {
+      account_name: hashParams.account_name ?
+        hashParams.account_name : this.props.settings.account_name,
+      application_name: hashParams.application_name ?
+        hashParams.application_name : this.props.settings.application_name,
+      client_username: hashParams.client_username ?
+        hashParams.client_username : this.props.settings.client_username,
+      client_password: hashParams.client_password ?
+        hashParams.client_password : this.props.settings.client_password,
+      op_username: hashParams.op_username ?
+        hashParams.op_username : this.props.settings.op_username
+    };
+    vox.init(voxParams);
   }
 
   componentWillUnmount() {
     vox.uninit();
   }
+
+  getHashParams() {
+  let hashParams = {};
+  let e,
+    a = /\+/g,  // Regex for replacing addition symbol with a space
+    r = /([^&;=]+)=?([^&;]*)/g,
+    d = function (s) { return decodeURIComponent(s.replace(a, " ")); },
+    q = window.location.hash.substring(1);
+
+  while (e = r.exec(q))
+    hashParams[d(e[1])] = d(e[2]);
+
+  return hashParams;
+}
 
   render(props, state) {
     if (!this.state.isCalling) {
