@@ -5,7 +5,9 @@
 //=============================================================================
 
 // Load VoxImplant SDK:
-import * as VoxImplant from 'voximplant-websdk';
+// import * as VoxImplant from 'voximplant-websdk';
+// import '../lib/voximplant-edge.min.js';
+// import '../lib/voximplant.min.js';
 
 //=============================================================================
 // VoxImplant globals
@@ -101,17 +103,23 @@ function onAuthResult(e) {
   console.log("------------------------------");
   console.log("AuthResult: "+e.result);
   console.log("VI connected: " + voxAPI.connected());
-  currentCall = voxAPI.call(dest_username, true, "TEST CUSTOM DATA", {"X-DirectCall": "true"});
-  currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
-  currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
-  currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
-  // currentCall.setVideoSettings({width: 720});
-  console.log("voxAPI.call called");
+  beginCall();
 }
 
 //=============================================================================
 // VoxImplant functions
 //=============================================================================
+
+function beginCall() {
+  currentCall = voxAPI.call(dest_username, true, "TEST CUSTOM DATA", {"X-DirectCall": "true"});
+  currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
+  currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
+  currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
+  currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, onProgressToneStart);
+  currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, onProgressToneStop);
+  // currentCall.setVideoSettings({width: 720});
+  console.log("voxAPI.call called");
+}
 
 // Show/hide local video
 function showLocalVideo(flag) {
@@ -151,12 +159,7 @@ export function createVideoCall() {
   if (!voxAPI.connected()) {    // 1st call
     voxAPI.connect();
   } else {                      // 2nd and subsequent calls
-    currentCall = voxAPI.call(dest_username, true, "TEST CUSTOM DATA", {"X-DirectCall": "true"});
-    currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
-    currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
-    currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
-    // currentCall.setVideoSettings({width: 720});
-    console.log("voxAPI.call called");
+    beginCall();
   }
   
   console.log('after connect in createVideoCall');
@@ -206,3 +209,12 @@ function onCallFailed(e) {
   currentCall = null;
 }
 
+function onProgressToneStart() {
+  console.log('===============================================================');
+  console.log('onProgressToneStart()');
+}
+
+function onProgressToneStop() {
+  console.log('===============================================================');
+  console.log('onProgressToneStop()');
+}

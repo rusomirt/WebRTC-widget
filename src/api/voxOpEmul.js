@@ -5,7 +5,9 @@
 //=============================================================================
 
 // Load VoxImplant SDK:
-import * as VoxImplant from 'voximplant-websdk';
+// import * as VoxImplant from 'voximplant-websdk';
+// import '../lib/voximplant-edge.min.js';
+// import '../lib/voximplant.min.js';
 
 //=============================================================================
 // VoxImplant globals
@@ -110,7 +112,10 @@ function onIncomingCall(e) {
   currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
   console.log("Incoming call from: "+currentCall.number());
   // Answer automatically
-  currentCall.answer();
+  setTimeout(function () {
+    currentCall.answer();
+  }, 5000);
+
 }
 
 //=============================================================================
