@@ -18,8 +18,11 @@ class WebchatClient extends Component {
 
     // This binding is necessary to make `this` work in the callback
     this.toggleChatButtons = this.toggleChatButtons.bind(this);
+
     this.startVideoChat = this.startVideoChat.bind(this);
-    this.stopVideoChat = this.stopVideoChat.bind(this);
+    this.startVoiceChat = this.startVoiceChat.bind(this);
+    this.stopChat = this.stopChat.bind(this);
+
     this.getHashParams = this.getHashParams.bind(this);
   }
 
@@ -30,14 +33,17 @@ class WebchatClient extends Component {
   }
 
   startVideoChat() {
-    console.log('start video chat');
-    vox.createVideoCall();
+    vox.createCall('video');
     this.setState({isCalling: true});
   }
 
-  stopVideoChat() {
-    console.log('stop video chat');
-    vox.stopVideoCall();
+  startVoiceChat() {
+    vox.createCall('voice');
+    this.setState({isCalling: true});
+  }
+
+  stopChat() {
+    vox.stopCall();
     this.setState({
       isCalling: false,
       isChatBtnsOpen: false
@@ -46,7 +52,6 @@ class WebchatClient extends Component {
 
   componentDidMount() {
     const hashParams = this.getHashParams();
-    console.log(hashParams);
     const voxParams = {
       account_name: hashParams.account_name ?
         hashParams.account_name : this.props.settings.account_name,
@@ -96,7 +101,7 @@ class WebchatClient extends Component {
           <button
             className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--voice'],
               {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
-            onClick={() => console.log('voice chat')}>
+            onClick={this.startVoiceChat}>
             <img className={styles['webchat__btn-icon']} src={voiceChatImg}/>
           </button>
           <button
@@ -137,7 +142,7 @@ class WebchatClient extends Component {
               <button
                 id="callButton"
                 className={cn(styles['chat__btn'], styles['chat__btn--big'])}
-                onClick={this.stopVideoChat}>
+                onClick={this.stopChat}>
                 <img className={styles['webchat__btn-icon']} src={voiceChatImg}/>
               </button>
               <div className={styles['chat__btns-group']}>

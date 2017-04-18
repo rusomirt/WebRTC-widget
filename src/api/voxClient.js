@@ -10,15 +10,16 @@ import $scriptjs from 'scriptjs';   // Script.js - for loading VoxImplant CDN
 // VoxImplant globals
 //=============================================================================
 
-let username,             // VoxImplant connection parameters
+let username,               // VoxImplant connection parameters
     password,
     dest_username,
     application_name,
     account_name;
 
-let currentCall = null;   // call global instances
+let currentCall = null;     // call global instances
+let currentCallMode = null; // Video, voice or text.
 
-let voxAPI;               // object for VoxImplant instance
+let voxAPI;                 // object for VoxImplant instance
 
 //=============================================================================
 // Initialization & deinitialization of VoxImplant API
@@ -109,57 +110,58 @@ function onAuthResult(e) {
 //=============================================================================
 
 function beginCall() {
-  // console.log('!!!!!!!!!!!!!!!!!! beginCall');
-  currentCall = voxAPI.call(dest_username, true, "TEST CUSTOM DATA", {"X-DirectCall": "true"});
-  // console.log('1');
-  // console.log(currentCall.getVideoElementId());
+  let useVideo = (currentCallMode === 'video');
+  currentCall = voxAPI.call(dest_username, useVideo, "TEST CUSTOM DATA", {"X-DirectCall": "true"});
 
-  // Hide remote video until call is connected:
-  let remoteVideo = document.getElementById(currentCall.getVideoElementId());
-  remoteVideo.style.width = 0;
+  if (useVideo) {
+    // Hide remote video until call is connected:
+    let remoteVideo = document.getElementById(currentCall.getVideoElementId());
+    remoteVideo.style.width = 0;
+  }
 
   currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
   currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
   currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
   currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, onProgressToneStart);
   currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, onProgressToneStop);
-  currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, onMediaElementCreated);
   // currentCall.setVideoSettings({width: 720});
-
-  // console.log('2');
-  // console.log(currentCall.getVideoElementId());
-  // console.log("voxAPI.call called");
 }
 
 // Show/hide local video
 function showLocalVideo(flag) {
-  // console.log('---------- showLocalVideo() begin ----------');
+  console.log('---------- showLocalVideo() begin ----------');
+  console.log('flag = ' + flag);
 
   voxAPI.showLocalVideo(flag);
   if (flag) {
     // Move local video from camera to container
-    // console.log(document.getElementById('voximplantlocalvideo'));
     const videoOut = document.getElementById('voximplantlocalvideo');
     videoOut.style.width = '100%';    // fit in container with aspect ratio keeping
     videoOut.style.display = 'block'; // remove space under element (initially it is inline)
 
-    // console.log(document.getElementById('video-out'));
     document.getElementById('video-out').appendChild(videoOut);
     videoOut.play();
   }
+
   console.log('---------- showLocalVideo() end ----------');
 }
 
 // Show/hide remote video
 function showRemoteVideo(flag) {
+  console.log('---------- showRemoteVideo() begin ----------');
+  console.log('flag = ' + flag);
+
   currentCall.showRemoteVideo(flag);
+  const videoIn = document.getElementById(currentCall.getVideoElementId());
   if (flag) {
-    const videoIn = document.getElementById(currentCall.getVideoElementId());
     videoIn.style.width = '100%';    // fit in container with aspect ratio keeping
     videoIn.style.display = 'block'; // remove space under element (initially it is inline)
     document.getElementById('video-in').appendChild(videoIn);
     videoIn.play();
+  } else {
+    videoIn.style.display = 'none';   // hide remote video
   }
+  console.log('---------- showRemoteVideo() end ----------');
 }
 
 // Start/stop sending video
@@ -168,13 +170,18 @@ function sendVideo(flag) {
 }
 
 // Create outbound call
-export function createVideoCall() {
+export function createCall(callMode) {
   // console.log("------------------------------");
   // console.log('createVideoCall');
   // console.log("! currentCall: ");
   // console.log(currentCall);
   // console.log('before connect in createVideoCall');
   // console.log("VI connected: " + voxAPI.connected());
+
+  if (callMode !== 'video' && callMode !== 'voice' && callMode !== 'text') {
+    return false;
+  }
+  currentCallMode = callMode;
 
   if (!voxAPI.connected()) {    // 1st call
     voxAPI.connect();
@@ -189,7 +196,7 @@ export function createVideoCall() {
 }
 
 // Hangup outbound call
-export function stopVideoCall() {
+export function stopCall() {
   // console.log('---------- stopVideoCall');
   // console.log("! currentCall: ");
   // console.log(currentCall);
@@ -208,10 +215,18 @@ export function stopVideoCall() {
 // Call connected
 function onCallConnected(e) {
   // console.log("CallConnected: "+currentCall.id());
-  sendVideo(true);
-  showLocalVideo(true);
-  showRemoteVideo(true);
-  // console.log(currentCall.getVideoElementId());
+  switch (currentCallMode) {
+    case 'video':
+      sendVideo(true);
+      showLocalVideo(true);
+      showRemoteVideo(true);
+      break;
+    case 'voice':
+      sendVideo(false);
+      // showLocalVideo(false);
+      showRemoteVideo(false);
+      break;
+  }
 }
 
 // Call disconnected
@@ -237,12 +252,7 @@ function onProgressToneStart() {
 }
 
 function onProgressToneStop() {
-  console.log('===============================================================');
-  console.log('onProgressToneStop()');
-  console.log(currentCall.getVideoElementId());
-}
-
-function onMediaElementCreated() {
-  console.clear();
-  console.log('---------- onMediaElementCreated() ----------');
+  // console.log('===============================================================');
+  // console.log('onProgressToneStop()');
+  // console.log(currentCall.getVideoElementId());
 }
