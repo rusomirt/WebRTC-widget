@@ -21,6 +21,10 @@
 // -py - vertical padding (-top & -bottom)
 
 
+video {
+  max-width: 100%;
+}
+
 $webchat-r: 20px;
 $webchat-b: 20px;
 $webchat-select-btn-size: 60px;
@@ -108,6 +112,7 @@ $modal-inner-w: 400px;
 
   .modal__inner {
     width: $modal-inner-w;
+    max-width: 100%;      // shrink to window on narrow screens (< $modal-inner-w)
 
     .modal__copyright {
       color: white;
