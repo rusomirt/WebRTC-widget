@@ -1,13 +1,10 @@
 //
 
 //=============================================================================
-// File imports
+// Modules & files imports
 //=============================================================================
 
-// Load VoxImplant SDK:
-// import * as VoxImplant from 'voximplant-websdk';
-// import '../lib/voximplant-edge.min.js';
-// import '../lib/voximplant.min.js';
+import $scriptjs from 'scriptjs';   // Script.js - for loading VoxImplant CDN
 
 //=============================================================================
 // VoxImplant globals
@@ -32,29 +29,31 @@ export function init(settings) {
   console.log('init()');
   console.log(settings);
 
-  // Create VoxImplant instance
-  voxAPI = VoxImplant.getInstance();
+  $scriptjs("//cdn.voximplant.com/voximplant.min.js", function() {
+    // Create VoxImplant instance
+    voxAPI = VoxImplant.getInstance();
 
-  // VoxImplant connection parameters
-  account_name      = settings.account_name;
-  application_name  = settings.application_name;
-  username          = settings.client_username;
-  password          = settings.client_password;
-  dest_username     = settings.op_username;
+    // VoxImplant connection parameters
+    account_name      = settings.account_name;
+    application_name  = settings.application_name;
+    username          = settings.client_username;
+    password          = settings.client_password;
+    dest_username     = settings.op_username;
 
-  // Assign handlers
-  voxAPI.addEventListener(VoxImplant.Events.SDKReady, onSdkReady);
-  voxAPI.addEventListener(VoxImplant.Events.ConnectionEstablished, onConnectionEstablished);
-  voxAPI.addEventListener(VoxImplant.Events.ConnectionFailed, onConnectionFailed);
-  voxAPI.addEventListener(VoxImplant.Events.ConnectionClosed, onConnectionClosed);
-  voxAPI.addEventListener(VoxImplant.Events.AuthResult, onAuthResult);
+    // Assign handlers
+    voxAPI.addEventListener(VoxImplant.Events.SDKReady, onSdkReady);
+    voxAPI.addEventListener(VoxImplant.Events.ConnectionEstablished, onConnectionEstablished);
+    voxAPI.addEventListener(VoxImplant.Events.ConnectionFailed, onConnectionFailed);
+    voxAPI.addEventListener(VoxImplant.Events.ConnectionClosed, onConnectionClosed);
+    voxAPI.addEventListener(VoxImplant.Events.AuthResult, onAuthResult);
 
-  // Initialize SDK
-  voxAPI.init({
-    useFlashOnly: false,
-    micRequired: true,  // force microphone/camera access request
-    videoSupport: true, // enable video support
-    progressTone: true  // play progress tone
+    // Initialize SDK
+    voxAPI.init({
+      useFlashOnly: false,
+      micRequired: true,  // force microphone/camera access request
+      videoSupport: true, // enable video support
+      progressTone: true  // play progress tone
+    });
   });
 }
 
@@ -161,7 +160,7 @@ export function createVideoCall() {
   } else {                      // 2nd and subsequent calls
     beginCall();
   }
-  
+
   console.log('after connect in createVideoCall');
   console.log("VI connected: " + voxAPI.connected());
   console.log("! currentCall: ");
