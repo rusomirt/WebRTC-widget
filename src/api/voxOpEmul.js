@@ -126,6 +126,19 @@ function sendVideo(flag) {
   voxAPI.sendVideo(flag);
 }
 
+// Hangup incoming call
+export function stopCall() {
+  console.log('---------- stopCall');
+  console.log("! currentCall: ");
+  console.log(currentCall);
+  if (currentCall) {
+    currentCall.hangup();
+  }
+  console.log("! currentCall: ");
+  console.log(currentCall);
+}
+
+
 //=============================================================================
 // Call event handlers
 //=============================================================================

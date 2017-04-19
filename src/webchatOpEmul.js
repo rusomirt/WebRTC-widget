@@ -6,7 +6,9 @@ class WebchatOpEmul extends Component {
     super();
     // This binding is necessary to make `this` work in the callback
     this.getHashParams = this.getHashParams.bind(this);
+    this.stopChat = this.stopChat.bind(this);
   }
+
   componentDidMount() {
     const hashParams = this.getHashParams();
     console.log(hashParams);
@@ -22,9 +24,11 @@ class WebchatOpEmul extends Component {
     };
     vox.init(voxParams);
   }
+
   componentWillUnmount() {
     vox.uninit();
   }
+
   getHashParams() {
     let hashParams = {};
     let e,
@@ -37,6 +41,16 @@ class WebchatOpEmul extends Component {
       hashParams[d(e[1])] = d(e[2]);
 
     return hashParams;
+  }
+
+  stopChat() {
+    vox.stopCall();
+  }
+
+  render(props, state) {
+    return (
+      <button onClick={this.stopChat}>CANCEL</button>
+    )
   }
 }
 
