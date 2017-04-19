@@ -16,10 +16,12 @@ let username,               // VoxImplant connection parameters
     application_name,
     account_name;
 
-let currentCall = null;     // call global instances
-let currentCallMode = null; // Video, voice or text.
+// currentCall is exported for onCallDisconnected event handler
+// assigning in Preact component
+export let currentCall = null;  // call global instances
+let currentCallMode = null;     // Video, voice or text.
 
-let voxAPI;                 // object for VoxImplant instance
+let voxAPI;                     // object for VoxImplant instance
 
 //=============================================================================
 // Initialization & deinitialization of VoxImplant API
@@ -98,6 +100,7 @@ function onConnectionClosed() {
   // console.log("VI connected: " + voxAPI.connected());
 }
 
+// Result of authorization
 function onAuthResult(e) {
   // console.log("------------------------------");
   // console.log("AuthResult: "+e.result);
@@ -110,6 +113,9 @@ function onAuthResult(e) {
 //=============================================================================
 
 function beginCall() {
+  console.log('---------- beginCall() begin ----------');
+  console.log('currentCallMode = ' + currentCallMode);
+
   let useVideo = (currentCallMode === 'video');
   currentCall = voxAPI.call(dest_username, useVideo, "TEST CUSTOM DATA", {"X-DirectCall": "true"});
 
@@ -120,11 +126,13 @@ function beginCall() {
   }
 
   currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
-  currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
+  // currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
   currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
   currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, onProgressToneStart);
   currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, onProgressToneStop);
   // currentCall.setVideoSettings({width: 720});
+
+  console.log('---------- beginCall() end ----------');
 }
 
 // Show/hide local video
@@ -229,13 +237,13 @@ function onCallConnected(e) {
   }
 }
 
-// Call disconnected
-function onCallDisconnected(e) {
-  // console.log("------------------------------");
-  // console.log("CallDisconnected: "+currentCall.id()+" Call state: "+currentCall.state());
-  // console.log("VI connected: " + voxAPI.connected());
-  currentCall = null;
-}
+// // Call disconnected
+// function onCallDisconnected(e) {
+//   console.log("------------------------------");
+//   console.log("CallDisconnected: "+currentCall.id()+" Call state: "+currentCall.state());
+//   console.log("VI connected: " + voxAPI.connected());
+//   currentCall = null;
+// }
 
 // Call failed
 function onCallFailed(e) {

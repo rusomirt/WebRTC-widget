@@ -19,9 +19,10 @@ class WebchatClient extends Component {
     // This binding is necessary to make `this` work in the callback
     this.toggleChatButtons = this.toggleChatButtons.bind(this);
 
-    this.startVideoChat = this.startVideoChat.bind(this);
-    this.startVoiceChat = this.startVoiceChat.bind(this);
+    this.startChat = this.startChat.bind(this);
     this.stopChat = this.stopChat.bind(this);
+
+    this.onCallDisconnect = this.onCallDisconnect.bind(this);
 
     this.getHashParams = this.getHashParams.bind(this);
   }
@@ -32,18 +33,42 @@ class WebchatClient extends Component {
     }));
   }
 
-  startVideoChat() {
-    vox.createCall('video');
+  // callMode values: 'video', 'voice', 'text'
+  startChat(callMode) {
+    vox.createCall(callMode);
     this.setState({isCalling: true});
-  }
 
-  startVoiceChat() {
-    vox.createCall('voice');
-    this.setState({isCalling: true});
+    // console.log('==================== currentCall before polling');
+    // console.log(vox.currentCall);
+
+    // Poll currentCall every 500ms until in becomes not null,
+    // then assign onCallDisconnect event handler.
+    let pollTimer = setInterval(() => {
+      // console.log('==================== currentCall while polling');
+      // console.log(vox.currentCall);
+      if (vox.currentCall !== null) {
+        // 'this' works in arrow function only
+        vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnect);
+        clearInterval(pollTimer);
+      }
+    }, 500);
   }
 
   stopChat() {
     vox.stopCall();
+    this.setState({
+      isCalling: false,
+      isChatBtnsOpen: false
+    });
+  }
+
+  onCallDisconnect() {
+    // console.log('==============================');
+    // console.log('Call Disconnected from out');
+    // console.log('==============================');
+
+    vox.currentCall = null; // clear call instance
+    
     this.setState({
       isCalling: false,
       isChatBtnsOpen: false
@@ -95,13 +120,13 @@ class WebchatClient extends Component {
           <button
             className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--video'],
               {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
-            onClick={this.startVideoChat}>
+            onClick={() => this.startChat('video')}>
             <img className={styles['webchat__btn-icon']} src={videoChatImg}/>
           </button>
           <button
             className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--voice'],
               {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
-            onClick={this.startVoiceChat}>
+            onClick={() => this.startChat('voice')}>
             <img className={styles['webchat__btn-icon']} src={voiceChatImg}/>
           </button>
           <button
