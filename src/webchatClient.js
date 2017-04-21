@@ -23,7 +23,7 @@ class WebchatClient extends Component {
     this.toggleChatButtons = this.toggleChatButtons.bind(this);
 
     this.startCall = this.startCall.bind(this);
-    this.muteUnmute= this.muteUnmute.bind(this);
+    this.turnSound= this.turnSound.bind(this);
     this.stopCall = this.stopCall.bind(this);
     this.onCallDisconnect = this.onCallDisconnect.bind(this);
 
@@ -57,11 +57,9 @@ class WebchatClient extends Component {
     }, 500);
   }
 
-  muteUnmute() {
-    console.log('isMuted = ' + this.state.isMuted);
+  turnSound() {
     vox.turnSound(this.state.isMuted);
     this.setState({isMuted: !this.state.isMuted});
-    console.log('isMuted = ' + this.state.isMuted);
   }
   
 
@@ -189,8 +187,8 @@ class WebchatClient extends Component {
               <div className={styles['chat__btns-group']}>
                 <button
                     className={cn(styles['chat__btn'], styles['chat__btn--small'])}
-                    onClick={this.muteUnmute}>
-                  mute
+                    onClick={this.turnSound}>
+                  sound
                 </button>
                 <button className={cn(styles['chat__btn'], styles['chat__btn--small'])}>
                   <img className={styles['webchat__btn-icon']} src={textChatImg} />
