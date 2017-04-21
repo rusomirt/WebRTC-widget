@@ -209,6 +209,7 @@ function sendVideo(flag) {
     voxAPI.sendVideo(flag);
 }
 
+// Turn the sound on/off
 export function turnSound(flag) {
     console.log('<--------- turnSound() begin');
     console.log('flag = ' + flag);
@@ -218,10 +219,22 @@ export function turnSound(flag) {
     } else {
         currentCall.mutePlayback();
     }
-    console.log('currentCall: ');
-    console.log(currentCall);
 
     console.log('           turnSound() end --------->');
+}
+
+// Turn the microphone on/off
+export function turnMic(flag) {
+    console.log('<--------- turnMic() begin');
+    console.log('flag = ' + flag);
+
+    if (flag) {
+        currentCall.unmuteMicrophone();
+    } else {
+        currentCall.muteMicrophone();
+    }
+
+    console.log('           turnMic() end --------->');
 }
 
 export function createChat() {

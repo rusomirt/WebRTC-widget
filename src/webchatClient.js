@@ -14,7 +14,8 @@ class WebchatClient extends Component {
     this.state = {
       isChatBtnsOpen: false,
       isCalling: false,
-      isMuted: false,
+      isSoundOn: true,
+      isMicOn: true,
     };
 
     // This binding is necessary to make `this` work in the callback
@@ -23,7 +24,8 @@ class WebchatClient extends Component {
     this.toggleChatButtons = this.toggleChatButtons.bind(this);
 
     this.startCall = this.startCall.bind(this);
-    this.turnSound= this.turnSound.bind(this);
+    this.turnSound = this.turnSound.bind(this);
+    this.turnMic = this.turnMic.bind(this);
     this.stopCall = this.stopCall.bind(this);
     this.onCallDisconnect = this.onCallDisconnect.bind(this);
 
@@ -58,10 +60,14 @@ class WebchatClient extends Component {
   }
 
   turnSound() {
-    vox.turnSound(this.state.isMuted);
-    this.setState({isMuted: !this.state.isMuted});
+    vox.turnSound(!this.state.isSoundOn);
+    this.setState({isSoundOn: !this.state.isSoundOn});
   }
   
+  turnMic() {
+    vox.turnMic(!this.state.isMicOn);
+    this.setState({isMicOn: !this.state.isMicOn});
+  }
 
   stopCall() {
     vox.stopCall();
@@ -190,8 +196,10 @@ class WebchatClient extends Component {
                     onClick={this.turnSound}>
                   sound
                 </button>
-                <button className={cn(styles['chat__btn'], styles['chat__btn--small'])}>
-                  <img className={styles['webchat__btn-icon']} src={textChatImg} />
+                <button
+                    className={cn(styles['chat__btn'], styles['chat__btn--small'])}
+                    onClick={this.turnMic}>
+                  mic
                 </button>
               </div>
             </div>
