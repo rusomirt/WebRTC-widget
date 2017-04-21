@@ -209,6 +209,21 @@ function sendVideo(flag) {
     voxAPI.sendVideo(flag);
 }
 
+export function turnSound(flag) {
+    console.log('<--------- turnSound() begin');
+    console.log('flag = ' + flag);
+
+    if (flag) {
+        currentCall.unmutePlayback();
+    } else {
+        currentCall.mutePlayback();
+    }
+    console.log('currentCall: ');
+    console.log(currentCall);
+
+    console.log('           turnSound() end --------->');
+}
+
 export function createChat() {
     console.log('<--------- createChat() begin');
     currentCallMode = 'text';
