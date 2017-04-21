@@ -28,7 +28,7 @@ export function init(settings) {
   console.log('init()');
   console.log(settings);
 
-  $scriptjs("//cdn.voximplant.com/voximplant.min.js", function () {
+  $scriptjs("//cdn.voximplant.com/edge/voximplant.min.js", function () {
     // Create VoxImplant instance
     voxAPI = VoxImplant.getInstance();
 

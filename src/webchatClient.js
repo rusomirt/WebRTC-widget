@@ -17,14 +17,15 @@ class WebchatClient extends Component {
     };
 
     // This binding is necessary to make `this` work in the callback
+    this.getHashParams = this.getHashParams.bind(this);
+
     this.toggleChatButtons = this.toggleChatButtons.bind(this);
 
-    this.startChat = this.startChat.bind(this);
-    this.stopChat = this.stopChat.bind(this);
-
+    this.startCall = this.startCall.bind(this);
+    this.stopCall = this.stopCall.bind(this);
     this.onCallDisconnect = this.onCallDisconnect.bind(this);
 
-    this.getHashParams = this.getHashParams.bind(this);
+    this.startChat = this.startChat.bind(this);
   }
 
   toggleChatButtons() {
@@ -34,7 +35,7 @@ class WebchatClient extends Component {
   }
 
   // callMode values: 'video', 'voice', 'text'
-  startChat(callMode) {
+  startCall(callMode) {
     vox.createCall(callMode);
     this.setState({isCalling: true});
 
@@ -54,7 +55,7 @@ class WebchatClient extends Component {
     }, 500);
   }
 
-  stopChat() {
+  stopCall() {
     vox.stopCall();
     this.setState({
       isCalling: false,
@@ -73,6 +74,11 @@ class WebchatClient extends Component {
       isCalling: false,
       isChatBtnsOpen: false
     });
+  }
+
+  startChat() {
+    vox.createChat();
+    this.setState({isChatting: true});
   }
 
   componentDidMount() {
@@ -120,19 +126,19 @@ class WebchatClient extends Component {
           <button
             className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--video'],
               {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
-            onClick={() => this.startChat('video')}>
+            onClick={() => this.startCall('video')}>
             <img className={styles['webchat__btn-icon']} src={videoChatImg}/>
           </button>
           <button
             className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--voice'],
               {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
-            onClick={() => this.startChat('voice')}>
+            onClick={() => this.startCall('voice')}>
             <img className={styles['webchat__btn-icon']} src={voiceChatImg}/>
           </button>
           <button
             className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--text'],
               {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
-            onClick={() => console.log('text chat')}>
+            onClick={() => this.startChat()}>
             <img className={styles['webchat__btn-icon']} src={textChatImg}/>
           </button>
         </div>
@@ -167,7 +173,7 @@ class WebchatClient extends Component {
               <button
                 id="callButton"
                 className={cn(styles['chat__btn'], styles['chat__btn--big'])}
-                onClick={this.stopChat}>
+                onClick={this.stopCall}>
                 <img className={styles['webchat__btn-icon']} src={voiceChatImg}/>
               </button>
               <div className={styles['chat__btns-group']}>
