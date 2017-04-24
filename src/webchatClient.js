@@ -1,5 +1,7 @@
 import {h, render, Component} from 'preact';
 import cn from 'classnames';
+import './font-awesome/css/font-awesome.min.css';
+import fa from 'font-awesome';
 
 import * as vox from 'api/voxClient';
 

@@ -191,8 +191,8 @@ function showRemoteVideo(flag) {
     console.log('flag = ' + flag);
 
     currentCall.showRemoteVideo(flag);
+    const videoIn = document.getElementById(currentCall.getVideoElementId());
     if (flag) {
-        const videoIn = document.getElementById(currentCall.getVideoElementId());
         console.log(videoIn);
         videoIn.style.width = '100%';    // fit in container with aspect ratio keeping
         videoIn.style.display = 'block'; // remove space under element (initially it is inline)
@@ -331,7 +331,7 @@ function onCallConnected(e) {
             break;
         case 'voice':
             sendVideo(false);
-            // showLocalVideo(false);
+            showLocalVideo(false);
             showRemoteVideo(false);
             break;
     }
