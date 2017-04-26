@@ -56,7 +56,6 @@ export function init(settings) {
 
         // Initialize SDK
         voxAPI.init({
-            useFlashOnly: false,
             micRequired: true,  // force microphone/camera access request
             videoSupport: true, // enable video support
             progressTone: true  // play progress tone
@@ -263,8 +262,8 @@ function beginChat() {
             console.log(e);
             console.log(e.conversation);
 
-            // currentConv = e.conversation;
-            // currentConv.sendMessage("Hello");
+            currentConv = e.conversation;
+            currentConv.sendMessage("Hello");
             console.log('           onCreateConversation end ---------->');
         });
 
@@ -274,27 +273,19 @@ function beginChat() {
             console.log('          onError end ---------->');
         });
 
-        // const participants = [{user_id: 'skalatskyalexey-2nd@videochat.xlucidity'}];
+        const participants = [{user_id: 'skalatskyalexey-2nd@videochat.xlucidity'}];
         // const participants = [{user_id: 'skalatskyalexey@videochat.xlucidity'},
         //                       {user_id: 'skalatskyalexey-2nd@videochat.xlucidity'}];
-        const participants = [{userId: username + "@" + application_name + "." + account_name},
-                              {userId: dest_username + "@" + application_name + "." + account_name}];
+        // const participants = [{userId: username + "@" + application_name + "." + account_name},
+        //                       {userId: dest_username + "@" + application_name + "." + account_name}];
         // const participants = [{user_id:"pavel_b@bar.foo"}];
         console.log('participants:');
         console.log(participants);
 
-        voxChatAPI.createConversation(
-            [
-                {userId: username + "@" + application_name + "." + account_name},
-                {userId: dest_username + "@" + application_name + "." + account_name}
-            ],
-            "Test text chat",
-            true,
-            false
-        );
+        voxChatAPI.createConversation(participants, "Test text chat", true, false);
 
-        // console.log('currentConv:');
-        // console.log(currentConv);
+        console.log('currentConv:');
+        console.log(currentConv);
     } catch(e) {
         console.log('! CAUGHT ERROR !');
         console.log(e);
@@ -314,6 +305,19 @@ export function stopCall() {
     // console.log("! currentCall: ");
     // console.log(currentCall);
     // console.log("VI connected: " + voxAPI.connected());
+}
+
+// Close current dialog
+export function stopChat() {
+    console.log('<---------- stopChat() begin');
+    console.log("currentConv: ");
+    console.log(currentConv);
+    if (currentConv) {
+        currentConv.remove();
+    }
+    console.log("currentConv: ");
+    console.log(currentConv);
+    console.log('           stopChat() end ---------->');
 }
 
 //=============================================================================

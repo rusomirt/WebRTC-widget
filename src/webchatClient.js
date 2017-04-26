@@ -1,7 +1,7 @@
 import {h, render, Component} from 'preact';
 import cn from 'classnames';
-import './font-awesome/css/font-awesome.min.css';
-import fa from 'font-awesome';
+// import './font-awesome/css/font-awesome.min.css';
+// import fa from 'font-awesome';
 
 import * as vox from 'api/voxClient';
 
@@ -16,6 +16,7 @@ class WebchatClient extends Component {
     this.state = {
       isChatBtnsOpen: false,
       isCalling: false,
+      isChatting: false,
       isSoundOn: true,
       isMicOn: true,
     };
@@ -133,7 +134,8 @@ class WebchatClient extends Component {
 }
 
   render(props, state) {
-    if (!this.state.isCalling) {
+    if (!this.state.isCalling && !this.state.isChatting) {
+      // Idle mode
       return (
         <div className={styles['webchat']}>
           <button
@@ -160,6 +162,11 @@ class WebchatClient extends Component {
         </div>
       );
     }
+
+    // Chat mode
+    let stopFunc = this.state.isCalling ? this.stopCall : this.stopChat;
+
+
     return (
       <div className={styles['modal']}>
         <div className={styles['modal__inner']}>
@@ -189,7 +196,7 @@ class WebchatClient extends Component {
               <button
                 id="callButton"
                 className={cn(styles['chat__btn'], styles['chat__btn--big'])}
-                onClick={this.stopCall}>
+                onClick={stopFunc}>
                 <img className={styles['webchat__btn-icon']} src={voiceChatImg}/>
               </button>
               <div className={styles['chat__btns-group']}>
