@@ -16,6 +16,7 @@ let username,               // VoxImplant connection parameters
     application_name,
     account_name;
 
+
 // currentCall is exported for onCallDisconnected event handler
 // assigning in Preact component
 export let currentCall = null;  // call global instances
@@ -331,8 +332,8 @@ function onCallConnected(e) {
             break;
         case 'voice':
             sendVideo(false);
-            showLocalVideo(false);
             showRemoteVideo(false);
+            // showLocalVideo(false);
             break;
     }
 }
