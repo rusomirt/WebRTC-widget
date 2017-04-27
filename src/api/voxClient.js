@@ -113,50 +113,7 @@ function onAuthResult(e) {
     if (currentCallMode === 'video' || currentCallMode === 'voice') {
         beginCall();
     } else if (currentCallMode === 'text') {
-        console.log('voxChatAPI:');
-        console.log(voxChatAPI);
-
-        // Create messenger instance
-        voxChatAPI = VoxImplant.getMessenger();
-
-        voxChatAPI.on(VoxImplant.MessagingEvents.onCreateConversation, (e) => {
-            console.log('<--------- onCreateConversation begin');
-            console.log('conversations:');
-            console.log(conversations);
-
-            conversations.push(e.conversation);
-
-            console.log('conversations:');
-            console.log(conversations);
-
-            currentConv = conversations[0];
-            console.log('currentConv:');
-            console.log(currentConv);
-            currentConv.sendMessage("Hello!");
-
-            console.log('           onCreateConversation end ---------->');
-        });
-        voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage,(e)=>{
-            console.log(e.message.conversation);
-            console.log(e.message.sender);
-            console.log(e.message.text);
-        });
-        voxChatAPI.on(VoxImplant.MessagingEvents.onRemoveConversation, (e) => {
-            console.log('<--------- onRemoveConversation begin');
-            console.log(e);
-            console.log('conversations:');
-            console.log(conversations);
-            console.log('           onRemoveConversation end ---------->');
-        });
-        voxChatAPI.on(VoxImplant.MessagingEvents.onError, (e) => {
-            console.log('<--------- onError begin');
-            console.log(e);
-            console.log('          onError end ---------->');
-        });
-
-        console.log('voxChatAPI:');
-        console.log(voxChatAPI);
-
+        initMessenger();
         beginChat();
     }
     console.log("           onAuthResult() end ---------->");
@@ -166,30 +123,74 @@ function onAuthResult(e) {
 // VoxImplant functions
 //=============================================================================
 
-// Create outbound call
-export function createCall(callMode) {
-    // console.log("------------------------------");
-    // console.log('createVideoCall');
-    // console.log("! currentCall: ");
-    // console.log(currentCall);
-    // console.log('before connect in createVideoCall');
-    // console.log("VI connected: " + voxAPI.connected());
+function initMessenger() {
+    console.log('<---------- initMessenger() begin');
+    console.log('voxChatAPI:');
+    console.log(voxChatAPI);
 
-    if (callMode !== 'video' && callMode !== 'voice' && callMode !== 'text') {
-        return false;
-    }
-    currentCallMode = callMode;
+    // Create messenger instance
+    voxChatAPI = VoxImplant.getMessenger();
+
+    voxChatAPI.on(VoxImplant.MessagingEvents.onCreateConversation, (e) => {
+        console.log('<--------- onCreateConversation begin');
+        console.log('conversations:');
+        console.log(conversations);
+
+        conversations.push(e.conversation);
+
+        console.log('conversations:');
+        console.log(conversations);
+
+        currentConv = conversations[0];
+        console.log('currentConv:');
+        console.log(currentConv);
+        currentConv.sendMessage("Hello!");
+
+        console.log('           onCreateConversation end ---------->');
+    });
+    voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage,(e)=>{
+        console.log(e.message);
+        console.log(e.message.sender);
+        console.log(e.message.text);
+    });
+    voxChatAPI.on(VoxImplant.MessagingEvents.onRemoveConversation, (e) => {
+        console.log('<--------- onRemoveConversation begin');
+        console.log(e);
+        console.log('conversations:');
+        console.log(conversations);
+        console.log('           onRemoveConversation end ---------->');
+    });
+    voxChatAPI.on(VoxImplant.MessagingEvents.onError, (e) => {
+        console.log('<--------- onError begin');
+        console.log(e);
+        console.log('          onError end ---------->');
+    });
+
+    console.log('voxChatAPI:');
+    console.log(voxChatAPI);
+    console.log('           initMessenger() end ---------->');
+}
+
+// Outbound chat
+export function createChat(mode) {
+    console.log('<--------- createChat() begin');
+    currentCallMode = mode;
 
     if (!voxAPI.connected()) {    // 1st call
+        console.log('connecting');
         voxAPI.connect();
     } else {                      // 2nd and subsequent calls
-        beginCall();
+        if (mode === 'video' || mode === 'voice') {
+            beginCall();
+        }
+        else if (mode === 'text') {
+            if (! voxChatAPI) {
+                initMessenger();
+            }
+            beginChat();
+        }
     }
-
-    // console.log('after connect in createVideoCall');
-    // console.log("VI connected: " + voxAPI.connected());
-    // console.log("! currentCall: ");
-    // console.log(currentCall);
+    console.log('           createChat() end ---------->');
 }
 
 function beginCall() {
@@ -207,6 +208,25 @@ function beginCall() {
     // currentCall.setVideoSettings({width: 720});
 
     console.log('---------- beginCall() end ----------');
+}
+
+function beginChat() {
+    try {
+        console.log('<--------- beginChat() begin');
+        const participants = [{userId: dest_username + "@" + application_name + "." + account_name,
+            canManageParticipants: false, canWrite: true}];
+        const title = "Test text chat";
+        const isDistinct = false;
+        const enablePublicJoin = true;
+        voxChatAPI.createConversation(participants, title, isDistinct, enablePublicJoin);
+
+        console.log('conversations:');
+        console.log(conversations);
+    } catch(e) {
+        console.log('! CAUGHT ERROR !');
+        console.log(e);
+    }
+    console.log('           beginChat() end ---------->');
 }
 
 // Show/hide local video
@@ -281,56 +301,25 @@ export function turnMic(flag) {
     console.log('           turnMic() end --------->');
 }
 
-export function createChat() {
-    console.log('<--------- createChat() begin');
-    currentCallMode = 'text';
-
-    if (!voxAPI.connected()) {    // 1st call
-        console.log('connecting');
-        voxAPI.connect();
-    } else {                      // 2nd and subsequent calls
-        beginChat();
-    }
-    console.log('           createChat() end ---------->');
-}
-
-function beginChat() {
-    try {
-        console.log('<--------- beginChat() begin');
-        const participants = [{userId: dest_username + "@" + application_name + "." + account_name,
-                               canManageParticipants: false, canWrite: true}];
-        const title = "Test text chat";
-        const isDistinct = false;
-        const enablePublicJoin = true;
-        voxChatAPI.createConversation(participants, title, isDistinct, enablePublicJoin);
-
-        console.log('conversations:');
-        console.log(conversations);
-    } catch(e) {
-        console.log('! CAUGHT ERROR !');
-        console.log(e);
-    }
-    console.log('           beginChat() end ---------->');
-}
-
-// Hangup outbound call
-export function stopCall() {
-    console.log('<---------- stopCall() begin');
-    // console.log("! currentCall: ");
-    // console.log(currentCall);
-    if (currentCall) {
-        currentCall.hangup();
-    }
-    // console.log("! currentCall: ");
-    // console.log(currentCall);
-    console.log('           stopCall() end ---------->');
-}
-
-// Close current dialog
+// Hangup outbound chat
 export function stopChat() {
     console.log('<---------- stopChat() begin');
-    // conversations.remove();
-    // voxChatAPI = null;
+    if (currentCallMode === 'video' || currentCallMode === 'voice') {
+        console.log('stopping call');
+        // console.log("! currentCall: ");
+        // console.log(currentCall);
+        if (currentCall) {
+            currentCall.hangup();
+        }
+        console.log('call has been stopped');
+        // console.log("! currentCall: ");
+        // console.log(currentCall);
+    } else if (currentCallMode === 'text') {
+        console.log('stopping text chat');
+        // conversations.remove();
+        // voxChatAPI = null;
+        console.log('text chat has been stopped');
+    }
     console.log('           stopChat() end ---------->');
 }
 

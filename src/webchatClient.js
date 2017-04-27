@@ -14,9 +14,8 @@ class WebchatClient extends Component {
   constructor() {
     super();
     this.state = {
+      chatMode: 'idle', // allowed values: 'idle', 'video', 'voice', 'text'
       isChatBtnsOpen: false,
-      isCalling: false,
-      isChatting: false,
       isSoundOn: true,
       isMicOn: true,
     };
@@ -26,14 +25,12 @@ class WebchatClient extends Component {
 
     this.toggleChatButtons = this.toggleChatButtons.bind(this);
 
-    this.startCall = this.startCall.bind(this);
-    this.turnSound = this.turnSound.bind(this);
-    this.turnMic = this.turnMic.bind(this);
-    this.stopCall = this.stopCall.bind(this);
-    this.onCallDisconnect = this.onCallDisconnect.bind(this);
-
     this.startChat = this.startChat.bind(this);
     this.stopChat = this.stopChat.bind(this);
+    this.onCallDisconnect = this.onCallDisconnect.bind(this);
+
+    this.turnSound = this.turnSound.bind(this);
+    this.turnMic = this.turnMic.bind(this);
   }
 
   toggleChatButtons() {
@@ -42,25 +39,45 @@ class WebchatClient extends Component {
     }));
   }
 
-  // callMode values: 'video', 'voice', 'text'
-  startCall(callMode) {
-    vox.createCall(callMode);
-    this.setState({isCalling: true, isChatting: false});
+  // mode values: 'video', 'voice', 'text'
+  startChat(mode) {
+    this.setState({chatMode: mode});
 
-    // console.log('==================== currentCall before polling');
-    // console.log(vox.currentCall);
+    vox.createChat(mode);
 
-    // Poll currentCall every 500ms until in becomes not null,
-    // then assign onCallDisconnect event handler.
-    let pollTimer = setInterval(() => {
-      // console.log('==================== currentCall while polling');
-      // console.log(vox.currentCall);
-      if (vox.currentCall !== null) {
-        // 'this' works in arrow function only
-        vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnect);
-        clearInterval(pollTimer);
-      }
-    }, 500);
+    if (mode === 'video' || mode === 'voice') {
+        // console.log('==================== currentCall before polling');
+        // console.log(vox.currentCall);
+
+        // Poll currentCall every 500ms until in becomes not null,
+        // then assign onCallDisconnect event handler.
+        let pollTimer = setInterval(() => {
+            // console.log('==================== currentCall while polling');
+            // console.log(vox.currentCall);
+            if (vox.currentCall !== null) {
+                // 'this' works in arrow function only
+                vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnect);
+                clearInterval(pollTimer);
+            }
+        }, 500);
+    }
+  }
+
+  onCallDisconnect() {
+        vox.currentCall = null; // clear call instance
+
+        this.setState({
+            isCalling: false,
+            isChatBtnsOpen: false
+        });
+    }
+
+  stopChat() {
+      vox.stopChat();
+      this.setState({
+          chatMode: 'idle',
+          isChatBtnsOpen: false
+      });
   }
 
   turnSound() {
@@ -71,36 +88,6 @@ class WebchatClient extends Component {
   turnMic() {
     vox.turnMic(!this.state.isMicOn);
     this.setState({isMicOn: !this.state.isMicOn});
-  }
-
-  stopCall() {
-    vox.stopCall();
-    this.setState({
-      isCalling: false,
-      isChatBtnsOpen: false
-    });
-  }
-
-  onCallDisconnect() {
-    vox.currentCall = null; // clear call instance
-    
-    this.setState({
-      isCalling: false,
-      isChatBtnsOpen: false
-    });
-  }
-
-  startChat() {
-    vox.createChat();
-    this.setState({isChatting: true, isCalling: false});
-  }
-
-  stopChat() {
-      vox.stopChat();
-      this.setState({
-          isChatting: false,
-          isChatBtnsOpen: false
-      });
   }
 
   componentDidMount() {
@@ -139,8 +126,7 @@ class WebchatClient extends Component {
   }
 
   render(props, state) {
-    if (!this.state.isCalling && !this.state.isChatting) {
-      // Idle mode
+    if (this.state.chatMode === 'idle') {   // Idle mode
       return (
         <div className={styles['webchat']}>
           <button
@@ -149,28 +135,26 @@ class WebchatClient extends Component {
           <button
             className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--video'],
               {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
-            onClick={() => this.startCall('video')}>
+            onClick={() => this.startChat('video')}>
             <img className={styles['webchat__btn-icon']} src={videoChatImg}/>
           </button>
           <button
             className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--voice'],
               {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
-            onClick={() => this.startCall('voice')}>
+            onClick={() => this.startChat('voice')}>
             <img className={styles['webchat__btn-icon']} src={voiceChatImg}/>
           </button>
           <button
             className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--text'],
               {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
-            onClick={() => this.startChat()}>
+            onClick={() => this.startChat('text')}>
             <img className={styles['webchat__btn-icon']} src={textChatImg}/>
           </button>
         </div>
       );
     }
 
-    // Chat mode
-    let stopFunc = this.state.isCalling ? this.stopCall : this.stopChat;
-
+    // Chatting mode
     return (
       <div className={styles['modal']}>
         <div className={styles['modal__inner']}>
@@ -200,7 +184,7 @@ class WebchatClient extends Component {
               <button
                 id="callButton"
                 className={cn(styles['chat__btn'], styles['chat__btn--big'])}
-                onClick={stopFunc}>
+                onClick={this.stopChat}>
                 <img className={styles['webchat__btn-icon']} src={voiceChatImg}/>
               </button>
               <div className={styles['chat__btns-group']}>
