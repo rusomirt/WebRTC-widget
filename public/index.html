@@ -5,9 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>VI client</title>
     <link rel="shortcut icon" href="">
+    <style>
+        /* reset body margin */
+        body {
+          margin: 0;
+        }
+    </style>
 </head>
 <body>
-
+    <!--
+        desktop version - https://www.yelp.com/biz/lukes-lobster-back-bay-boston
+        mobile version – https://m.yelp.com/biz/lukes-lobster-back-bay-boston
+    -->
+    <iframe src="https://www.yelp.com/biz/lukes-lobster-back-bay-boston" frameborder="0" style="width: 100%; height: 100%;min-height: 100vh;"></iframe>
     <script src="build/webchatClientBundle.js"></script>
     <script>
         // webchatClientCreate - from config.output.library in webpack.config.js
