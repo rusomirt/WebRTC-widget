@@ -33,6 +33,7 @@ class WebchatClient extends Component {
     this.onCallDisconnect = this.onCallDisconnect.bind(this);
 
     this.startChat = this.startChat.bind(this);
+    this.stopChat = this.stopChat.bind(this);
   }
 
   toggleChatButtons() {
@@ -44,7 +45,7 @@ class WebchatClient extends Component {
   // callMode values: 'video', 'voice', 'text'
   startCall(callMode) {
     vox.createCall(callMode);
-    this.setState({isCalling: true});
+    this.setState({isCalling: true, isChatting: false});
 
     // console.log('==================== currentCall before polling');
     // console.log(vox.currentCall);
@@ -81,10 +82,6 @@ class WebchatClient extends Component {
   }
 
   onCallDisconnect() {
-    // console.log('==============================');
-    // console.log('Call Disconnected from out');
-    // console.log('==============================');
-
     vox.currentCall = null; // clear call instance
     
     this.setState({
@@ -95,43 +92,51 @@ class WebchatClient extends Component {
 
   startChat() {
     vox.createChat();
-    this.setState({isChatting: true});
+    this.setState({isChatting: true, isCalling: false});
+  }
+
+  stopChat() {
+      vox.stopChat();
+      this.setState({
+          isChatting: false,
+          isChatBtnsOpen: false
+      });
   }
 
   componentDidMount() {
-    const hashParams = this.getHashParams();
-    const voxParams = {
-      account_name: hashParams.account_name ?
-        hashParams.account_name : this.props.settings.account_name,
-      application_name: hashParams.application_name ?
-        hashParams.application_name : this.props.settings.application_name,
-      client_username: hashParams.client_username ?
-        hashParams.client_username : this.props.settings.client_username,
-      client_password: hashParams.client_password ?
-        hashParams.client_password : this.props.settings.client_password,
-      op_username: hashParams.op_username ?
-        hashParams.op_username : this.props.settings.op_username
-    };
-    vox.init(voxParams);
-  }
+  const hashParams = this.getHashParams();
+  const voxParams = {
+    account_name: hashParams.account_name ?
+      hashParams.account_name : this.props.settings.account_name,
+    application_name: hashParams.application_name ?
+      hashParams.application_name : this.props.settings.application_name,
+    client_username: hashParams.client_username ?
+      hashParams.client_username : this.props.settings.client_username,
+    client_password: hashParams.client_password ?
+      hashParams.client_password : this.props.settings.client_password,
+    op_username: hashParams.op_username ?
+      hashParams.op_username : this.props.settings.op_username
+  };
+  vox.init(voxParams);
+}
 
   componentWillUnmount() {
     vox.uninit();
   }
 
   getHashParams() {
-  let hashParams = {};
-  let e,
-    a = /\+/g,  // Regex for replacing addition symbol with a space
-    r = /([^&;=]+)=?([^&;]*)/g,
-    d = function (s) { return decodeURIComponent(s.replace(a, " ")); },
-    q = window.location.hash.substring(1);
+    let hashParams = {};
+    let e,
+      a = /\+/g,  // Regex for replacing addition symbol with a space
+      r = /([^&;=]+)=?([^&;]*)/g,
+      d = function (s) { return decodeURIComponent(s.replace(a, " ")); },
+      q = window.location.hash.substring(1);
 
-  while (e = r.exec(q))
-    hashParams[d(e[1])] = d(e[2]);
+    while (e = r.exec(q))
+      hashParams[d(e[1])] = d(e[2]);
 
-  return hashParams;
-}
+    return hashParams;
+  }
 
   render(props, state) {
     if (!this.state.isCalling && !this.state.isChatting) {
@@ -165,7 +170,6 @@ class WebchatClient extends Component {
 
     // Chat mode
     let stopFunc = this.state.isCalling ? this.stopCall : this.stopChat;
-
 
     return (
       <div className={styles['modal']}>
