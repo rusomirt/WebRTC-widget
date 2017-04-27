@@ -316,8 +316,7 @@ export function stopChat() {
         // console.log(currentCall);
     } else if (currentCallMode === 'text') {
         console.log('stopping text chat');
-        // conversations.remove();
-        // voxChatAPI = null;
+        conversations = [];
         console.log('text chat has been stopped');
     }
     console.log('           stopChat() end ---------->');
