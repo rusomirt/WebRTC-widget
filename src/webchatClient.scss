@@ -122,8 +122,8 @@ $modal-inner-w: 400px;
 }
 
 $chat-video-out-w: 20%;       // 20% of .chat width
-$chat-panel-width: 90%;       // 90% of .chat width
-$chat-panel-max-width: 300px;
+$chat-panel-w: 90%;           // 90% of .chat width
+$chat-panel-max-w: 300px;
 $chat-panel-h: 40px;
 $chat-panel-b: 20px;
 $chat-btns-group-mx: $chat-panel-h * 0.25;
@@ -176,8 +176,8 @@ $chat-btns-group-mx: $chat-panel-h * 0.25;
     left: 50%;
     transform: translateX(-50%);
 
-    width: $chat-panel-width;
-    max-width: $chat-panel-max-width;
+    width: $chat-panel-w;
+    max-width: $chat-panel-max-w;
     height: $chat-panel-h;
     border-radius: $chat-panel-h * 0.5;
 
