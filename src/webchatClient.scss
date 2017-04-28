@@ -27,10 +27,20 @@ video {
 
 $webchat-r: 20px;
 $webchat-b: 20px;
-$webchat-select-btn-size: 60px;
-$webchat-chat-btn-size: 40px;
-// Distance between chat type buttons (video, voice or text) and chat select button:
+$webchat-launch-btn-size: 64px;
+$webchat-chat-btn-size: 50px;
+// Distance between chat type buttons (video, voice or text) and chat launch button:
 $webchat-chat-btn-shift: 40px;
+$webchat-color-main: #00c48a;
+$webchat-color-stop: #c41200;
+
+.btn {
+  border-radius: 50%;
+  padding: 0;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
 
 .webchat {
   position: fixed;
@@ -41,57 +51,43 @@ $webchat-chat-btn-shift: 40px;
   width: 0;
   height: 0;
 
-  .webchat__select-btn {
+  .webchat__launch-btn {
+    @extend .btn;
     position: absolute;
     right: 0;
     bottom: 0;
 
-    width: $webchat-select-btn-size;
-    height: $webchat-select-btn-size;
-    border-radius: 50%;
-    padding: 0;
-    border: none;
-    outline: none;
-    cursor: pointer;
-
-    background-color: red;    // change to icon
+    width: $webchat-launch-btn-size;
+    height: $webchat-launch-btn-size;
+    background-color: $webchat-color-main;
   }
   .webchat__chat-btn {
+    @extend .btn;
     position: absolute;
     right: 0;
     bottom: 0;
 
     width: $webchat-chat-btn-size;
     height: $webchat-chat-btn-size;
-    border-radius: 50%;
-    padding: 0;
-    border: none;
-    outline: none;
-    cursor: pointer;
-
     display: none;  // initially hidden
+    background-color: $webchat-color-main;
   }
   .webchat__chat-btn--showed {
-    display: block; // displayed after click on 'select-btn'
+    display: block; // displayed after click on 'launch-btn'
   }
 
   .webchat__chat-btn--video {
-    right: $webchat-chat-btn-shift + $webchat-select-btn-size;
-    bottom: ($webchat-select-btn-size - $webchat-chat-btn-size) * 0.5;
+    right: $webchat-chat-btn-shift + $webchat-launch-btn-size;
+    bottom: ($webchat-launch-btn-size - $webchat-chat-btn-size) * 0.5;
   }
   .webchat__chat-btn--voice {
-    right: ($webchat-chat-btn-shift + $webchat-select-btn-size) * 0.707;
-    bottom: ($webchat-chat-btn-shift + $webchat-select-btn-size) * 0.707;
+    right: ($webchat-chat-btn-shift + $webchat-launch-btn-size) * 0.707;
+    bottom: ($webchat-chat-btn-shift + $webchat-launch-btn-size) * 0.707;
   }
   .webchat__chat-btn--text {
-    right: ($webchat-select-btn-size - $webchat-chat-btn-size) * 0.5;
-    bottom: $webchat-chat-btn-shift + $webchat-select-btn-size;
+    right: ($webchat-launch-btn-size - $webchat-chat-btn-size) * 0.5;
+    bottom: $webchat-chat-btn-shift + $webchat-launch-btn-size;
   }
-}
-
-.webchat__btn-icon {
-  width: 100%;
-  height: 100%;
 }
 
 $modal-bg-transparency: 0.5;
@@ -124,9 +120,10 @@ $modal-inner-w: 400px;
 $chat-video-out-w: 20%;       // 20% of .chat width
 $chat-panel-w: 90%;           // 90% of .chat width
 $chat-panel-max-w: 300px;
-$chat-panel-h: 40px;
+$chat-panel-h: 50px;
 $chat-panel-b: 20px;
 $chat-btns-group-mx: $chat-panel-h * 0.25;
+$chat-stop-btn-size: 64px;
 
 .chat {
   position: relative;   /* for abs-positioned .chat__panel*/
@@ -197,20 +194,41 @@ $chat-btns-group-mx: $chat-panel-h * 0.25;
       align-items: center;
     }
 
-    .chat__btn {
-      border-radius: 50%;   // Round shape
-      padding: 0;
-      border: none;
-      outline: none;
-      cursor: pointer;
-    }
     .chat__btn--small {
+      @extend .btn;
       width: $chat-panel-h;
       height: $chat-panel-h;
+      background-color: transparent;
     }
-    .chat__btn--big {
-      width: $chat-panel-h * 1.5;
-      height: $chat-panel-h * 1.5;
+    .chat__btn--stop {
+      @extend .btn;
+      flex: 1 0 auto;
+      width: $chat-stop-btn-size;
+      height: $chat-stop-btn-size;
+      background-color: $webchat-color-stop;
     }
   }
 }
+
+.icon {
+  vertical-align: middle;
+}
+.icon--white {
+  color: white;
+}
+.icon--green {
+  color: $webchat-color-main;
+}
+.icon--lg {
+  font-size: 30px;
+}
+.icon--md {
+  font-size: 26px;
+}
+.icon--sm {
+  font-size: 20px;
+}
+.icon--xs {
+  font-size: 18px;
+}
+

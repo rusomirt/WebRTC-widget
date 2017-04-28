@@ -1,14 +1,9 @@
 import {h, render, Component} from 'preact';
 import cn from 'classnames';
-// import './font-awesome/css/font-awesome.min.css';
-// import fa from 'font-awesome';
-
+import './font-awesome/css/font-awesome.css';
+import 'font-awesome-webpack';
 import * as vox from 'api/voxClient';
-
 import styles from './webchatClient.scss';
-import videoChatImg from './img/video-chat.png';
-import voiceChatImg from './img/voice-chat.png';
-import textChatImg from './img/text-chat.png';
 
 class WebchatClient extends Component {
   constructor() {
@@ -42,7 +37,6 @@ class WebchatClient extends Component {
   // mode values: 'video', 'voice', 'text'
   startChat(mode) {
     this.setState({chatMode: mode});
-
     vox.createChat(mode);
 
     if (mode === 'video' || mode === 'voice') {
@@ -130,31 +124,42 @@ class WebchatClient extends Component {
       return (
         <div className={styles['webchat']}>
           <button
-            className={cn(styles['webchat__select-btn'])}
-            onClick={this.toggleChatButtons}></button>
+            className={cn(styles['webchat__launch-btn'])}
+            onClick={this.toggleChatButtons}>
+              <i className={cn("fa fa-phone", styles['icon'], styles['icon--white'], styles['icon--md'])}></i>
+          </button>
           <button
             className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--video'],
               {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
             onClick={() => this.startChat('video')}>
-            <img className={styles['webchat__btn-icon']} src={videoChatImg}/>
+              <i className={cn("fa fa-video-camera", styles['icon'], styles['icon--white'], styles['icon--sm'])}></i>
           </button>
           <button
             className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--voice'],
               {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
             onClick={() => this.startChat('voice')}>
-            <img className={styles['webchat__btn-icon']} src={voiceChatImg}/>
+              <i className={cn("fa fa-phone", styles['icon'], styles['icon--white'], styles['icon--sm'])}></i>
           </button>
           <button
             className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--text'],
               {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
             onClick={() => this.startChat('text')}>
-            <img className={styles['webchat__btn-icon']} src={textChatImg}/>
+              <i className={cn("fa fa-comments", styles['icon'], styles['icon--white'], styles['icon--sm'])}></i>
           </button>
         </div>
       );
     }
 
     // Chatting mode
+
+    const soundIconClass = this.state.isSoundOn ?
+        cn("fa fa-volume-off", styles['icon'], styles['icon--green'], styles['icon--sm']) :
+        cn("fa fa-volume-up", styles['icon'], styles['icon--green'], styles['icon--sm']);
+
+    const micIconClass = this.state.isMicOn ?
+        cn("fa fa-microphone-slash", styles['icon'], styles['icon--green'], styles['icon--sm']) :
+        cn("fa fa-microphone", styles['icon'], styles['icon--green'], styles['icon--sm']);
+
     return (
       <div className={styles['modal']}>
         <div className={styles['modal__inner']}>
@@ -177,26 +182,29 @@ class WebchatClient extends Component {
 
             <div className={styles['chat__panel']}>
               <div className={styles['chat__btns-group']}>
-                <button className={cn(styles['chat__btn'], styles['chat__btn--small'])}>
-                  <img className={styles['webchat__btn-icon']} src={textChatImg} />
+                <button className={cn(styles['chat__btn--small'])}>
+                  <i className={cn("fa fa-video-camera", styles['icon'], styles['icon--green'], styles['icon--xs'])}></i>
+                </button>
+                <button className={cn(styles['chat__btn--small'])}>
+                  <i className={cn("fa fa-comments", styles['icon'], styles['icon--green'], styles['icon--sm'])}></i>
                 </button>
               </div>
               <button
                 id="callButton"
-                className={cn(styles['chat__btn'], styles['chat__btn--big'])}
+                className={cn(styles['chat__btn--stop'])}
                 onClick={this.stopChat}>
-                <img className={styles['webchat__btn-icon']} src={voiceChatImg}/>
+                  <i className={cn("fa fa-phone", styles['icon'], styles['icon--white'], styles['icon--lg'])}></i>
               </button>
               <div className={styles['chat__btns-group']}>
                 <button
-                    className={cn(styles['chat__btn'], styles['chat__btn--small'])}
+                    className={cn(styles['chat__btn--small'])}
                     onClick={this.turnSound}>
-                  sound
+                  <i className={soundIconClass}></i>
                 </button>
                 <button
-                    className={cn(styles['chat__btn'], styles['chat__btn--small'])}
+                    className={cn(styles['chat__btn--small'])}
                     onClick={this.turnMic}>
-                  mic
+                  <i className={micIconClass}></i>
                 </button>
               </div>
             </div>
