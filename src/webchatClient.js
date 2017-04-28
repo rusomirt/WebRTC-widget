@@ -123,102 +123,168 @@ class WebchatClient extends Component {
     }
 
     render(props, state) {
-        if (this.state.chatMode === 'idle') {   // Idle mode
-            return (
-                <div className={styles['webchat']}>
-                    <button
-                        className={cn(styles['webchat__launch-btn'])}
-                        onClick={this.toggleChatButtons}>
-                        <span className={cn("fa fa-phone", styles['icon'], styles['icon--white'], styles['icon--md'])}></span>
-                    </button>
-                    <button
-                        className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--video'],
-                            {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
-                        onClick={() => this.startChat('video')}>
-                        <span className={cn("fa fa-video-camera", styles['icon'], styles['icon--white'], styles['icon--sm'])}></span>
-                    </button>
-                    <button
-                        className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--voice'],
-                            {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
-                        onClick={() => this.startChat('voice')}>
-                        <span className={cn("fa fa-phone", styles['icon'], styles['icon--white'], styles['icon--sm'])}></span>
-                    </button>
-                    <button
-                        className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--text'],
-                            {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
-                        onClick={() => this.startChat('text')}>
-                        <span className={cn("fa fa-comments", styles['icon'], styles['icon--white'], styles['icon--sm'])}></span>
-                    </button>
-                </div>
-            );
-        }
+        switch (this.state.chatMode) {
+            case 'idle':
+                return (
+                    <SelectMode
+                        toggleChatButtons={this.toggleChatButtons}
+                        startChat={this.startChat}
+                        isChatBtnsOpen={this.state.isChatBtnsOpen}
+                    />
+                );
+            case 'connectingVideo':
+            case 'connectingVoice':
+            case 'video':
 
-        // Chatting mode
+                const soundIconClass = cn('fa', {'fa-volume-off': this.state.isSoundOn}, {'fa-volume-up': !this.state.isSoundOn},
+                    styles['icon'], styles['icon--green'], styles['icon--sm']);
 
-        const soundIconClass = this.state.isSoundOn ?
-            cn("fa fa-volume-off", styles['icon'], styles['icon--green'], styles['icon--sm']) :
-            cn("fa fa-volume-up", styles['icon'], styles['icon--green'], styles['icon--sm']);
+                const micIconClass = cn('fa', {'fa-microphone-slash': this.state.isMicOn}, {'fa-microphone': !this.state.isMicOn},
+                    styles['icon'], styles['icon--green'], styles['icon--sm']);
 
-        const micIconClass = this.state.isMicOn ?
-            cn("fa fa-microphone-slash", styles['icon'], styles['icon--green'], styles['icon--sm']) :
-            cn("fa fa-microphone", styles['icon'], styles['icon--green'], styles['icon--sm']);
+                return (
+                    <div className={styles['modal']}>
+                        <div className={styles['modal__inner']}>
+                            <div className={styles['chat']}>
 
-        return (
-            <div className={styles['modal']}>
-                <div className={styles['modal__inner']}>
-                    <div className={styles['chat']}>
+                                <div id='video-out' className={styles['chat__video-out']}></div>
 
-                        {/*<div className={styles['chat__info']}>*/}
-                        {/*<div className={styles['chat__status']}>*/}
-                        {/*<div className={styles['chat__status-txt']}>Connecting</div>*/}
-                        {/*</div>*/}
-                        {/*<div className={styles['chat__tips-hdr']}>Two quick tips</div>*/}
-                        {/*<div className={styles['chat__tips-body']}>*/}
-                        {/*Luke's rated 4 stars with 159 reviews<br/><br/><br/><br/>*/}
-                        {/*Don't forget!<br/>15% off for new customers*/}
-                        {/*</div>*/}
-                        {/*</div>*/}
+                                <div id='video-in' className={styles['chat__video-in']}></div>
 
-                        <div id='video-out' className={styles['chat__video-out']}></div>
+                                <div className={styles['chat__panel']}>
+                                    <div className={styles['chat__btns-group']}>
+                                        <button className={cn(styles['chat__btn--small'])}>
+                                            <span className={cn("fa fa-video-camera", styles['icon'], styles['icon--green'], styles['icon--xs'])}></span>
+                                        </button>
+                                        <button className={cn(styles['chat__btn--small'])}>
+                                            <span className={cn("fa fa-comments", styles['icon'], styles['icon--green'], styles['icon--sm'])}></span>
+                                        </button>
+                                    </div>
+                                    <button
+                                        id="callButton"
+                                        className={cn(styles['chat__btn--stop'])}
+                                        onClick={this.stopChat}>
+                                        <span className={cn("fa fa-phone", styles['icon'], styles['icon--white'], styles['icon--lg'])}></span>
+                                    </button>
+                                    <div className={styles['chat__btns-group']}>
+                                        <button
+                                            className={cn(styles['chat__btn--small'])}
+                                            onClick={this.turnSound}>
+                                            <span className={soundIconClass}></span>
+                                        </button>
+                                        <button
+                                            className={cn(styles['chat__btn--small'])}
+                                            onClick={this.turnMic}>
+                                            <span className={micIconClass}></span>
+                                        </button>
+                                    </div>
+                                </div>
 
-                        <div id='video-in' className={styles['chat__video-in']}></div>
-
-                        <div className={styles['chat__panel']}>
-                            <div className={styles['chat__btns-group']}>
-                                <button className={cn(styles['chat__btn--small'])}>
-                                    <span className={cn("fa fa-video-camera", styles['icon'], styles['icon--green'], styles['icon--xs'])}></span>
-                                </button>
-                                <button className={cn(styles['chat__btn--small'])}>
-                                    <span className={cn("fa fa-comments", styles['icon'], styles['icon--green'], styles['icon--sm'])}></span>
-                                </button>
                             </div>
-                            <button
-                                id="callButton"
-                                className={cn(styles['chat__btn--stop'])}
-                                onClick={this.stopChat}>
-                                <span className={cn("fa fa-phone", styles['icon'], styles['icon--white'], styles['icon--lg'])}></span>
-                            </button>
-                            <div className={styles['chat__btns-group']}>
-                                <button
-                                    className={cn(styles['chat__btn--small'])}
-                                    onClick={this.turnSound}>
-                                    <span className={soundIconClass}></span>
-                                </button>
-                                <button
-                                    className={cn(styles['chat__btn--small'])}
-                                    onClick={this.turnMic}>
-                                    <span className={micIconClass}></span>
-                                </button>
-                            </div>
+                            <div className={styles['modal__copyright']}>powered by overtok</div>
                         </div>
-
                     </div>
-                    <div className={styles['modal__copyright']}>powered by overtok</div>
-                </div>
-            </div>
-        );
+                );
+
+            case 'voice':
+            case 'text':
+        }
+        //
+        // // Chatting mode
+        //
+        // const soundIconClass = this.state.isSoundOn ?
+        //     cn("fa fa-volume-off", styles['icon'], styles['icon--green'], styles['icon--sm']) :
+        //     cn("fa fa-volume-up", styles['icon'], styles['icon--green'], styles['icon--sm']);
+        //
+        // const micIconClass = this.state.isMicOn ?
+        //     cn("fa fa-microphone-slash", styles['icon'], styles['icon--green'], styles['icon--sm']) :
+        //     cn("fa fa-microphone", styles['icon'], styles['icon--green'], styles['icon--sm']);
+        //
+        // return (
+        //     <div className={styles['modal']}>
+        //         <div className={styles['modal__inner']}>
+        //             <div className={styles['chat']}>
+        //
+        //                 {/*<div className={styles['chat__info']}>*/}
+        //                 {/*<div className={styles['chat__status']}>*/}
+        //                 {/*<div className={styles['chat__status-txt']}>Connecting</div>*/}
+        //                 {/*</div>*/}
+        //                 {/*<div className={styles['chat__tips-hdr']}>Two quick tips</div>*/}
+        //                 {/*<div className={styles['chat__tips-body']}>*/}
+        //                 {/*Luke's rated 4 stars with 159 reviews<br/><br/><br/><br/>*/}
+        //                 {/*Don't forget!<br/>15% off for new customers*/}
+        //                 {/*</div>*/}
+        //                 {/*</div>*/}
+        //
+        //                 <div id='video-out' className={styles['chat__video-out']}></div>
+        //
+        //                 <div id='video-in' className={styles['chat__video-in']}></div>
+        //
+        //                 <div className={styles['chat__panel']}>
+        //                     <div className={styles['chat__btns-group']}>
+        //                         <button className={cn(styles['chat__btn--small'])}>
+        //                             <span className={cn("fa fa-video-camera", styles['icon'], styles['icon--green'], styles['icon--xs'])}></span>
+        //                         </button>
+        //                         <button className={cn(styles['chat__btn--small'])}>
+        //                             <span className={cn("fa fa-comments", styles['icon'], styles['icon--green'], styles['icon--sm'])}></span>
+        //                         </button>
+        //                     </div>
+        //                     <button
+        //                         id="callButton"
+        //                         className={cn(styles['chat__btn--stop'])}
+        //                         onClick={this.stopChat}>
+        //                         <span className={cn("fa fa-phone", styles['icon'], styles['icon--white'], styles['icon--lg'])}></span>
+        //                     </button>
+        //                     <div className={styles['chat__btns-group']}>
+        //                         <button
+        //                             className={cn(styles['chat__btn--small'])}
+        //                             onClick={this.turnSound}>
+        //                             <span className={soundIconClass}></span>
+        //                         </button>
+        //                         <button
+        //                             className={cn(styles['chat__btn--small'])}
+        //                             onClick={this.turnMic}>
+        //                             <span className={micIconClass}></span>
+        //                         </button>
+        //                     </div>
+        //                 </div>
+        //
+        //             </div>
+        //             <div className={styles['modal__copyright']}>powered by overtok</div>
+        //         </div>
+        //     </div>
+        // );
     }
 }
+
+const SelectMode = (props) => (
+    <div className={styles['webchat']}>
+        <button
+            className={cn(styles['webchat__launch-btn'])}
+            onClick={props.toggleChatButtons}>
+            <span className={cn("fa fa-phone", styles['icon'], styles['icon--white'], styles['icon--md'])}></span>
+        </button>
+        <button
+            className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--video'],
+                {[styles["webchat__chat-btn--showed"]]: props.isChatBtnsOpen})}
+            onClick={() => props.startChat('video')}>
+            <span
+                className={cn("fa fa-video-camera", styles['icon'], styles['icon--white'], styles['icon--sm'])}></span>
+        </button>
+        <button
+            className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--voice'],
+                {[styles["webchat__chat-btn--showed"]]: props.isChatBtnsOpen})}
+            onClick={() => props.startChat('voice')}>
+            <span className={cn("fa fa-phone", styles['icon'], styles['icon--white'], styles['icon--sm'])}></span>
+        </button>
+        <button
+            className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--text'],
+                {[styles["webchat__chat-btn--showed"]]: props.isChatBtnsOpen})}
+            onClick={() => props.startChat('text')}>
+            <span className={cn("fa fa-comments", styles['icon'], styles['icon--white'], styles['icon--sm'])}></span>
+        </button>
+    </div>
+);
 
 module.exports = function createWidget(node, settings) {
     render(<WebchatClient settings={settings}/>, node);
