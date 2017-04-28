@@ -9,7 +9,8 @@ class WebchatClient extends Component {
     constructor() {
         super();
         this.state = {
-            chatMode: 'idle', // allowed values: 'idle', 'video', 'voice', 'text'
+            // Allowed values: 'idle', 'connectingVideo', 'video', 'connectingVoice', 'voice', 'text'.
+            chatMode: 'idle',
             isChatBtnsOpen: false,
             isSoundOn: true,
             isMicOn: true,
