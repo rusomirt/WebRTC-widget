@@ -32,10 +32,6 @@ let voxChatAPI;
 //=============================================================================
 
 export function init(settings) {
-    // console.log("------------------------------");
-    // console.log('init()');
-    // console.log(settings);
-
     $scriptjs("//cdn.voximplant.com/edge/voximplant.min.js", function () {
         // Create VoxImplant instance
         voxAPI = VoxImplant.getInstance();
@@ -73,41 +69,26 @@ export function uninit() {
 //=============================================================================
 
 // SDK ready - functions can be called now
-function onSdkReady() {
-    // console.log("------------------------------");
-    // console.log('onSdkReady()');
-    // console.log("VI connected: " + voxAPI.connected());
-}
+function onSdkReady() {}
 
 // Connection with VoxImplant established
 function onConnectionEstablished() {
-    // console.log("------------------------------");
-    // console.log('onConnectionEstablished()');
-    // console.log("VI connected: " + voxAPI.connected());
     voxAPI.login(username + "@" + application_name + "." + account_name + ".voximplant.com", password);
 }
 
 // Connection with VoxImplant failed
 function onConnectionFailed() {
-    // console.log("------------------------------");
-    // console.log('onConnectionFailed(). Reconnect');
     setTimeout(function () {
         voxAPI.connect();
     }, 1000);
 }
 
 // Connection with VoxImplant closed
-function onConnectionClosed() {
-    // console.log("------------------------------------------------------------");
-    // console.log('onConnectionClosed()');
-    // console.log("! currentCall: ");
-    // console.log(currentCall);
-    // console.log("VI connected: " + voxAPI.connected());
-}
+function onConnectionClosed() {}
 
 // Result of authorization
 function onAuthResult(e) {
-    console.log("<---------- onAuthResult() begin");
+    console.log("<<<<<<<<<< onAuthResult() begin");
     console.log("AuthResult: " + e.result);
 
     if (currentCallMode === 'video' || currentCallMode === 'voice') {
@@ -116,7 +97,7 @@ function onAuthResult(e) {
         initMessenger();
         beginChat();
     }
-    console.log("           onAuthResult() end ---------->");
+    console.log("           onAuthResult() end >>>>>>>>>>");
 }
 
 //=============================================================================
@@ -124,7 +105,7 @@ function onAuthResult(e) {
 //=============================================================================
 
 function initMessenger() {
-    console.log('<---------- initMessenger() begin');
+    console.log('<<<<<<<<<< initMessenger() begin');
     console.log('voxChatAPI:');
     console.log(voxChatAPI);
 
@@ -132,7 +113,7 @@ function initMessenger() {
     voxChatAPI = VoxImplant.getMessenger();
 
     voxChatAPI.on(VoxImplant.MessagingEvents.onCreateConversation, (e) => {
-        console.log('<--------- onCreateConversation begin');
+        console.log('<<<<<<<<<< onCreateConversation begin');
         console.log('conversations:');
         console.log(conversations);
 
@@ -146,7 +127,7 @@ function initMessenger() {
         console.log(currentConv);
         currentConv.sendMessage("Hello!");
 
-        console.log('           onCreateConversation end ---------->');
+        console.log('           onCreateConversation end >>>>>>>>>>');
     });
     voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, (e) => {
         console.log(e.message);
@@ -154,26 +135,26 @@ function initMessenger() {
         console.log(e.message.text);
     });
     voxChatAPI.on(VoxImplant.MessagingEvents.onRemoveConversation, (e) => {
-        console.log('<--------- onRemoveConversation begin');
+        console.log('<<<<<<<<<< onRemoveConversation begin');
         console.log(e);
         console.log('conversations:');
         console.log(conversations);
-        console.log('           onRemoveConversation end ---------->');
+        console.log('           onRemoveConversation end >>>>>>>>>>');
     });
     voxChatAPI.on(VoxImplant.MessagingEvents.onError, (e) => {
-        console.log('<--------- onError begin');
+        console.log('<<<<<<<<<< onError begin');
         console.log(e);
-        console.log('          onError end ---------->');
+        console.log('          onError end >>>>>>>>>>');
     });
 
     console.log('voxChatAPI:');
     console.log(voxChatAPI);
-    console.log('           initMessenger() end ---------->');
+    console.log('           initMessenger() end >>>>>>>>>>');
 }
 
 // Outbound chat
 export function createChat(mode) {
-    console.log('<--------- createChat() begin');
+    console.log('<<<<<<<<<< createChat() begin');
     currentCallMode = mode;
 
     if (!voxAPI.connected()) {    // 1st call
@@ -190,11 +171,11 @@ export function createChat(mode) {
             beginChat();
         }
     }
-    console.log('           createChat() end ---------->');
+    console.log('           createChat() end >>>>>>>>>>');
 }
 
 function beginCall() {
-    console.log('---------- beginCall() begin ----------');
+    console.log('<<<<<<<<<< beginCall() begin');
     console.log('currentCallMode = ' + currentCallMode);
 
     let useVideo = (currentCallMode === 'video');
@@ -207,12 +188,12 @@ function beginCall() {
     currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, onProgressToneStop);
     // currentCall.setVideoSettings({width: 720});
 
-    console.log('---------- beginCall() end ----------');
+    console.log('          beginCall() end >>>>>>>>>>');
 }
 
 function beginChat() {
     try {
-        console.log('<--------- beginChat() begin');
+        console.log('<<<<<<<<<< beginChat() begin');
         const participants = [{
             userId: dest_username + "@" + application_name + "." + account_name,
             canManageParticipants: false, canWrite: true
@@ -228,12 +209,12 @@ function beginChat() {
         console.log('! CAUGHT ERROR !');
         console.log(e);
     }
-    console.log('           beginChat() end ---------->');
+    console.log('           beginChat() end >>>>>>>>>>');
 }
 
 // Show/hide local video
 function showLocalVideo(flag) {
-    console.log('---------- showLocalVideo() begin ----------');
+    console.log('<<<<<<<<<< showLocalVideo() begin');
     console.log('flag = ' + flag);
 
     voxAPI.showLocalVideo(flag);
@@ -248,12 +229,12 @@ function showLocalVideo(flag) {
         videoOut.play();
     }
 
-    console.log('---------- showLocalVideo() end ----------');
+    console.log('          showLocalVideo() end >>>>>>>>>>');
 }
 
 // Show/hide remote video
 function showRemoteVideo(flag) {
-    console.log('---------- showRemoteVideo() begin ----------');
+    console.log('<<<<<<<<<< showRemoteVideo() begin');
     console.log('flag = ' + flag);
 
     currentCall.showRemoteVideo(flag);
@@ -267,7 +248,7 @@ function showRemoteVideo(flag) {
     } else {
         videoIn.style.display = 'none';   // hide remote video
     }
-    console.log('---------- showRemoteVideo() end ----------');
+    console.log('          showRemoteVideo() end >>>>>>>>>>');
 }
 
 // Start/stop sending video
@@ -277,7 +258,7 @@ function sendVideo(flag) {
 
 // Turn the sound on/off
 export function turnSound(flag) {
-    console.log('<--------- turnSound() begin');
+    console.log('<<<<<<<<<< turnSound() begin');
     console.log('flag = ' + flag);
 
     if (flag) {
@@ -286,12 +267,12 @@ export function turnSound(flag) {
         currentCall.mutePlayback();
     }
 
-    console.log('           turnSound() end --------->');
+    console.log('           turnSound() end >>>>>>>>>>');
 }
 
 // Turn the microphone on/off
 export function turnMic(flag) {
-    console.log('<--------- turnMic() begin');
+    console.log('<<<<<<<<<< turnMic() begin');
     console.log('flag = ' + flag);
 
     if (flag) {
@@ -300,12 +281,12 @@ export function turnMic(flag) {
         currentCall.muteMicrophone();
     }
 
-    console.log('           turnMic() end --------->');
+    console.log('           turnMic() end >>>>>>>>>>');
 }
 
 // Hangup outbound chat
 export function stopChat() {
-    console.log('<---------- stopChat() begin');
+    console.log('<<<<<<<<<< stopChat() begin');
     if (currentCallMode === 'video' || currentCallMode === 'voice') {
         console.log('stopping call');
         // console.log("! currentCall: ");
@@ -321,7 +302,7 @@ export function stopChat() {
         conversations = [];
         console.log('text chat has been stopped');
     }
-    console.log('           stopChat() end ---------->');
+    console.log('           stopChat() end >>>>>>>>>>');
 }
 
 //=============================================================================
@@ -330,7 +311,7 @@ export function stopChat() {
 
 // Call connected
 function onCallConnected(e) {
-    console.log("========== CallConnected: " + currentCall.id());
+    console.log("<<<<<<<<<< onCallConnected() begin");
 
     switch (currentCallMode) {
         case 'video':
@@ -344,6 +325,7 @@ function onCallConnected(e) {
             // showLocalVideo(false);
             break;
     }
+    console.log("          onCallConnected() end >>>>>>>>>>");
 }
 
 // // Call disconnected
