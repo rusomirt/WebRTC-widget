@@ -25,15 +25,6 @@ video {
   max-width: 100%;
 }
 
-$webchat-r: 20px;
-$webchat-b: 20px;
-$webchat-launch-btn-size: 64px;
-$webchat-chat-btn-size: 50px;
-// Distance between chat type buttons (video, voice or text) and chat launch button:
-$webchat-chat-btn-shift: 40px;
-$webchat-color-main: #00c48a;
-$webchat-color-stop: #c41200;
-
 .btn {
   border-radius: 50%;
   padding: 0;
@@ -41,6 +32,18 @@ $webchat-color-stop: #c41200;
   outline: none;
   cursor: pointer;
 }
+
+$webchat-r: 20px;
+$webchat-b: 20px;
+$webchat-launch-btn-size: 64px;
+$webchat-chat-btn-size: 50px;
+// Distance between chat type buttons (video, voice or text) and chat launch button:
+$webchat-chat-btn-shift: 40px;
+
+$webchat-color-main: #00c48a;
+$webchat-color-stop: #c41200;
+$webchat-color-bluedark: #3b5d80;
+$webchat-color-bluelight: #75baff;
 
 .webchat {
   position: fixed;
@@ -127,7 +130,7 @@ $chat-stop-btn-size: 64px;
 
 .chat {
   position: relative;   /* for abs-positioned .chat__panel*/
-  border-top: 10px solid red;
+  border-top: 10px solid $webchat-color-bluedark;
   height: 100%;
 
   .chat__info {
@@ -182,7 +185,7 @@ $chat-stop-btn-size: 64px;
     justify-content: space-around;
     align-items: center;
 
-    background: white;  // debug
+    background: white;
 
     .chat__btns-group { /* contains 1 or 2 buttons (.chat__btn-small) */
       // Needs to have any size value to not be shrinked when contains 1 button:
@@ -216,7 +219,7 @@ $chat-stop-btn-size: 64px;
 .icon--white {
   color: white;
 }
-.icon--green {
+.icon--color {
   color: $webchat-color-main;
 }
 .icon--lg {
