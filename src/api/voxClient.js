@@ -108,7 +108,7 @@ function onConnectionClosed() {
 // Result of authorization
 function onAuthResult(e) {
     console.log("<---------- onAuthResult() begin");
-    console.log("AuthResult: "+e.result);
+    console.log("AuthResult: " + e.result);
 
     if (currentCallMode === 'video' || currentCallMode === 'voice') {
         beginCall();
@@ -148,7 +148,7 @@ function initMessenger() {
 
         console.log('           onCreateConversation end ---------->');
     });
-    voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage,(e)=>{
+    voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, (e) => {
         console.log(e.message);
         console.log(e.message.sender);
         console.log(e.message.text);
@@ -184,7 +184,7 @@ export function createChat(mode) {
             beginCall();
         }
         else if (mode === 'text') {
-            if (! voxChatAPI) {
+            if (!voxChatAPI) {
                 initMessenger();
             }
             beginChat();
@@ -213,8 +213,10 @@ function beginCall() {
 function beginChat() {
     try {
         console.log('<--------- beginChat() begin');
-        const participants = [{userId: dest_username + "@" + application_name + "." + account_name,
-            canManageParticipants: false, canWrite: true}];
+        const participants = [{
+            userId: dest_username + "@" + application_name + "." + account_name,
+            canManageParticipants: false, canWrite: true
+        }];
         const title = "Test text chat";
         const isDistinct = false;
         const enablePublicJoin = true;
@@ -222,7 +224,7 @@ function beginChat() {
 
         console.log('conversations:');
         console.log(conversations);
-    } catch(e) {
+    } catch (e) {
         console.log('! CAUGHT ERROR !');
         console.log(e);
     }
@@ -328,8 +330,8 @@ export function stopChat() {
 
 // Call connected
 function onCallConnected(e) {
-    console.log("========== CallConnected: "+currentCall.id());
-    
+    console.log("========== CallConnected: " + currentCall.id());
+
     switch (currentCallMode) {
         case 'video':
             sendVideo(true);

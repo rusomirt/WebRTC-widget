@@ -6,58 +6,58 @@ import * as vox from 'api/voxClient';
 import styles from './webchatClient.scss';
 
 class WebchatClient extends Component {
-  constructor() {
-    super();
-    this.state = {
-      chatMode: 'idle', // allowed values: 'idle', 'video', 'voice', 'text'
-      isChatBtnsOpen: false,
-      isSoundOn: true,
-      isMicOn: true,
-    };
+    constructor() {
+        super();
+        this.state = {
+            chatMode: 'idle', // allowed values: 'idle', 'video', 'voice', 'text'
+            isChatBtnsOpen: false,
+            isSoundOn: true,
+            isMicOn: true,
+        };
 
-    // This binding is necessary to make `this` work in the callback
-    this.getHashParams = this.getHashParams.bind(this);
+        // This binding is necessary to make `this` work in the callback
+        this.getHashParams = this.getHashParams.bind(this);
 
-    this.toggleChatButtons = this.toggleChatButtons.bind(this);
+        this.toggleChatButtons = this.toggleChatButtons.bind(this);
 
-    this.startChat = this.startChat.bind(this);
-    this.stopChat = this.stopChat.bind(this);
-    this.onCallDisconnect = this.onCallDisconnect.bind(this);
+        this.startChat = this.startChat.bind(this);
+        this.stopChat = this.stopChat.bind(this);
+        this.onCallDisconnect = this.onCallDisconnect.bind(this);
 
-    this.turnSound = this.turnSound.bind(this);
-    this.turnMic = this.turnMic.bind(this);
-  }
-
-  toggleChatButtons() {
-    this.setState(prevState => ({
-      isChatBtnsOpen: !prevState.isChatBtnsOpen
-    }));
-  }
-
-  // mode values: 'video', 'voice', 'text'
-  startChat(mode) {
-    this.setState({chatMode: mode});
-    vox.createChat(mode);
-
-    if (mode === 'video' || mode === 'voice') {
-        // console.log('==================== currentCall before polling');
-        // console.log(vox.currentCall);
-
-        // Poll currentCall every 500ms until in becomes not null,
-        // then assign onCallDisconnect event handler.
-        let pollTimer = setInterval(() => {
-            // console.log('==================== currentCall while polling');
-            // console.log(vox.currentCall);
-            if (vox.currentCall !== null) {
-                // 'this' works in arrow function only
-                vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnect);
-                clearInterval(pollTimer);
-            }
-        }, 500);
+        this.turnSound = this.turnSound.bind(this);
+        this.turnMic = this.turnMic.bind(this);
     }
-  }
 
-  onCallDisconnect() {
+    toggleChatButtons() {
+        this.setState(prevState => ({
+            isChatBtnsOpen: !prevState.isChatBtnsOpen
+        }));
+    }
+
+    // mode values: 'video', 'voice', 'text'
+    startChat(mode) {
+        this.setState({chatMode: mode});
+        vox.createChat(mode);
+
+        if (mode === 'video' || mode === 'voice') {
+            // console.log('==================== currentCall before polling');
+            // console.log(vox.currentCall);
+
+            // Poll currentCall every 500ms until in becomes not null,
+            // then assign onCallDisconnect event handler.
+            let pollTimer = setInterval(() => {
+                // console.log('==================== currentCall while polling');
+                // console.log(vox.currentCall);
+                if (vox.currentCall !== null) {
+                    // 'this' works in arrow function only
+                    vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnect);
+                    clearInterval(pollTimer);
+                }
+            }, 500);
+        }
+    }
+
+    onCallDisconnect() {
         vox.currentCall = null; // clear call instance
 
         this.setState({
@@ -66,157 +66,159 @@ class WebchatClient extends Component {
         });
     }
 
-  stopChat() {
-      vox.stopChat();
-      this.setState({
-          chatMode: 'idle',
-          isChatBtnsOpen: false
-      });
-  }
-
-  turnSound() {
-    vox.turnSound(!this.state.isSoundOn);
-    this.setState({isSoundOn: !this.state.isSoundOn});
-  }
-  
-  turnMic() {
-    vox.turnMic(!this.state.isMicOn);
-    this.setState({isMicOn: !this.state.isMicOn});
-  }
-
-  componentDidMount() {
-  const hashParams = this.getHashParams();
-  const voxParams = {
-    account_name: hashParams.account_name ?
-      hashParams.account_name : this.props.settings.account_name,
-    application_name: hashParams.application_name ?
-      hashParams.application_name : this.props.settings.application_name,
-    client_username: hashParams.client_username ?
-      hashParams.client_username : this.props.settings.client_username,
-    client_password: hashParams.client_password ?
-      hashParams.client_password : this.props.settings.client_password,
-    op_username: hashParams.op_username ?
-      hashParams.op_username : this.props.settings.op_username
-  };
-  vox.init(voxParams);
-}
-
-  componentWillUnmount() {
-    vox.uninit();
-  }
-
-  getHashParams() {
-    let hashParams = {};
-    let e,
-      a = /\+/g,  // Regex for replacing addition symbol with a space
-      r = /([^&;=]+)=?([^&;]*)/g,
-      d = function (s) { return decodeURIComponent(s.replace(a, " ")); },
-      q = window.location.hash.substring(1);
-
-    while (e = r.exec(q))
-      hashParams[d(e[1])] = d(e[2]);
-
-    return hashParams;
-  }
-
-  render(props, state) {
-    if (this.state.chatMode === 'idle') {   // Idle mode
-      return (
-        <div className={styles['webchat']}>
-          <button
-            className={cn(styles['webchat__launch-btn'])}
-            onClick={this.toggleChatButtons}>
-              <i className={cn("fa fa-phone", styles['icon'], styles['icon--white'], styles['icon--md'])}></i>
-          </button>
-          <button
-            className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--video'],
-              {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
-            onClick={() => this.startChat('video')}>
-              <i className={cn("fa fa-video-camera", styles['icon'], styles['icon--white'], styles['icon--sm'])}></i>
-          </button>
-          <button
-            className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--voice'],
-              {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
-            onClick={() => this.startChat('voice')}>
-              <i className={cn("fa fa-phone", styles['icon'], styles['icon--white'], styles['icon--sm'])}></i>
-          </button>
-          <button
-            className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--text'],
-              {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
-            onClick={() => this.startChat('text')}>
-              <i className={cn("fa fa-comments", styles['icon'], styles['icon--white'], styles['icon--sm'])}></i>
-          </button>
-        </div>
-      );
+    stopChat() {
+        vox.stopChat();
+        this.setState({
+            chatMode: 'idle',
+            isChatBtnsOpen: false
+        });
     }
 
-    // Chatting mode
+    turnSound() {
+        vox.turnSound(!this.state.isSoundOn);
+        this.setState({isSoundOn: !this.state.isSoundOn});
+    }
 
-    const soundIconClass = this.state.isSoundOn ?
-        cn("fa fa-volume-off", styles['icon'], styles['icon--green'], styles['icon--sm']) :
-        cn("fa fa-volume-up", styles['icon'], styles['icon--green'], styles['icon--sm']);
+    turnMic() {
+        vox.turnMic(!this.state.isMicOn);
+        this.setState({isMicOn: !this.state.isMicOn});
+    }
 
-    const micIconClass = this.state.isMicOn ?
-        cn("fa fa-microphone-slash", styles['icon'], styles['icon--green'], styles['icon--sm']) :
-        cn("fa fa-microphone", styles['icon'], styles['icon--green'], styles['icon--sm']);
+    componentDidMount() {
+        const hashParams = this.getHashParams();
+        const voxParams = {
+            account_name: hashParams.account_name ?
+                hashParams.account_name : this.props.settings.account_name,
+            application_name: hashParams.application_name ?
+                hashParams.application_name : this.props.settings.application_name,
+            client_username: hashParams.client_username ?
+                hashParams.client_username : this.props.settings.client_username,
+            client_password: hashParams.client_password ?
+                hashParams.client_password : this.props.settings.client_password,
+            op_username: hashParams.op_username ?
+                hashParams.op_username : this.props.settings.op_username
+        };
+        vox.init(voxParams);
+    }
 
-    return (
-      <div className={styles['modal']}>
-        <div className={styles['modal__inner']}>
-          <div className={styles['chat']}>
+    componentWillUnmount() {
+        vox.uninit();
+    }
 
-            {/*<div className={styles['chat__info']}>*/}
-              {/*<div className={styles['chat__status']}>*/}
-                {/*<div className={styles['chat__status-txt']}>Connecting</div>*/}
-              {/*</div>*/}
-              {/*<div className={styles['chat__tips-hdr']}>Two quick tips</div>*/}
-              {/*<div className={styles['chat__tips-body']}>*/}
-                {/*Luke's rated 4 stars with 159 reviews<br/><br/><br/><br/>*/}
-                {/*Don't forget!<br/>15% off for new customers*/}
-              {/*</div>*/}
-            {/*</div>*/}
+    getHashParams() {
+        let hashParams = {};
+        let e,
+            a = /\+/g,  // Regex for replacing addition symbol with a space
+            r = /([^&;=]+)=?([^&;]*)/g,
+            d = function (s) {
+                return decodeURIComponent(s.replace(a, " "));
+            },
+            q = window.location.hash.substring(1);
 
-            <div id='video-out' className={styles['chat__video-out']}></div>
+        while (e = r.exec(q))
+            hashParams[d(e[1])] = d(e[2]);
 
-            <div id='video-in' className={styles['chat__video-in']}></div>
+        return hashParams;
+    }
 
-            <div className={styles['chat__panel']}>
-              <div className={styles['chat__btns-group']}>
-                <button className={cn(styles['chat__btn--small'])}>
-                  <i className={cn("fa fa-video-camera", styles['icon'], styles['icon--green'], styles['icon--xs'])}></i>
-                </button>
-                <button className={cn(styles['chat__btn--small'])}>
-                  <i className={cn("fa fa-comments", styles['icon'], styles['icon--green'], styles['icon--sm'])}></i>
-                </button>
-              </div>
-              <button
-                id="callButton"
-                className={cn(styles['chat__btn--stop'])}
-                onClick={this.stopChat}>
-                  <i className={cn("fa fa-phone", styles['icon'], styles['icon--white'], styles['icon--lg'])}></i>
-              </button>
-              <div className={styles['chat__btns-group']}>
-                <button
-                    className={cn(styles['chat__btn--small'])}
-                    onClick={this.turnSound}>
-                  <i className={soundIconClass}></i>
-                </button>
-                <button
-                    className={cn(styles['chat__btn--small'])}
-                    onClick={this.turnMic}>
-                  <i className={micIconClass}></i>
-                </button>
-              </div>
+    render(props, state) {
+        if (this.state.chatMode === 'idle') {   // Idle mode
+            return (
+                <div className={styles['webchat']}>
+                    <button
+                        className={cn(styles['webchat__launch-btn'])}
+                        onClick={this.toggleChatButtons}>
+                        <span className={cn("fa fa-phone", styles['icon'], styles['icon--white'], styles['icon--md'])}></span>
+                    </button>
+                    <button
+                        className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--video'],
+                            {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
+                        onClick={() => this.startChat('video')}>
+                        <span className={cn("fa fa-video-camera", styles['icon'], styles['icon--white'], styles['icon--sm'])}></span>
+                    </button>
+                    <button
+                        className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--voice'],
+                            {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
+                        onClick={() => this.startChat('voice')}>
+                        <span className={cn("fa fa-phone", styles['icon'], styles['icon--white'], styles['icon--sm'])}></span>
+                    </button>
+                    <button
+                        className={ cn(styles['webchat__chat-btn'], styles['webchat__chat-btn--text'],
+                            {[styles["webchat__chat-btn--showed"]]: this.state.isChatBtnsOpen})}
+                        onClick={() => this.startChat('text')}>
+                        <span className={cn("fa fa-comments", styles['icon'], styles['icon--white'], styles['icon--sm'])}></span>
+                    </button>
+                </div>
+            );
+        }
+
+        // Chatting mode
+
+        const soundIconClass = this.state.isSoundOn ?
+            cn("fa fa-volume-off", styles['icon'], styles['icon--green'], styles['icon--sm']) :
+            cn("fa fa-volume-up", styles['icon'], styles['icon--green'], styles['icon--sm']);
+
+        const micIconClass = this.state.isMicOn ?
+            cn("fa fa-microphone-slash", styles['icon'], styles['icon--green'], styles['icon--sm']) :
+            cn("fa fa-microphone", styles['icon'], styles['icon--green'], styles['icon--sm']);
+
+        return (
+            <div className={styles['modal']}>
+                <div className={styles['modal__inner']}>
+                    <div className={styles['chat']}>
+
+                        {/*<div className={styles['chat__info']}>*/}
+                        {/*<div className={styles['chat__status']}>*/}
+                        {/*<div className={styles['chat__status-txt']}>Connecting</div>*/}
+                        {/*</div>*/}
+                        {/*<div className={styles['chat__tips-hdr']}>Two quick tips</div>*/}
+                        {/*<div className={styles['chat__tips-body']}>*/}
+                        {/*Luke's rated 4 stars with 159 reviews<br/><br/><br/><br/>*/}
+                        {/*Don't forget!<br/>15% off for new customers*/}
+                        {/*</div>*/}
+                        {/*</div>*/}
+
+                        <div id='video-out' className={styles['chat__video-out']}></div>
+
+                        <div id='video-in' className={styles['chat__video-in']}></div>
+
+                        <div className={styles['chat__panel']}>
+                            <div className={styles['chat__btns-group']}>
+                                <button className={cn(styles['chat__btn--small'])}>
+                                    <span className={cn("fa fa-video-camera", styles['icon'], styles['icon--green'], styles['icon--xs'])}></span>
+                                </button>
+                                <button className={cn(styles['chat__btn--small'])}>
+                                    <span className={cn("fa fa-comments", styles['icon'], styles['icon--green'], styles['icon--sm'])}></span>
+                                </button>
+                            </div>
+                            <button
+                                id="callButton"
+                                className={cn(styles['chat__btn--stop'])}
+                                onClick={this.stopChat}>
+                                <span className={cn("fa fa-phone", styles['icon'], styles['icon--white'], styles['icon--lg'])}></span>
+                            </button>
+                            <div className={styles['chat__btns-group']}>
+                                <button
+                                    className={cn(styles['chat__btn--small'])}
+                                    onClick={this.turnSound}>
+                                    <span className={soundIconClass}></span>
+                                </button>
+                                <button
+                                    className={cn(styles['chat__btn--small'])}
+                                    onClick={this.turnMic}>
+                                    <span className={micIconClass}></span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div className={styles['modal__copyright']}>powered by overtok</div>
+                </div>
             </div>
-
-          </div>
-          <div className={styles['modal__copyright']}>powered by overtok</div>
-        </div>
-      </div>
-    );
-  }
+        );
+    }
 }
 
 module.exports = function createWidget(node, settings) {
-  render(<WebchatClient settings={settings} />, node);
+    render(<WebchatClient settings={settings}/>, node);
 };
