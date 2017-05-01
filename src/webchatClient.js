@@ -413,7 +413,7 @@ const Chat = (props) => {
     switch (props.chatMode) {
         case 'connectingVoice': chatInfo =
             <div className={cn('chat__info')}>
-                <div className={cn('chat__status')}>
+                <div className={cn('chat__status', 'chat__status--high')}>
                     <div className={cn('chat__status-txt-wrapper')}>
                         <span className={cn('fa fa-phone', 'icon', 'icon--color', 'icon--xs', 'icon--lowered')}></span>
                         <span className={cn('chat__status-txt')}>Connecting to voice call</span>
@@ -436,7 +436,7 @@ const Chat = (props) => {
             break;
         case 'connectingVideo': chatInfo =
             <div className={cn('chat__info')}>
-                <div className={cn('chat__status')}>
+                <div className={cn('chat__status', 'chat__status--high')}>
                     <div className={cn('chat__status-txt-wrapper')}>
                         <span className={cn('fa fa-video-camera', 'icon', 'icon--color', 'icon--xs', 'icon--lowered')}></span>
                         <span className={cn('chat__status-txt')}>Connecting to video call</span>
@@ -459,7 +459,7 @@ const Chat = (props) => {
             break;
         case 'voice': chatInfo =
             <div className={cn('chat__info')}>
-                <div className={cn('chat__status')}>
+                <div className={cn('chat__status', 'chat__status--high')}>
                     <div className={cn('chat__status-txt-wrapper')}>
                         <span className={cn('fa fa-phone', 'icon', 'icon--color', 'icon--xs', 'icon--lowered')}></span>
                         <span className={cn('chat__status-txt')}>Voice call connected</span>

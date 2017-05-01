@@ -238,8 +238,8 @@ function showRemoteVideo(flag) {
     const videoIn = document.getElementById(currentCall.getVideoElementId());
     if (flag) {
         console.log(videoIn);
-        videoIn.style.width = '100%';    // fit in container with aspect ratio keeping
-        videoIn.style.display = 'block'; // remove space under element (initially it is inline)
+        videoIn.style.height = '100%';      // fit in container with aspect ratio keeping
+        videoIn.style.display = 'block';    // remove space under element (initially it is inline)
         document.getElementById('video-in').appendChild(videoIn);
         videoIn.play();
     }

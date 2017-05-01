@@ -122,8 +122,8 @@ $modal-inner-w: 400px;
   background: rgba(0, 0, 0, $modal-bg-transparency);
 
   .modal__inner {
-    width: $modal-inner-w;
-    max-width: 100%;      // shrink to window on narrow screens (< $modal-inner-w)
+    //width: $modal-inner-w;
+    max-width: 90%;      // shrink to window on narrow screens (< $modal-inner-w)
 
   }
 }
@@ -204,7 +204,12 @@ $chat-circle-circle2-color: $webchat-color-main;
 
     .chat__status {
       padding-top: 6px;
-      margin-bottom: 12px;
+      padding-bottom: 12px;
+
+      &.chat__status--high {
+        padding-top: 40px;
+        padding-bottom: 22px;
+      }
 
       .chat__status-txt-wrapper {
         display: flex;
@@ -225,19 +230,22 @@ $chat-circle-circle2-color: $webchat-color-main;
       }
     }
     .chat__logo {
-      //margin-bottom: 90px;
+      margin-top: 10px;
     }
     .chat__tips {
-      margin-bottom: 118px;
+      width: 400px;
+      height: 100px;
+
       font-family: 'Roboto Regular', sans-serif;
       font-size: 16px;
       color: black;
-      padding: 40px 0;
+      padding: 78px 0;
       text-align: center;
     }
-  }
-  .chat__info--short {
-    margin-bottom: 0;
+
+    &.chat__info--short {
+      margin-bottom: 0;
+    }
   }
 
   .chat__circles {
@@ -311,52 +319,53 @@ $chat-circle-circle2-color: $webchat-color-main;
       border-bottom-left-radius: 0;
     }
   }
+}
 
-  .chat__panel {
+.chat__panel {
+  position: absolute;
+  bottom: $chat-panel-b;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: $chat-panel-w;
+  max-width: $chat-panel-max-w;
+  height: $chat-panel-h;
+  border-radius: $chat-panel-h * 0.5;
+  background: white;
+
+  display: flex;
+
+  .chat__btns-group { /* contains 1 or 2 buttons (.chat__btn-small) */
+    margin: 0 $chat-btns-group-mx;
+    flex: 1 1 0;
+
+    display: inline-flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  .chat__btns-group:not(:first-of-type) {   // .chat__btns-group + .chat__btns-group doesn't work
+    margin-left: $chat-stop-btn-size - $chat-btns-group-mx;
+  }
+
+  .chat__btn--small {
+    @extend .btn;
+    width: $chat-panel-h;
+    height: $chat-panel-h;
+    background-color: transparent;
+  }
+  .chat__btn--stop {
     position: absolute;
-    bottom: $chat-panel-b;
+    top: ($chat-panel-h - $chat-stop-btn-size)/2;
     left: 50%;
     transform: translateX(-50%);
 
-    width: $chat-panel-w;
-    max-width: $chat-panel-max-w;
-    height: $chat-panel-h;
-    border-radius: $chat-panel-h * 0.5;
-    background: white;
-
-    display: flex;
-
-    .chat__btns-group { /* contains 1 or 2 buttons (.chat__btn-small) */
-      margin: 0 $chat-btns-group-mx;
-      flex: 1 1 0;
-
-      display: inline-flex;
-      justify-content: space-around;
-      align-items: center;
-    }
-    .chat__btns-group:not(:first-of-type) {   // .chat__btns-group + .chat__btns-group doesn't work
-      margin-left: $chat-stop-btn-size - $chat-btns-group-mx;
-    }
-
-    .chat__btn--small {
-      @extend .btn;
-      width: $chat-panel-h;
-      height: $chat-panel-h;
-      background-color: transparent;
-    }
-    .chat__btn--stop {
-      position: absolute;
-      top: ($chat-panel-h - $chat-stop-btn-size)/2;
-      left: 50%;
-      transform: translateX(-50%);
-
-      @extend .btn;
-      width: $chat-stop-btn-size;
-      height: $chat-stop-btn-size;
-      background-color: $webchat-color-stop;
-    }
+    @extend .btn;
+    width: $chat-stop-btn-size;
+    height: $chat-stop-btn-size;
+    background-color: $webchat-color-stop;
   }
 }
+
 
 .icon {
   vertical-align: middle;
