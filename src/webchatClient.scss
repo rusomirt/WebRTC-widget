@@ -360,45 +360,46 @@ $chat-circle-circle2-color: $webchat-color-main;
 
 .icon {
   vertical-align: middle;
-}
-.icon--white {
-  color: white;
-}
-.icon--color {
-  color: $webchat-color-main;
-}
-.icon--color-scnd {
-  color: #f8e71c;
-}
-.icon--lg {
-  font-size: 30px;
-}
-.icon--md {
-  font-size: 26px;
-}
-.icon--sm {
-  font-size: 20px;
-}
-.icon--xs {
-  font-size: 18px;
-}
-.icon--crossed {
-  position: relative;
 
-  &:after{
-    content: '';
-    position: absolute;
-    top: 7px;
-    right: -4px;
-    width: 1.4em;
-    height: 2px;
-    background: $webchat-color-main;
-    border-top: 2px solid white;
-    transform: rotate(-45deg);
+  &.icon--white {
+    color: white;
   }
-}
-.icon--lowered {
-  margin-bottom: -3px;
+  &.icon--color {
+    color: $webchat-color-main;
+  }
+  &.icon--color-scnd {
+    color: #f8e71c;
+  }
+  &.icon--lg {
+    font-size: 30px;
+  }
+  &.icon--md {
+    font-size: 26px;
+  }
+  &.icon--sm {
+    font-size: 20px;
+  }
+  &.icon--xs {
+    font-size: 18px;
+  }
+  &.icon--crossed {
+    position: relative;
+
+    &:after{
+      content: '';
+      position: absolute;
+      top: 7px;
+      right: -4px;
+      width: 1.4em;
+      height: 2px;
+      background: $webchat-color-main;
+      border-top: 2px solid white;
+      transform: rotate(-45deg);
+    }
+  }
+  &.icon--lowered {
+    margin-bottom: -3px;
+  }
 }
 
 .timer {
