@@ -154,6 +154,7 @@ function onAuthResult(e) {
 // Incoming call
 function onIncomingCall(e) {
     console.log('<<<<<<<<<< onIncomingCall()');
+    console.log(e);
     currentCall = e.call;
     // Add handlers
     currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
@@ -163,7 +164,7 @@ function onIncomingCall(e) {
     // Answer automatically
     setTimeout(function () {
         currentCall.answer();
-    }, 1000);
+    }, 10000);
     console.log('          onIncomingCall() >>>>>>>>>>');
 }
 

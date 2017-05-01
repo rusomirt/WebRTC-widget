@@ -123,7 +123,7 @@ export function beginCall(callMode) {
 
     // currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
     // currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
-    currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
+    // currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
     currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
         console.log('<+++++++++ onProgressToneStart() +++++++++>');
         voxAPI.playProgressTone();
@@ -290,15 +290,3 @@ function onConnectionFailed() {
 
 // Connection with VoxImplant closed
 function onConnectionClosed() {}
-
-//=============================================================================
-// Call event handlers
-//=============================================================================
-
-// Call failed
-function onCallFailed(e) {
-    console.log('<<<<<<<<<< onCallFailed() begin');
-    console.log('Call id: '+currentCall.id()+', code: '+e.code+', reason: '+e.reason);
-    currentCall = null;
-    console.log('           onCallFailed() end >>>>>>>>>>');
-}

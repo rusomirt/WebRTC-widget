@@ -31,6 +31,7 @@ class WebchatClient extends Component {
         this.onAuthResult = this.onAuthResult.bind(this);
         this.onCallConnected = this.onCallConnected.bind(this);
         this.onCallDisconnected = this.onCallDisconnected.bind(this);
+        this.onCallFailed = this.onCallFailed.bind(this);
 
         this.switchMode = this.switchMode.bind(this);
     }
@@ -75,6 +76,7 @@ class WebchatClient extends Component {
                 // Assign event handlers here because these events need to be handled in preact component
                 vox.currentCall.addEventListener(VoxImplant.CallEvents.Connected, this.onCallConnected);
                 vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnected);
+                vox.currentCall.addEventListener(VoxImplant.CallEvents.Failed, this.onCallFailed);
             }
             else if (demandedMode === 'text') {
                 if (!vox.voxChatAPI) {
@@ -136,6 +138,7 @@ class WebchatClient extends Component {
             // Assign event handlers here because these events need to be handled in preact component
             vox.currentCall.addEventListener(VoxImplant.CallEvents.Connected, this.onCallConnected);
             vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnected);
+            vox.currentCall.addEventListener(VoxImplant.CallEvents.Failed, this.onCallFailed);
         } else if (this.state.chatMode === 'text') {
             vox.initMessenger();
             vox.beginChat();
@@ -155,12 +158,23 @@ class WebchatClient extends Component {
         console.log('            onCallConnected() end =========>');
     }
     onCallDisconnected() {
+        console.log('<========= onCallDisconnected() begin');
         vox.currentCall = null; // clear call instance
-
         this.setState({
             chatMode: 'idle',
             isModeChanged: true,
         });
+        console.log('           onCallDisconnected() end =========>');
+    }
+    onCallFailed(e) {
+        console.log('<========= onCallFailed() begin');
+        console.log('Call id: '+vox.currentCall.id()+', code: '+e.code+', reason: '+e.reason);
+        vox.currentCall = null;
+        this.setState({
+                chatMode: 'idle',
+                isModeChanged: true,
+            });
+        console.log('           onCallFailed() end =========>');
     }
 
     componentDidMount() {
