@@ -57,7 +57,7 @@ export function init(settings) {
         // remoteVideoContainerId: 'video-in',
         localVideoContainerId: 'video-out',
         micRequired: true,  // force microphone/camera access request
-        videoSupport: true, // enable video support
+        videoSupport: false, // enable video support
         progressTone: true  // play progress tone
     });
 }
@@ -118,7 +118,7 @@ export function beginCall(callMode) {
     console.log('<<<<<<<<<< beginCall() begin');
     console.log('callMode = ' + callMode);
 
-    let useVideo = true;//(callMode === 'video');
+    let useVideo = false;//(callMode === 'video');
     currentCall = voxAPI.call(dest_username, useVideo, 'TEST CUSTOM DATA', {'X-DirectCall': 'true'});
 
     // currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
@@ -134,11 +134,20 @@ export function beginCall(callMode) {
     });
 
     // currentCall.addEventListener(VoxImplant.CallEvents.ICECompleted, () => console.log('<<<<<<<<<< onICECompleted() >>>>>>>>>>'));
-    currentCall.addEventListener(VoxImplant.CallEvents.ICETimeout, () => console.log('<<<<<<<<<< onICETimeout() >>>>>>>>>>'));
-    currentCall.addEventListener(VoxImplant.CallEvents.Updated, () => console.log('<<<<<<<<<< onUpdated() >>>>>>>>>>'));
-    currentCall.addEventListener(VoxImplant.CallEvents.VideoPlaybackStarted, () => console.log('<<<<<<<<<< VideoPlaybackStarted() >>>>>>>>>>'));
+    // currentCall.addEventListener(VoxImplant.CallEvents.ICETimeout, () => console.log('<<<<<<<<<< onICETimeout() >>>>>>>>>>'));
+    currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, (e) => {
+        console.log('<<<<<<<<<< onMediaElementCreated() begin');
+        console.log(e.element);
+        e.element.style.display = 'none';
+        console.log('           onMediaElementCreated() end >>>>>>>>>>');
+    });
+    // currentCall.addEventListener(VoxImplant.CallEvents.TransferComplete, () => console.log('<<<<<<<<<< onTransferComplete() >>>>>>>>>>'));
+    // currentCall.addEventListener(VoxImplant.CallEvents.Updated, () => console.log('<<<<<<<<<< onUpdated() >>>>>>>>>>'));
+    // currentCall.addEventListener(VoxImplant.CallEvents.VideoPlaybackStarted, () => console.log('<<<<<<<<<< VideoPlaybackStarted() >>>>>>>>>>'));
     // currentCall.setVideoSettings({width: 720});
 
+    console.log('currentCall.getVideoElementId():');
+    console.log(currentCall.getVideoElementId());
     console.log('          beginCall() end >>>>>>>>>>');
 }
 // Begin text chat
@@ -213,7 +222,7 @@ function showLocalVideo(flag) {
         videoOut.style.width = '100%';    // fit in container with aspect ratio keeping
         videoOut.style.display = 'block'; // remove space under element (initially it is inline)
         // document.getElementById('video-out').appendChild(videoOut);
-        videoOut.play();
+        // videoOut.play();
     }
 
     console.log('          showLocalVideo() end >>>>>>>>>>');
@@ -232,7 +241,7 @@ function showRemoteVideo(flag) {
         videoIn.style.width = '100%';    // fit in container with aspect ratio keeping
         videoIn.style.display = 'block'; // remove space under element (initially it is inline)
         document.getElementById('video-in').appendChild(videoIn);
-        videoIn.play();
+        // videoIn.play();
     }
 
     console.log('          showRemoteVideo() end >>>>>>>>>>');
