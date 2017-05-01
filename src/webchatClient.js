@@ -109,11 +109,21 @@ class WebchatClient extends Component {
         console.log('           switchMode() end =========>');
     }
     stopChat() {
-        vox.stopChat(this.state.chatMode);
+        console.log('<========= stopChat() begin');
+        let mode = null;
+        if (this.state.chatMode === 'connectingVoice') {
+            mode = 'voice';
+        } else if (this.state.chatMode === 'connectingVideo') {
+            mode = 'video';
+        } else {
+            mode = this.state.chatMode;
+        }
+        vox.stopChat(mode);
         this.setState({
             chatMode: 'idle',
             isModeChanged: true,
         });
+        console.log('           stopChat() end =========>');
     }
 
     onAuthResult() {
