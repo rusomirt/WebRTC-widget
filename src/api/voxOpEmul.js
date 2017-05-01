@@ -164,7 +164,7 @@ function onIncomingCall(e) {
     // Answer automatically
     setTimeout(function () {
         currentCall.answer();
-    }, 10000);
+    }, 1000);
     console.log('          onIncomingCall() >>>>>>>>>>');
 }
 
