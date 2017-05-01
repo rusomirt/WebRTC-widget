@@ -89,13 +89,16 @@ class WebchatClient extends Component {
         console.log('nextMode = ' + nextMode);
 
         if (this.state.chatMode === 'text') {
-            vox.beginCall(nextMode);
+            // TODO: Hangup chat correctly
+
+            console.log('starting call');
+            this.startChat(nextMode);
         }
         else if (nextMode === 'text') {
-            if (!vox.voxChatAPI) {
-                vox.initMessenger();
-            }
-            vox.beginChat();
+            console.log('stopping call');
+            vox.stopChat(this.state.chatMode);
+            console.log('starting text chat');
+            this.startChat(nextMode);
         }
 
         this.setState({
@@ -489,8 +492,6 @@ const Chat = (props) => {
                 </div>;
             messengerContainer =
                 <div className={cn('chat__msg-container')}>
-                    <div id="video-in" className={cn('chat__video-in')}></div>
-                    <div id="video-out" className={cn('chat__video-out')}></div>
                 </div>;
             break;
     }
