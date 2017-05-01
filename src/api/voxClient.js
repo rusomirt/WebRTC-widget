@@ -57,7 +57,7 @@ export function init(settings) {
         // remoteVideoContainerId: 'video-in',
         localVideoContainerId: 'video-out',
         micRequired: true,  // force microphone/camera access request
-        videoSupport: false, // enable video support
+        videoSupport: true, // enable video support
         progressTone: true  // play progress tone
     });
 }
@@ -118,7 +118,7 @@ export function beginCall(callMode) {
     console.log('<<<<<<<<<< beginCall() begin');
     console.log('callMode = ' + callMode);
 
-    let useVideo = false;//(callMode === 'video');
+    let useVideo = true;//(callMode === 'video');
     currentCall = voxAPI.call(dest_username, useVideo, 'TEST CUSTOM DATA', {'X-DirectCall': 'true'});
 
     // currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
