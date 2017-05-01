@@ -11,7 +11,6 @@ class WebchatOpEmul extends Component {
 
     componentDidMount() {
         const hashParams = this.getHashParams();
-        console.log(hashParams);
         const voxParams = {
             account_name: hashParams.account_name ?
                 hashParams.account_name : this.props.settings.account_name,

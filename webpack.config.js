@@ -40,7 +40,7 @@ let config = {
                 test: /\.scss$/,
                 loaders: [
                     'style?sourceMap',
-                    'css?modules&importLoaders=1&localIdentName=[name]__[local][hash:base64:5]',
+                    'css?modules&importLoaders=1&localIdentName=[local]_[hash:base64:4]',
                     'sass?sourceMap'
                 ],
                 exclude: /node_modules/

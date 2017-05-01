@@ -4,13 +4,14 @@
 // Modules & files imports
 //=============================================================================
 
-import $scriptjs from 'scriptjs';   // Script.js - for loading VoxImplant CDN
+// Load VoxImplant SDK from npm module:
+import * as VoxImplant from 'voximplant-websdk';
 
 //=============================================================================
 // VoxImplant globals
 //=============================================================================
 
-let username,               // VoxImplant connection parameters
+let username,                       // VoxImplant connection parameters
     password,
     dest_username,
     application_name,
@@ -18,97 +19,50 @@ let username,               // VoxImplant connection parameters
 
 // currentCall is exported for onCallDisconnected event handler
 // assigning in Preact component
-export let currentCall = null;  // call global instances
-let currentCallMode = null;     // Video, voice or text.
+export let currentCall = null;      // call global instances
 
 let currentConv;
 let conversations = [];
 
-let voxAPI;                     // object for VoxImplant instance
-let voxChatAPI;
-
-//=============================================================================
-// Initialization & deinitialization of VoxImplant API
-//=============================================================================
-
-export function init(settings) {
-    $scriptjs("//cdn.voximplant.com/edge/voximplant.min.js", function () {
-        // Create VoxImplant instance
-        voxAPI = VoxImplant.getInstance();
-
-        // VoxImplant connection parameters
-        account_name = settings.account_name;
-        application_name = settings.application_name;
-        username = settings.client_username;
-        password = settings.client_password;
-        dest_username = settings.op_username;
-
-        // Assign handlers
-        voxAPI.addEventListener(VoxImplant.Events.SDKReady, onSdkReady);
-        voxAPI.addEventListener(VoxImplant.Events.ConnectionEstablished, onConnectionEstablished);
-        voxAPI.addEventListener(VoxImplant.Events.ConnectionFailed, onConnectionFailed);
-        voxAPI.addEventListener(VoxImplant.Events.ConnectionClosed, onConnectionClosed);
-        voxAPI.addEventListener(VoxImplant.Events.AuthResult, onAuthResult);
-
-        // Initialize SDK
-        voxAPI.init({
-            micRequired: true,  // force microphone/camera access request
-            videoSupport: true, // enable video support
-            progressTone: true  // play progress tone
-        });
-    });
-}
-
-export function uninit() {
-    // Clear VoxImplant instance
-    voxAPI = null;
-}
-
-//=============================================================================
-// Global VoxImplant instance event handlers
-//=============================================================================
-
-// SDK ready - functions can be called now
-function onSdkReady() {}
-
-// Connection with VoxImplant established
-function onConnectionEstablished() {
-    voxAPI.login(username + "@" + application_name + "." + account_name + ".voximplant.com", password);
-}
-
-// Connection with VoxImplant failed
-function onConnectionFailed() {
-    setTimeout(function () {
-        voxAPI.connect();
-    }, 1000);
-}
-
-// Connection with VoxImplant closed
-function onConnectionClosed() {}
-
-// Result of authorization
-function onAuthResult(e) {
-    console.log("<<<<<<<<<< onAuthResult() begin");
-    console.log("AuthResult: " + e.result);
-
-    if (currentCallMode === 'video' || currentCallMode === 'voice') {
-        beginCall();
-    } else if (currentCallMode === 'text') {
-        initMessenger();
-        beginChat();
-    }
-    console.log("           onAuthResult() end >>>>>>>>>>");
-}
+export let voxAPI;                  // object for VoxImplant instance
+export let voxChatAPI;
 
 //=============================================================================
 // VoxImplant functions
 //=============================================================================
 
-function initMessenger() {
-    console.log('<<<<<<<<<< initMessenger() begin');
-    console.log('voxChatAPI:');
-    console.log(voxChatAPI);
+// Initialize VoxImplant
+export function init(settings) {
+    // Create VoxImplant instance
+    voxAPI = VoxImplant.getInstance();
 
+    // VoxImplant connection parameters
+    account_name = settings.account_name;
+    application_name = settings.application_name;
+    username = settings.client_username;
+    password = settings.client_password;
+    dest_username = settings.op_username;
+
+    // Assign handlers
+    voxAPI.addEventListener(VoxImplant.Events.SDKReady, onSdkReady);
+    voxAPI.addEventListener(VoxImplant.Events.ConnectionEstablished, onConnectionEstablished);
+    voxAPI.addEventListener(VoxImplant.Events.ConnectionFailed, onConnectionFailed);
+    voxAPI.addEventListener(VoxImplant.Events.ConnectionClosed, onConnectionClosed);
+    // voxAPI.addEventListener(VoxImplant.Events.AuthResult, onAuthResult);
+
+    // Initialize SDK
+    voxAPI.init({
+        // doesn't work, needed to be placed manually in showRemoteVideo()
+        // remoteVideoContainerId: 'video-in',
+        localVideoContainerId: 'video-out',
+        micRequired: true,  // force microphone/camera access request
+        videoSupport: true, // enable video support
+        progressTone: true  // play progress tone
+    });
+}
+// Initialize messenger
+export function initMessenger() {
+    console.log('<<<<<<<<<< initMessenger() begin');
     // Create messenger instance
     voxChatAPI = VoxImplant.getMessenger();
 
@@ -125,7 +79,7 @@ function initMessenger() {
         currentConv = conversations[0];
         console.log('currentConv:');
         console.log(currentConv);
-        currentConv.sendMessage("Hello!");
+        currentConv.sendMessage('Hello!');
 
         console.log('           onCreateConversation end >>>>>>>>>>');
     });
@@ -151,54 +105,44 @@ function initMessenger() {
     console.log(voxChatAPI);
     console.log('           initMessenger() end >>>>>>>>>>');
 }
-
-// Outbound chat
-export function createChat(mode) {
-    console.log('<<<<<<<<<< createChat() begin');
-    currentCallMode = mode;
-
-    if (!voxAPI.connected()) {    // 1st call
-        console.log('connecting');
-        voxAPI.connect();
-    } else {                      // 2nd and subsequent calls
-        if (mode === 'video' || mode === 'voice') {
-            beginCall();
-        }
-        else if (mode === 'text') {
-            if (!voxChatAPI) {
-                initMessenger();
-            }
-            beginChat();
-        }
-    }
-    console.log('           createChat() end >>>>>>>>>>');
+// Deinitialize all
+export function uninit() {
+    // Clear all instances
+    voxAPI = null;
+    voxChatAPI = null;
 }
 
-function beginCall() {
+// Begin video or voice call
+export function beginCall(callMode) {
     console.log('<<<<<<<<<< beginCall() begin');
-    console.log('currentCallMode = ' + currentCallMode);
+    console.log('callMode = ' + callMode);
 
-    let useVideo = (currentCallMode === 'video');
-    currentCall = voxAPI.call(dest_username, useVideo, "TEST CUSTOM DATA", {"X-DirectCall": "true"});
+    let useVideo = true;//(callMode === 'video');
+    currentCall = voxAPI.call(dest_username, useVideo, 'TEST CUSTOM DATA', {'X-DirectCall': 'true'});
 
-    currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
+    // currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
     // currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
     currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
-    currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, onProgressToneStart);
-    currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, onProgressToneStop);
+    currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => console.log('<<<<<<<<<< onProgressToneStart() >>>>>>>>>>'));
+    currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, () => console.log('<<<<<<<<<< onProgressToneStop() >>>>>>>>>>'));
+
+    // currentCall.addEventListener(VoxImplant.CallEvents.ICECompleted, () => console.log('<<<<<<<<<< onICECompleted() >>>>>>>>>>'));
+    currentCall.addEventListener(VoxImplant.CallEvents.ICETimeout, () => console.log('<<<<<<<<<< onICETimeout() >>>>>>>>>>'));
+    currentCall.addEventListener(VoxImplant.CallEvents.Updated, () => console.log('<<<<<<<<<< onUpdated() >>>>>>>>>>'));
+    currentCall.addEventListener(VoxImplant.CallEvents.VideoPlaybackStarted, () => console.log('<<<<<<<<<< VideoPlaybackStarted() >>>>>>>>>>'));
     // currentCall.setVideoSettings({width: 720});
 
     console.log('          beginCall() end >>>>>>>>>>');
 }
-
-function beginChat() {
+// Begin text chat
+export function beginChat() {
+    console.log('<<<<<<<<<< beginChat() begin');
     try {
-        console.log('<<<<<<<<<< beginChat() begin');
         const participants = [{
-            userId: dest_username + "@" + application_name + "." + account_name,
+            userId: dest_username + '@' + application_name + '.' + account_name,
             canManageParticipants: false, canWrite: true
         }];
-        const title = "Test text chat";
+        const title = 'Test text chat';
         const isDistinct = false;
         const enablePublicJoin = true;
         voxChatAPI.createConversation(participants, title, isDistinct, enablePublicJoin);
@@ -211,7 +155,44 @@ function beginChat() {
     }
     console.log('           beginChat() end >>>>>>>>>>');
 }
+// Hangup outbound chat
+export function stopChat(callMode) {
+    console.log('<<<<<<<<<< stopChat() begin');
+    if (callMode === 'video' || callMode === 'voice') {
+        console.log('currentCall before hanging up: ');
+        console.log(currentCall);
+        if (currentCall) {
+            currentCall.hangup();
+        }
+        console.log('currentCall after hanging up: ');
+        console.log(currentCall);
+    } else if (callMode === 'text') {
+        console.log('stopping text chat');
+        conversations = [];
+        console.log('text chat has been stopped');
+    }
+    console.log('           stopChat() end >>>>>>>>>>');
+}
 
+// Video displaying control
+export function videoControl(callMode) {
+    console.log('<<<<<<<<<< videoControl() begin');
+    console.log('callMode = ' + callMode);
+
+    switch (callMode) {
+        case 'video':
+            sendVideo(true);
+            showLocalVideo(true);
+            showRemoteVideo(true);
+            break;
+        case 'voice':
+            sendVideo(false);
+            showRemoteVideo(false);
+            // showLocalVideo(false);
+            break;
+    }
+    console.log('          videoControl() end >>>>>>>>>>');
+}
 // Show/hide local video
 function showLocalVideo(flag) {
     console.log('<<<<<<<<<< showLocalVideo() begin');
@@ -224,20 +205,20 @@ function showLocalVideo(flag) {
         console.log(videoOut);
         videoOut.style.width = '100%';    // fit in container with aspect ratio keeping
         videoOut.style.display = 'block'; // remove space under element (initially it is inline)
-
-        document.getElementById('video-out').appendChild(videoOut);
+        // document.getElementById('video-out').appendChild(videoOut);
         videoOut.play();
     }
 
     console.log('          showLocalVideo() end >>>>>>>>>>');
 }
-
 // Show/hide remote video
 function showRemoteVideo(flag) {
     console.log('<<<<<<<<<< showRemoteVideo() begin');
     console.log('flag = ' + flag);
 
     currentCall.showRemoteVideo(flag);
+    console.log('currentCall.getVideoElementId():');
+    console.log(currentCall.getVideoElementId());
     const videoIn = document.getElementById(currentCall.getVideoElementId());
     if (flag) {
         console.log(videoIn);
@@ -245,12 +226,10 @@ function showRemoteVideo(flag) {
         videoIn.style.display = 'block'; // remove space under element (initially it is inline)
         document.getElementById('video-in').appendChild(videoIn);
         videoIn.play();
-    } else {
-        videoIn.style.display = 'none';   // hide remote video
     }
+
     console.log('          showRemoteVideo() end >>>>>>>>>>');
 }
-
 // Start/stop sending video
 function sendVideo(flag) {
     voxAPI.sendVideo(flag);
@@ -269,7 +248,6 @@ export function turnSound(flag) {
 
     console.log('           turnSound() end >>>>>>>>>>');
 }
-
 // Turn the microphone on/off
 export function turnMic(flag) {
     console.log('<<<<<<<<<< turnMic() begin');
@@ -284,74 +262,36 @@ export function turnMic(flag) {
     console.log('           turnMic() end >>>>>>>>>>');
 }
 
-// Hangup outbound chat
-export function stopChat() {
-    console.log('<<<<<<<<<< stopChat() begin');
-    if (currentCallMode === 'video' || currentCallMode === 'voice') {
-        console.log('stopping call');
-        // console.log("! currentCall: ");
-        // console.log(currentCall);
-        if (currentCall) {
-            currentCall.hangup();
-        }
-        console.log('call has been stopped');
-        // console.log("! currentCall: ");
-        // console.log(currentCall);
-    } else if (currentCallMode === 'text') {
-        console.log('stopping text chat');
-        conversations = [];
-        console.log('text chat has been stopped');
-    }
-    console.log('           stopChat() end >>>>>>>>>>');
+//=============================================================================
+// Global VoxImplant instance event handlers
+//=============================================================================
+
+// SDK ready - functions can be called now
+function onSdkReady() {}
+
+// Connection with VoxImplant established
+function onConnectionEstablished() {
+    voxAPI.login(username + '@' + application_name + '.' + account_name + '.voximplant.com', password);
 }
+
+// Connection with VoxImplant failed
+function onConnectionFailed() {
+    setTimeout(function () {
+        voxAPI.connect();
+    }, 1000);
+}
+
+// Connection with VoxImplant closed
+function onConnectionClosed() {}
 
 //=============================================================================
 // Call event handlers
 //=============================================================================
 
-// Call connected
-function onCallConnected(e) {
-    console.log("<<<<<<<<<< onCallConnected() begin");
-
-    switch (currentCallMode) {
-        case 'video':
-            sendVideo(true);
-            showLocalVideo(true);
-            showRemoteVideo(true);
-            break;
-        case 'voice':
-            sendVideo(false);
-            showRemoteVideo(false);
-            // showLocalVideo(false);
-            break;
-    }
-    console.log("          onCallConnected() end >>>>>>>>>>");
-}
-
-// // Call disconnected
-// function onCallDisconnected(e) {
-//   console.log("------------------------------");
-//   console.log("CallDisconnected: "+currentCall.id()+" Call state: "+currentCall.state());
-//   console.log("VI connected: " + voxAPI.connected());
-//   currentCall = null;
-// }
-
 // Call failed
 function onCallFailed(e) {
-    // console.log("------------------------------");
-    // console.log("CallFailed: "+currentCall.id()+" code: "+e.code+" reason: "+e.reason);
-    // console.log("VI connected: " + voxAPI.connected());
+    console.log('<<<<<<<<<< onCallFailed() begin');
+    console.log('Call id: '+currentCall.id()+', code: '+e.code+', reason: '+e.reason);
     currentCall = null;
-}
-
-function onProgressToneStart() {
-    // console.log('===============================================================');
-    // console.log('onProgressToneStart()');
-    // console.log(currentCall.getVideoElementId());
-}
-
-function onProgressToneStop() {
-    // console.log('===============================================================');
-    // console.log('onProgressToneStop()');
-    // console.log(currentCall.getVideoElementId());
+    console.log('           onCallFailed() end >>>>>>>>>>');
 }
