@@ -134,6 +134,9 @@ class WebchatClient extends Component {
     onCallConnected() {
         console.log('<========= onCallConnected() begin');
 
+        console.log('voxAPI.stopProgressTone()');
+        vox.voxAPI.stopProgressTone();
+
         if (this.state.chatMode === 'connectingVoice') {
             this.setState({chatMode: 'voice'});
         } else if (this.state.chatMode === 'connectingVideo') {

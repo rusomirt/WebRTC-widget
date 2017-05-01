@@ -115,6 +115,10 @@ export function uninit() {
 // Begin video or voice call
 export function beginCall(callMode) {
     console.log('<<<<<<<<<< beginCall() begin');
+
+    console.log('voxAPI.playProgressTone()');
+    voxAPI.playProgressTone();
+
     console.log('callMode = ' + callMode);
 
     let useVideo = true;//(callMode === 'video');
