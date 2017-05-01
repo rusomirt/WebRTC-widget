@@ -2,7 +2,8 @@ import {h, render, Component} from 'preact';
 import classNames from 'classnames/bind';
 import './font-awesome/css/font-awesome.css';
 import 'font-awesome-webpack';
-import * as VoxImplant from 'voximplant-websdk';
+// import * as VoxImplant from 'voximplant-websdk';
+import * as VoxImplant from './lib/voximplant.min.js';
 import * as vox from 'api/voxClient';
 import styles from './webchatClient.scss';
 
@@ -133,9 +134,6 @@ class WebchatClient extends Component {
     }
     onCallConnected() {
         console.log('<========= onCallConnected() begin');
-
-        console.log('voxAPI.stopProgressTone()');
-        vox.voxAPI.stopProgressTone();
 
         if (this.state.chatMode === 'connectingVoice') {
             this.setState({chatMode: 'voice'});

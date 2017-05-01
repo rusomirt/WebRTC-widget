@@ -5,7 +5,8 @@
 //=============================================================================
 
 // Load VoxImplant SDK:
-import * as VoxImplant from 'voximplant-websdk';
+// import * as VoxImplant from 'voximplant-websdk';
+import * as VoxImplant from '../lib/voximplant.min.js';
 
 //=============================================================================
 // VoxImplant globals

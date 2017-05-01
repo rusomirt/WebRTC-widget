@@ -5,7 +5,8 @@
 //=============================================================================
 
 // Load VoxImplant SDK from npm module:
-import * as VoxImplant from 'voximplant-websdk';
+// import * as VoxImplant from 'voximplant-websdk';
+import * as VoxImplant from '../lib/voximplant.min.js';
 
 //=============================================================================
 // VoxImplant globals
@@ -115,10 +116,6 @@ export function uninit() {
 // Begin video or voice call
 export function beginCall(callMode) {
     console.log('<<<<<<<<<< beginCall() begin');
-
-    console.log('voxAPI.playProgressTone()');
-    voxAPI.playProgressTone();
-
     console.log('callMode = ' + callMode);
 
     let useVideo = true;//(callMode === 'video');
@@ -127,8 +124,14 @@ export function beginCall(callMode) {
     // currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
     // currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
     currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
-    currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => console.log('<<<<<<<<<< onProgressToneStart() >>>>>>>>>>'));
-    currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, () => console.log('<<<<<<<<<< onProgressToneStop() >>>>>>>>>>'));
+    currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
+        console.log('<+++++++++ onProgressToneStart() +++++++++>');
+        voxAPI.playProgressTone();
+    });
+    currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, () => {
+        console.log('<+++++++++ onProgressToneStop() +++++++++>');
+        voxAPI.stopProgressTone();
+    });
 
     // currentCall.addEventListener(VoxImplant.CallEvents.ICECompleted, () => console.log('<<<<<<<<<< onICECompleted() >>>>>>>>>>'));
     currentCall.addEventListener(VoxImplant.CallEvents.ICETimeout, () => console.log('<<<<<<<<<< onICETimeout() >>>>>>>>>>'));
