@@ -434,8 +434,10 @@ const Chat = (props) => {
             <div className={cn('chat__info', 'chat__info--bordered')}>
                 <div className={cn('chat__status', 'chat__status--high')}>
                     <div className={cn('chat__status-txt-wrapper')}>
-                        <span className={cn('fa fa-phone', 'icon', 'icon--color', 'icon--xs', 'icon--lowered')}></span>
-                        <span className={cn('chat__status-txt')}>Connecting to voice call</span>
+                        <span className={cn('chat__status-hdr')}>
+                            <span className={cn('fa fa-phone', 'icon', 'icon--color', 'icon--xs', 'icon--shifted')}></span>
+                            Connecting to voice call
+                        </span>
                     </div>
                 </div>
                 <div className={cn('chat__circles')}>
@@ -457,8 +459,10 @@ const Chat = (props) => {
             <div className={cn('chat__info', 'chat__info--bordered')}>
                 <div className={cn('chat__status', 'chat__status--high')}>
                     <div className={cn('chat__status-txt-wrapper')}>
-                        <span className={cn('fa fa-video-camera', 'icon', 'icon--color', 'icon--xs', 'icon--lowered')}></span>
-                        <span className={cn('chat__status-txt')}>Connecting to video call</span>
+                        <span className={cn('chat__status-hdr')}>
+                            <span className={cn('fa fa-video-camera', 'icon', 'icon--color', 'icon--xs', 'icon--shifted')}></span>
+                            Connecting to video call
+                        </span>
                     </div>
                 </div>
                 <div className={cn('chat__circles')}>
@@ -480,8 +484,10 @@ const Chat = (props) => {
             <div className={cn('chat__info', 'chat__info--bordered')}>
                 <div className={cn('chat__status', 'chat__status--high')}>
                     <div className={cn('chat__status-txt-wrapper')}>
-                        <span className={cn('fa fa-phone', 'icon', 'icon--color', 'icon--xs', 'icon--lowered')}></span>
-                        <span className={cn('chat__status-txt')}>Voice call connected</span>
+                        <span className={cn('chat__status-hdr')}>
+                            <span className={cn('fa fa-phone', 'icon', 'icon--color', 'icon--xs', 'icon--shifted')}></span>
+                            Voice call connected
+                        </span>
                     </div>
                     <div className={cn('chat__timer-wrapper')}>
                         <Timer/>
@@ -509,8 +515,10 @@ const Chat = (props) => {
                     <img className={cn('chat__logo')} src={lukesLogo}/>
                     <div className={cn('chat__status')}>
                         <div className={cn('chat__status-txt-wrapper')}>
-                            <span className={cn('fa fa-video-camera', 'icon', 'icon--color', 'icon--xs', 'icon--lowered')}></span>
-                            <span className={cn('chat__status-txt')}>Video call connected</span>
+                            <span className={cn('chat__status-hdr')}>
+                                <span className={cn('fa fa-video-camera', 'icon', 'icon--color', 'icon--xs', 'icon--shifted')}></span>
+                                Video call connected
+                            </span>
                         </div>
                         <div className={cn('chat__timer-wrapper')}>
                             <Timer />
@@ -529,8 +537,10 @@ const Chat = (props) => {
                     <img className={cn('chat__logo')} src={lukesLogo}/>
                     <div className={cn('chat__status')}>
                         <div className={cn('chat__status-txt-wrapper')}>
-                            <span className={cn('fa fa-comments', 'icon', 'icon--color', 'icon--xs', 'icon--lowered')}></span>
-                            <span className={cn('chat__status-txt')}>Chat connected</span>
+                            <span className={cn('chat__status-hdr')}>
+                                <span className={cn('fa fa-comments', 'icon', 'icon--color', 'icon--xs', 'icon--shifted')}></span>
+                                Chat connected
+                            </span>
                         </div>
                     </div>
                 </div>;

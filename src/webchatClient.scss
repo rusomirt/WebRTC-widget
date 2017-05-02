@@ -694,7 +694,7 @@ $back-btn-border-radius: 100px;
     font-size: 20px;
   }
   &.icon--xs {
-    font-size: 18px;
+    font-size: 16px;
   }
   &.icon--crossed {
     position: relative;
@@ -710,9 +710,6 @@ $back-btn-border-radius: 100px;
       border-top: 2px solid white;
       transform: rotate(-45deg);
     }
-  }
-  &.icon--lowered {
-    margin-bottom: -3px;
   }
   &.icon--shifted {
     margin-right: 5px;
