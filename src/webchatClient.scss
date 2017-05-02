@@ -312,9 +312,12 @@ $chat-video-out-right: 10px;
         align-items: center;
       }
       .chat__status-hdr {
-        margin-bottom: $chat-status-hdr-mb;
         font-family: $chat-status-hdr-font;
         font-size: $chat-status-hdr-font-size;
+
+        &.chat__status-hdr--margined {
+          margin-bottom: $chat-status-hdr-mb;
+        }
       }
       .chat__status-txt {
         margin-bottom: $chat-status-txt-mb;

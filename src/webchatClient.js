@@ -573,7 +573,7 @@ const Chat = (props) => {
             chatInfo =
                 <div className={cn('chat__info', 'chat__info--short')}>
                     <div className={cn('chat__status', 'chat__status--fail')}>
-                        <div className={cn('chat__status-hdr')}>
+                        <div className={cn('chat__status-hdr', 'chat__status-hdr--margined')}>
                             <span className={cn('fa fa-times', 'icon', 'icon--white', 'icon--xs', 'icon--shifted')}></span>
                             Luke's is not available
                         </div>
