@@ -555,8 +555,12 @@ const Chat = (props) => {
                             <input type='radio' id='starhalf' name='rating' value='half' />
                             <label className={cn('rating__half-star')} htmlFor='starhalf' title='Sucks big time - 0.5 stars'></label>
                         </fieldset>
-
                         <input className={cn('feedback__review')} placeholder='Write a review'/>
+                    </div>
+                    <div className={cn('subscribe')}>
+                        <span className={cn('fa fa-envelope', 'icon', 'icon--color', 'icon--xs')}></span><br/>
+                        Great!<br/>
+                        Check your mail
                     </div>
                 </div>;
     }

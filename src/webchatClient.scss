@@ -426,6 +426,19 @@ $rating-star-spacing: 8px;
   }
 }
 
+$subscribe-padding: 60px 0 75px;
+$subscribe-font: 'Roboto Regular', sans-serif;
+$subscribe-font-size: 16px;
+$subscribe-font-color: $webchat-color-main;
+
+.subscribe {
+  padding: $subscribe-padding;
+  font-family: $subscribe-font;
+  font-size: $subscribe-font-size;
+  color: $subscribe-font-color;
+  text-align: center;
+}
+
 $chat-btns-group-mx: 3%;
 $temp1: 100% - $chat-btns-group-mx*4;
 
