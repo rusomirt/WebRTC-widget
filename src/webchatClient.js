@@ -187,7 +187,7 @@ class WebchatClient extends Component {
         console.log('Call id: '+vox.currentCall.id()+', code: '+e.code+', reason: '+e.reason);
         vox.currentCall = null;
         this.setState({
-                chatMode: 'idle',
+                chatMode: 'notAvailable',
                 isModeChanged: true,
             });
         console.log('           onCallFailed() end =========>');
@@ -285,8 +285,7 @@ class SelectMode extends Component {
                     className={ cn('webchat__chat-btn', 'webchat__chat-btn--video',
                         {'webchat__chat-btn--showed': this.state.isChatBtnsOpen})}
                     onClick={() => props.startChat('video')}>
-                <span
-                    className={cn('fa fa-video-camera', 'icon', 'icon--white', 'icon--sm')}></span>
+                <span className={cn('fa fa-video-camera', 'icon', 'icon--white', 'icon--sm')}></span>
                 </button>
                 <button
                     className={ cn('webchat__chat-btn', 'webchat__chat-btn--voice',
