@@ -18,8 +18,7 @@ class WebchatClient extends Component {
             // Allowed chatMode values:
             // 'idle', 'connectingVideo', 'video',
             // 'connectingVoice', 'voice', 'text', 'endCall'.
-            // chatMode: 'idle',
-            chatMode: 'endCall',
+            chatMode: 'idle',
             isModeChanged: false
         };
 
@@ -414,7 +413,7 @@ const Chat = (props) => {
     let messengerContainer = null;
     switch (props.chatMode) {
         case 'connectingVoice': chatInfo =
-            <div className={cn('chat__info')}>
+            <div className={cn('chat__info', 'chat__info--bordered')}>
                 <div className={cn('chat__status', 'chat__status--high')}>
                     <div className={cn('chat__status-txt-wrapper')}>
                         <span className={cn('fa fa-phone', 'icon', 'icon--color', 'icon--xs', 'icon--lowered')}></span>
@@ -437,7 +436,7 @@ const Chat = (props) => {
             </div>;
             break;
         case 'connectingVideo': chatInfo =
-            <div className={cn('chat__info')}>
+            <div className={cn('chat__info', 'chat__info--bordered')}>
                 <div className={cn('chat__status', 'chat__status--high')}>
                     <div className={cn('chat__status-txt-wrapper')}>
                         <span className={cn('fa fa-video-camera', 'icon', 'icon--color', 'icon--xs', 'icon--lowered')}></span>
@@ -460,7 +459,7 @@ const Chat = (props) => {
             </div>;
             break;
         case 'voice': chatInfo =
-            <div className={cn('chat__info')}>
+            <div className={cn('chat__info', 'chat__info--bordered')}>
                 <div className={cn('chat__status', 'chat__status--high')}>
                     <div className={cn('chat__status-txt-wrapper')}>
                         <span className={cn('fa fa-phone', 'icon', 'icon--color', 'icon--xs', 'icon--lowered')}></span>
@@ -488,7 +487,7 @@ const Chat = (props) => {
             break;
         case 'video':
             chatInfo =
-                <div className={cn('chat__info', 'chat__info--short')}>
+                <div className={cn('chat__info', 'chat__info--bordered', 'chat__info--short')}>
                     <img className={cn('chat__logo')} src={logo}/>
                     <div className={cn('chat__status')}>
                         <div className={cn('chat__status-txt-wrapper')}>
@@ -508,7 +507,7 @@ const Chat = (props) => {
             break;
         case 'text':
             chatInfo =
-                <div className={cn('chat__info', 'chat__info--short')}>
+                <div className={cn('chat__info', 'chat__info--bordered', 'chat__info--short')}>
                     <img className={cn('chat__logo')} src={logo}/>
                     <div className={cn('chat__status')}>
                         <div className={cn('chat__status-txt-wrapper')}>
@@ -523,7 +522,7 @@ const Chat = (props) => {
             break;
         case 'endCall':
             chatInfo =
-                <div className={cn('chat__info')}>
+                <div className={cn('chat__info', 'chat__info--short')}>
                     <div className={cn('chat__status', 'chat__status--success')}>
                         <span className={cn('fa fa-check', 'icon', 'icon--white', 'icon--xs', 'icon--shifted')}></span>
                         Thanks for calling Luke's

@@ -138,14 +138,14 @@ $modal-inner-w: 400px;
 $copyright-padding: 4px;
 
 $copyright-font-family: 'Roboto Regular', sans-serif;
-$copyright-font-size: 15px;
+$copyright-font-size: 12px;
 $copyright-font-color: white;
 
-$copyright-inner-w: 3px;
+$copyright-inner-w: 2px;
 $copyright-inner-color: #b33b29;
 $copyright-circle1-w: 2px;
 $copyright-circle1-color: white;
-$copyright-circle2-w: 4px;
+$copyright-circle2-w: 3px;
 $copyright-circle2-color: #b33b29;
 $copyright-mr: 4px;
 
@@ -196,7 +196,6 @@ $chat-circle-circle2-color: $webchat-color-main;
 
 .chat {
   position: relative;   /* for abs-positioned .chat__panel*/
-  border-top: 10px solid $webchat-color-bluedark;
   height: 100%;
 
   .chat__info {
@@ -208,6 +207,14 @@ $chat-circle-circle2-color: $webchat-color-main;
     justify-content: flex-start;
 
     background: white;
+
+    &.chat__info--bordered {
+      border-top: 10px solid $webchat-color-bluedark;
+    }
+
+    &.chat__info--short {
+      margin-bottom: 0;
+    }
 
     .chat__status {
       padding: 6px 0 12px;
@@ -259,9 +266,6 @@ $chat-circle-circle2-color: $webchat-color-main;
       text-align: center;
     }
 
-    &.chat__info--short {
-      margin-bottom: 0;
-    }
   }
 
   .chat__circles {
@@ -385,6 +389,7 @@ $rating-star-spacing: 8px;
 
 .rating {
   display: inline-block;
+  padding: 10px 0 14px;
   border: none;
 
   input {
@@ -489,17 +494,20 @@ $temp1: 100% - $chat-btns-group-mx*4;
   }
 }
 
+$back-btn-m: 15px auto 5px;
 $back-btn-font-family: 'Roboto Medium', sans-serif;
 $back-btn-font-size: 14px;
 $back-btn-font-color: white;
 $back-btn-bg-color: $webchat-color-bluedark;
-$back-btn-h: 31px;
+$back-btn-h: 32px;
 $back-btn-w: 70%;
 $back-btn-border-radius: $back-btn-h * 0.5;
 
 .back-btn {
   @extend .btn;
 
+  display: block;
+  margin: $back-btn-m;
   width: $back-btn-w;
   height: $back-btn-h;
   background: $back-btn-bg-color;
