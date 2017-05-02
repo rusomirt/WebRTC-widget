@@ -4,6 +4,7 @@ import './font-awesome/css/font-awesome.css';
 import 'font-awesome-webpack';
 // import * as VoxImplant from 'voximplant-websdk';
 import * as VoxImplant from './lib/voximplant.min.js';
+
 import * as vox from 'api/voxClient';
 import styles from './webchatClient.scss';
 
@@ -12,6 +13,8 @@ import mewLogo from './img/mew-logo.png';
 import oxidoLogo from './img/oxido-logo.png';
 import flexMusselsLogo from './img/flex-mussels-logo.png';
 
+// This allows using cn('class1', 'class2')
+// instead of cn(styles['class1'], styles['class2'])
 let cn = classNames.bind(styles);
 
 class WebchatClient extends Component {
@@ -21,8 +24,8 @@ class WebchatClient extends Component {
             // Allowed chatMode values:
             // 'idle', 'connectingVideo', 'video', 'connectingVoice',
             // 'voice', 'text', 'endCall', 'notAvailable'.
-            chatMode: 'notAvailable',
-            isModeChanged: false
+            chatMode: 'idle',
+            isModeChanged: false    // checked in componentDidUpdated()
         };
 
         // These bindings are necessary to make `this` work in the callbacks
@@ -39,6 +42,7 @@ class WebchatClient extends Component {
 
         this.switchMode = this.switchMode.bind(this);
     }
+    // Get values from URL hash
     getHashParams() {
         let hashParams = {};
         let e,
@@ -55,6 +59,7 @@ class WebchatClient extends Component {
         return hashParams;
     }
 
+    // Chat control functions
     startChat(demandedMode) {
         console.log('<========= startChat() begin');
 
@@ -132,6 +137,7 @@ class WebchatClient extends Component {
         console.log('           stopChat() end =========>');
     }
 
+    // Events from VoxImplant
     onAuthResult() {
         console.log('<========= onAuthResult() begin');
         console.log('this.state.chatMode = ' + this.state.chatMode);
@@ -181,6 +187,7 @@ class WebchatClient extends Component {
         console.log('           onCallFailed() end =========>');
     }
 
+    // Component events
     componentDidMount() {
         const hashParams = this.getHashParams();
         const voxParams = {
@@ -217,6 +224,7 @@ class WebchatClient extends Component {
         vox.uninit();
     }
 
+    // Render to HTML
     render(props, state) {
         if (this.state.chatMode === 'idle') {
             return (
