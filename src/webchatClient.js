@@ -33,14 +33,14 @@ class WebchatClient extends Component {
         this.getHashParams = this.getHashParams.bind(this);
 
         this.startChat = this.startChat.bind(this);
+        this.switchMode = this.switchMode.bind(this);
         this.stopChat = this.stopChat.bind(this);
+        this.backToInitial = this.backToInitial.bind(this);
 
         this.onAuthResult = this.onAuthResult.bind(this);
         this.onCallConnected = this.onCallConnected.bind(this);
         this.onCallDisconnected = this.onCallDisconnected.bind(this);
         this.onCallFailed = this.onCallFailed.bind(this);
-
-        this.switchMode = this.switchMode.bind(this);
     }
     // Get values from URL hash
     getHashParams() {
@@ -135,6 +135,12 @@ class WebchatClient extends Component {
             isModeChanged: true,
         });
         console.log('           stopChat() end =========>');
+    }
+    backToInitial() {
+        this.setState({
+            chatMode: 'idle',
+            isModeChanged: true,
+        });
     }
 
     // Events from VoxImplant
@@ -241,6 +247,7 @@ class WebchatClient extends Component {
                             chatMode={this.state.chatMode}
                             stopChat={this.stopChat}
                             switchMode={this.switchMode}
+                            backToInitial={this.backToInitial}
                         />
                         <div className={cn('copyright')}>
                             <div className={cn('copyright__sign')}></div>
@@ -639,7 +646,11 @@ const Chat = (props) => {
     let toYelpBtn = null;
     if (props.chatMode === 'endCall' || props.chatMode === 'notAvailable') {
         chatPanel = null;
-        toYelpBtn = <button className={cn('back-btn')}>Back to Yelp</button>;
+        toYelpBtn =
+            <button
+                className={cn('back-btn')}
+                onClick={props.backToInitial}
+            >Back to Yelp</button>;
     }
 
     return (
