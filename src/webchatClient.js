@@ -16,8 +16,10 @@ class WebchatClient extends Component {
         super();
         this.state = {
             // Allowed chatMode values:
-            // 'idle', 'connectingVideo', 'video', 'connectingVoice', 'voice', 'text'.
-            chatMode: 'idle',
+            // 'idle', 'connectingVideo', 'video',
+            // 'connectingVoice', 'voice', 'text', 'endCall'.
+            // chatMode: 'idle',
+            chatMode: 'endCall',
             isModeChanged: false
         };
 
@@ -122,7 +124,7 @@ class WebchatClient extends Component {
         }
         vox.stopChat(mode);
         this.setState({
-            chatMode: 'idle',
+            chatMode: 'endCall',
             isModeChanged: true,
         });
         console.log('           stopChat() end =========>');
@@ -161,7 +163,7 @@ class WebchatClient extends Component {
         console.log('<========= onCallDisconnected() begin');
         vox.currentCall = null; // clear call instance
         this.setState({
-            chatMode: 'idle',
+            chatMode: 'endCall',
             isModeChanged: true,
         });
         console.log('           onCallDisconnected() end =========>');
@@ -519,20 +521,68 @@ const Chat = (props) => {
                 <div className={cn('chat__msg-container')}>
                 </div>;
             break;
+        case 'endCall':
+            chatInfo =
+                <div className={cn('chat__info')}>
+                    <div className={cn('chat__status', 'chat__status--success')}>
+                        <span className={cn('fa fa-check', 'icon', 'icon--white', 'icon--xs', 'icon--lowered')}></span>
+                        Thanks for calling Luke's
+                    </div>
+                    <div className={cn('feedback')}>
+                        <div className={cn('feedback__hdr')}>
+                            <span className={'fa fa-stack'}>
+                                <span className={cn('fa fa-circle fa-stack-2x', 'icon', 'icon--red', 'icon--xs', 'icon--lowered')}></span>
+                                <span className={cn('fa fa-yelp fa-stack-1x', 'icon', 'icon--white', 'icon--xs', 'icon--lowered')}></span>
+                            </span>
+                            Rate Luke's Lobster
+                        </div>
+                        <fieldset className={cn('rating')}>
+                            <input type="radio" id="star5" name="rating" value="5" />
+                            <label className={cn('rating__full-star')} htmlFor="star5" title="Awesome - 5 stars"></label>
+                            <input type="radio" id="star4half" name="rating" value="4 and a half" />
+                            <label className={cn('rating__half-star')} htmlFor="star4half" title="Pretty good - 4.5 stars"></label>
+                            <input type="radio" id="star4" name="rating" value="4" />
+                            <label className={cn('rating__full-star')} htmlFor="star4" title="Pretty good - 4 stars"></label>
+                            <input type="radio" id="star3half" name="rating" value="3 and a half" />
+                            <label className={cn('rating__half-star')} htmlFor="star3half" title="Meh - 3.5 stars"></label>
+                            <input type="radio" id="star3" name="rating" value="3" />
+                            <label className={cn('rating__full-star')} htmlFor="star3" title="Meh - 3 stars"></label>
+                            <input type="radio" id="star2half" name="rating" value="2 and a half" />
+                            <label className={cn('rating__half-star')} htmlFor="star2half" title="Kinda bad - 2.5 stars"></label>
+                            <input type="radio" id="star2" name="rating" value="2" />
+                            <label className={cn('rating__full-star')} htmlFor="star2" title="Kinda bad - 2 stars"></label>
+                            <input type="radio" id="star1half" name="rating" value="1 and a half" />
+                            <label className={cn('rating__half-star')} htmlFor="star1half" title="Meh - 1.5 stars"></label>
+                            <input type="radio" id="star1" name="rating" value="1" />
+                            <label className={cn('rating__full-star')} htmlFor="star1" title="Sucks big time - 1 star"></label>
+                            <input type="radio" id="starhalf" name="rating" value="half" />
+                            <label className={cn('rating__half-star')} htmlFor="starhalf" title="Sucks big time - 0.5 stars"></label>
+                        </fieldset>
+
+                        <input className={cn('feedback__review')}/>
+                    </div>
+                </div>;
+    }
+
+    let chatPanel =
+        <ChatPanel
+            chatMode={props.chatMode}
+            stopChat={props.stopChat}
+            switchMode={props.switchMode}
+        />;
+    let toYelpBtn = null;
+    if (props.chatMode === 'endCall' || props.chatMode === 'notAvailable') {
+        chatPanel = null;
+        toYelpBtn = <button className={cn('back-btn')}>Back to Yelp</button>;
     }
 
     return (
         <div className={cn('chat')}>
-
             {chatInfo}
             {videoContainer}
             {messengerContainer}
-            <ChatPanel
-                chatMode={props.chatMode}
-                stopChat={props.stopChat}
-                switchMode={props.switchMode}
-            />
-
+            {chatPanel}
+            {toYelpBtn}
         </div>
     );
 };

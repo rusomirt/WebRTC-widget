@@ -20,6 +20,9 @@
 // -px - horizontal padding (-left & -right)
 // -py - vertical padding (-top & -bottom)
 
+// For using font-awesome icons as font symbols
+@import url(font-awesome/css/font-awesome.css);
+
 @font-face {
   font-family: 'Lucida Grande';
   src: url(fonts/LucidaGrandeRegular.ttf);
@@ -38,11 +41,15 @@ video {
 }
 
 .btn {
-  border-radius: 50%;
   padding: 0;
   border: none;
   outline: none;
   cursor: pointer;
+}
+
+.btn--circle {
+  @extend .btn;
+  border-radius: 50%;
 }
 
 $webchat-r: 20px;
@@ -67,7 +74,7 @@ $webchat-color-bluelight: #75baff;
   height: 0;
 
   .webchat__launch-btn {
-    @extend .btn;
+    @extend .btn--circle;
     position: absolute;
     right: 0;
     bottom: 0;
@@ -77,7 +84,7 @@ $webchat-color-bluelight: #75baff;
     background-color: $webchat-color-main;
   }
   .webchat__chat-btn {
-    @extend .btn;
+    @extend .btn--circle;
     position: absolute;
     right: 0;
     bottom: 0;
@@ -203,12 +210,17 @@ $chat-circle-circle2-color: $webchat-color-main;
     background: white;
 
     .chat__status {
-      padding-top: 6px;
-      padding-bottom: 12px;
+      padding: 6px 0 12px;
 
       &.chat__status--high {
         padding-top: 40px;
         padding-bottom: 22px;
+      }
+
+      &.chat__status--success {
+        background-color: $webchat-color-main;
+        color: white;
+        padding: 57px 0;
       }
 
       .chat__status-txt-wrapper {
@@ -321,8 +333,76 @@ $chat-circle-circle2-color: $webchat-color-main;
   }
 }
 
+.feedback {
+  width: 300px;
+  padding: 50px 0 42px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  border-bottom: solid 1px #e6e6e6;
+  text-align: center;
+
+  .feedback__hdr {
+    font-family: 'Roboto Regular', sans-serif;
+    font-size: 16px;
+  }
+  .feedback__rating {
+  }
+  .feedback__review {}
+}
+
+$rating-color: #ffba00;
+$rating-star-size: 20px;
+$rating-star-spacing: 8px;
+
+.rating {
+  display: inline-block;
+  border: none;
+
+  input {
+    display: none;  // hide actual radio inputs
+  }
+  label {
+    color: $rating-color;
+    float: right;
+
+    &:before {
+      display: block;
+      font-family: FontAwesome;
+      font-size: $rating-star-size;
+    }
+    &:not(:last-of-type):before {
+      margin-right: $rating-star-spacing;
+    }
+  }
+
+  .rating__half-star:before { // left half-star
+    content: "\f089";         // fa-star-half
+    position: absolute;
+    opacity: 0;
+  }
+
+  input:checked + .rating__half-star:before,  // left half-star is visible when checked
+  .rating__half-star:hover:before {           // left half-star is visible when hovered
+    opacity: 1;
+  }
+
+  .rating__full-star:before { // empty star
+    content: "\f006";         // fa-star-o
+  }
+
+  .rating__full-star:hover:before,             // fill empty star when it's hovered
+  input:checked ~ .rating__full-star:before,   // fill checked empty star and all empty stars left to it
+  label:hover ~ .rating__full-star:before {    // Fill all stars preceding to hovered one
+    content: "\f005";         // fa-star
+  }
+}
+
 $chat-btns-group-mx: 3%;
 $temp1: 100% - $chat-btns-group-mx*4;
+
 .chat__panel {
   position: absolute;
   bottom: $chat-panel-b;
@@ -352,7 +432,7 @@ $temp1: 100% - $chat-btns-group-mx*4;
   }
 
   .chat__btn--small {
-    @extend .btn;
+    @extend .btn--circle;
     width: $chat-panel-h;
     height: $chat-panel-h;
     background-color: transparent;
@@ -363,11 +443,32 @@ $temp1: 100% - $chat-btns-group-mx*4;
     left: 50%;
     transform: translateX(-50%);
 
-    @extend .btn;
+    @extend .btn--circle;
     width: $chat-stop-btn-size;
     height: $chat-stop-btn-size;
     background-color: $webchat-color-stop;
   }
+}
+
+$back-btn-font-family: 'Roboto Medium', sans-serif;
+$back-btn-font-size: 14px;
+$back-btn-font-color: white;
+$back-btn-bg-color: $webchat-color-bluedark;
+$back-btn-h: 31px;
+$back-btn-w: 70%;
+$back-btn-border-radius: $back-btn-h * 0.5;
+
+.back-btn {
+  @extend .btn;
+
+  width: $back-btn-w;
+  height: $back-btn-h;
+  background: $back-btn-bg-color;
+  border-radius: $back-btn-border-radius;
+
+  font-family: $back-btn-font-family;
+  font-size: $back-btn-font-size;
+  color: $back-btn-font-color;
 }
 
 .icon {
@@ -375,6 +476,9 @@ $temp1: 100% - $chat-btns-group-mx*4;
 
   &.icon--white {
     color: white;
+  }
+  &.icon--red {
+    color: $webchat-color-stop;
   }
   &.icon--color {
     color: $webchat-color-main;
