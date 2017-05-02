@@ -333,24 +333,46 @@ $chat-circle-circle2-color: $webchat-color-main;
   }
 }
 
+$feedback-w: 300px;
+$feedback-p: 50px 0 42px;
+$feedback-border-color: #e6e6e6;
+
+$feedback-hdr-font: 'Roboto Regular', sans-serif;
+$feedback-hdr-font-size: 16px;
+
+$feedback-review-w: 60%;
+$feedback-review-border-radius: 100px;
+$feedback-review-border-color: #979797;
+$feedback-review-font: 'Roboto Regular', sans-serif;
+$feedback-review-font-size: 16px;
+$feedback-review-p: 7px 0 10px;
+
 .feedback {
-  width: 300px;
-  padding: 50px 0 42px;
+  width: $feedback-w;
+  padding: $feedback-p;
 
   display: flex;
   flex-direction: column;
   align-items: center;
 
-  border-bottom: solid 1px #e6e6e6;
+  border-bottom: solid 1px $feedback-border-color;
   text-align: center;
 
   .feedback__hdr {
-    font-family: 'Roboto Regular', sans-serif;
-    font-size: 16px;
+    font-family: $feedback-hdr-font;
+    font-size: $feedback-hdr-font-size;
   }
-  .feedback__rating {
+
+  .feedback__review {
+    width: $feedback-review-w;
+    padding: $feedback-review-p;
+    outline: none;
+    border: solid 1px $feedback-review-border-color;
+    border-radius: $feedback-review-border-radius;
+    text-align: center;
+    font-family: $feedback-review-font;
+    font-size: $feedback-review-font-size;
   }
-  .feedback__review {}
 }
 
 $rating-color: #ffba00;
