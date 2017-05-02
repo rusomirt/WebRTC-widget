@@ -7,7 +7,10 @@ import * as VoxImplant from './lib/voximplant.min.js';
 import * as vox from 'api/voxClient';
 import styles from './webchatClient.scss';
 
-import logo from './img/lukes-logo.png';
+import lukesLogo from './img/lukes-logo.png';
+import mewLogo from './img/mew-logo.png';
+import oxidoLogo from './img/oxido-logo.png';
+import flexMusselsLogo from './img/flex-mussels-logo.png';
 
 let cn = classNames.bind(styles);
 
@@ -427,7 +430,7 @@ const Chat = (props) => {
                     <div className={cn('chat__circle')}></div>
                     <div className={cn('chat__circle')}></div>
                 </div>
-                <img className={cn('chat__logo')} src={logo}/>
+                <img className={cn('chat__logo')} src={lukesLogo}/>
                 <div className={cn('chat__tips')}>
                     Don't forget!<br/>
                     15% off for new customers<br/>
@@ -450,7 +453,7 @@ const Chat = (props) => {
                     <div className={cn('chat__circle')}></div>
                     <div className={cn('chat__circle')}></div>
                 </div>
-                <img className={cn('chat__logo')} src={logo}/>
+                <img className={cn('chat__logo')} src={lukesLogo}/>
                 <div className={cn('chat__tips')}>
                     Don't forget!<br/>
                     15% off for new customers<br/>
@@ -469,7 +472,7 @@ const Chat = (props) => {
                         <Timer/>
                     </div>
                 </div>
-                <img className={cn('chat__logo')} src={logo}/>
+                <img className={cn('chat__logo')} src={lukesLogo}/>
                 <div className={cn('chat__tips')}>
                     Don't forget!<br/>
                     15% off for new customers<br/>
@@ -488,7 +491,7 @@ const Chat = (props) => {
         case 'video':
             chatInfo =
                 <div className={cn('chat__info', 'chat__info--bordered', 'chat__info--short')}>
-                    <img className={cn('chat__logo')} src={logo}/>
+                    <img className={cn('chat__logo')} src={lukesLogo}/>
                     <div className={cn('chat__status')}>
                         <div className={cn('chat__status-txt-wrapper')}>
                             <span className={cn('fa fa-video-camera', 'icon', 'icon--color', 'icon--xs', 'icon--lowered')}></span>
@@ -508,7 +511,7 @@ const Chat = (props) => {
         case 'text':
             chatInfo =
                 <div className={cn('chat__info', 'chat__info--bordered', 'chat__info--short')}>
-                    <img className={cn('chat__logo')} src={logo}/>
+                    <img className={cn('chat__logo')} src={lukesLogo}/>
                     <div className={cn('chat__status')}>
                         <div className={cn('chat__status-txt-wrapper')}>
                             <span className={cn('fa fa-comments', 'icon', 'icon--color', 'icon--xs', 'icon--lowered')}></span>
@@ -532,28 +535,7 @@ const Chat = (props) => {
                             <span className={cn('fa fa-yelp', 'icon', 'icon--white', 'icon--xs', 'icon--circled', 'icon--shifted')}></span>
                             Rate Luke's Lobster
                         </div>
-                        <fieldset className={cn('rating')}>
-                            <input type='radio' id='star5' name='rating' value='5' />
-                            <label className={cn('rating__full-star')} htmlFor='star5' title='Awesome - 5 stars'></label>
-                            <input type='radio' id='star4half' name='rating' value='4 and a half' />
-                            <label className={cn('rating__half-star')} htmlFor='star4half' title='Pretty good - 4.5 stars'></label>
-                            <input type='radio' id='star4' name='rating' value='4' />
-                            <label className={cn('rating__full-star')} htmlFor='star4' title='Pretty good - 4 stars'></label>
-                            <input type='radio' id='star3half' name='rating' value='3 and a half' />
-                            <label className={cn('rating__half-star')} htmlFor='star3half' title='Meh - 3.5 stars'></label>
-                            <input type='radio' id='star3' name='rating' value='3' />
-                            <label className={cn('rating__full-star')} htmlFor='star3' title='Meh - 3 stars'></label>
-                            <input type='radio' id='star2half' name='rating' value='2 and a half' />
-                            <label className={cn('rating__half-star')} htmlFor='star2half' title='Kinda bad - 2.5 stars'></label>
-                            <input type='radio' id='star2' name='rating' value='2' />
-                            <label className={cn('rating__full-star')} htmlFor='star2' title='Kinda bad - 2 stars'></label>
-                            <input type='radio' id='star1half' name='rating' value='1 and a half' />
-                            <label className={cn('rating__half-star')} htmlFor='star1half' title='Meh - 1.5 stars'></label>
-                            <input type='radio' id='star1' name='rating' value='1' />
-                            <label className={cn('rating__full-star')} htmlFor='star1' title='Sucks big time - 1 star'></label>
-                            <input type='radio' id='starhalf' name='rating' value='half' />
-                            <label className={cn('rating__half-star')} htmlFor='starhalf' title='Sucks big time - 0.5 stars'></label>
-                        </fieldset>
+                        <Rating clickable={true} starsNum={5} initValue={0} starSize={'20px'} inputName='name0'/>
                         <input className={cn('feedback__review')} placeholder='Write a review'/>
                     </div>
                     <div className={cn('subscribe')}>
@@ -581,39 +563,60 @@ const Chat = (props) => {
                             </button>
                         </div>
                     </div>
-                    <div className={cn('feedback')}>
-                        <div className={cn('feedback__hdr')}>
-                            <span className={cn('fa fa-yelp', 'icon', 'icon--white', 'icon--xs', 'icon--circled', 'icon--shifted')}></span>
-                            Rate Luke's Lobster
+                    <div className={cn('similar')}>
+                        <div className={cn('similar__hdr')}>Try similar restaurants in your area</div>
+                        <div className={cn('similar__item')}>
+                            <img className={cn('similar__logo')} src={mewLogo}/>
+                            <div className={cn('similar__info')}>
+                                <div className={cn('similar__name')}>
+                                    MEW <span className={cn('fa fa-info-circle')}></span>
+                                </div>
+                                <div className={cn('similar__desc')}>
+                                    Sushi Bars, Izakaya Cocktail Bars
+                                </div>
+                                <Rating clickable={false} starsNum={5} initValue={3.5} starSize={'14px'} inputName='name2'/>
+                            </div>
+                            <div className={cn('similar__call')}>
+                                <button className={cn('similar__call-btn')}>
+                                    <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--md')}></span>
+                                </button>
+                            </div>
                         </div>
-                        <fieldset className={cn('rating')}>
-                            <input type='radio' id='star5' name='rating' value='5' />
-                            <label className={cn('rating__full-star')} htmlFor='star5' title='Awesome - 5 stars'></label>
-                            <input type='radio' id='star4half' name='rating' value='4 and a half' />
-                            <label className={cn('rating__half-star')} htmlFor='star4half' title='Pretty good - 4.5 stars'></label>
-                            <input type='radio' id='star4' name='rating' value='4' />
-                            <label className={cn('rating__full-star')} htmlFor='star4' title='Pretty good - 4 stars'></label>
-                            <input type='radio' id='star3half' name='rating' value='3 and a half' />
-                            <label className={cn('rating__half-star')} htmlFor='star3half' title='Meh - 3.5 stars'></label>
-                            <input type='radio' id='star3' name='rating' value='3' />
-                            <label className={cn('rating__full-star')} htmlFor='star3' title='Meh - 3 stars'></label>
-                            <input type='radio' id='star2half' name='rating' value='2 and a half' />
-                            <label className={cn('rating__half-star')} htmlFor='star2half' title='Kinda bad - 2.5 stars'></label>
-                            <input type='radio' id='star2' name='rating' value='2' />
-                            <label className={cn('rating__full-star')} htmlFor='star2' title='Kinda bad - 2 stars'></label>
-                            <input type='radio' id='star1half' name='rating' value='1 and a half' />
-                            <label className={cn('rating__half-star')} htmlFor='star1half' title='Meh - 1.5 stars'></label>
-                            <input type='radio' id='star1' name='rating' value='1' />
-                            <label className={cn('rating__full-star')} htmlFor='star1' title='Sucks big time - 1 star'></label>
-                            <input type='radio' id='starhalf' name='rating' value='half' />
-                            <label className={cn('rating__half-star')} htmlFor='starhalf' title='Sucks big time - 0.5 stars'></label>
-                        </fieldset>
-                        <input className={cn('feedback__review')} placeholder='Write a review'/>
-                    </div>
-                    <div className={cn('subscribe')}>
-                        <span className={cn('fa fa-envelope', 'icon', 'icon--color', 'icon--xs')}></span><br/>
-                        Great!<br/>
-                        Check your mail
+                        <div className={cn('similar__item')}>
+                            <img className={cn('similar__logo')} src={oxidoLogo}/>
+                            <div className={cn('similar__info')}>
+                                <div className={cn('similar__name')}>
+                                    MEW <span className={cn('fa fa-info-circle')}></span>
+                                </div>
+                                <div className={cn('similar__desc')}>
+                                    Mexican, Cocktail Bars
+                                </div>
+                                <Rating clickable={false} starsNum={5} initValue={4} starSize={'14px'} inputName='name3'/>
+                            </div>
+                            <div className={cn('similar__call')}>
+                                <button className={cn('similar__call-btn')}>
+                                    <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--md')}></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div className={cn('similar__item')}>
+                            <img className={cn('similar__logo')} src={flexMusselsLogo}/>
+                            <div className={cn('similar__info')}>
+                                <div className={cn('similar__name')}>
+                                    MEW <span className={cn('fa fa-info-circle')}></span>
+                                </div>
+                                <div className={cn('similar__desc')}>
+                                    Seafood, Bars
+                                </div>
+                                <Rating clickable={false} starsNum={5} initValue={4.5} starSize={'14px'} inputName='name4'/>
+                            </div>
+                            <div className={cn('similar__call')}>
+                                <button className={cn('similar__call-btn')}>
+                                    <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--md')}></span>
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
                 </div>;
             break;
@@ -678,6 +681,44 @@ class Timer extends Component {
         );
     }
 }
+
+const Rating = (props) => {
+    let starsArray = [];
+    // Each star is represented by full star input (hidden), full star label,
+    // half star input (hidden) and half star label.
+    // And the stars must follow in inverse order.
+    for (let i = props.starsNum; i > 0; i--) {
+        // Full star
+        const fullId = props.inputName + '_star_' + i + '_0';
+        const fullValue = i;
+        const fullChecked = ((props.initValue - fullValue) >= 0) && ((props.initValue - fullValue) < 0.5);
+        const inputFull = <input type='radio' id={fullId} name={props.inputName} value={fullValue}
+                   defaultChecked={fullChecked} disabled={!props.clickable}/>;
+        const labelFull = <label className={cn('rating__full-star')} htmlFor={fullId}></label>;
+
+        // Half star
+        const halfId = props.inputName + '_star_' + (i - 1) + '_5';
+        const halfValue = i - 0.5;
+        const halfChecked = ((props.initValue - halfValue) >= 0) && ((props.initValue - halfValue) < 0.5);
+        const inputHalf = <input type='radio' id={halfId} name={props.inputName} value={halfValue}
+                   defaultChecked={halfChecked} disabled={!props.clickable}/>;
+        const labelHalf = <label className={cn('rating__half-star')} htmlFor={halfId}></label>;
+
+        // Add in array
+        starsArray.push(inputFull);
+        starsArray.push(labelFull);
+        starsArray.push(inputHalf);
+        starsArray.push(labelHalf);
+    }
+    return (
+        <fieldset
+            className={cn('rating', {'hoverable': props.clickable})}
+            style={{fontSize: props.starSize}}
+        >
+            {starsArray}
+        </fieldset>
+    );
+};
 
 module.exports = function createWidget(node, settings) {
     render(<WebchatClient settings={settings}/>, node);
