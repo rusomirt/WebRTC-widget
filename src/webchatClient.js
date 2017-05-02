@@ -525,15 +525,12 @@ const Chat = (props) => {
             chatInfo =
                 <div className={cn('chat__info')}>
                     <div className={cn('chat__status', 'chat__status--success')}>
-                        <span className={cn('fa fa-check', 'icon', 'icon--white', 'icon--xs', 'icon--lowered')}></span>
+                        <span className={cn('fa fa-check', 'icon', 'icon--white', 'icon--xs', 'icon--shifted')}></span>
                         Thanks for calling Luke's
                     </div>
                     <div className={cn('feedback')}>
                         <div className={cn('feedback__hdr')}>
-                            <span className={'fa fa-stack'}>
-                                <span className={cn('fa fa-circle fa-stack-2x', 'icon', 'icon--red', 'icon--xs', 'icon--lowered')}></span>
-                                <span className={cn('fa fa-yelp fa-stack-1x', 'icon', 'icon--white', 'icon--xs', 'icon--lowered')}></span>
-                            </span>
+                            <span className={cn('fa fa-yelp', 'icon', 'icon--white', 'icon--xs', 'icon--circled', 'icon--shifted')}></span>
                             Rate Luke's Lobster
                         </div>
                         <fieldset className={cn('rating')}>

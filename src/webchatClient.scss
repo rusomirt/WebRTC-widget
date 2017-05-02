@@ -211,6 +211,8 @@ $chat-circle-circle2-color: $webchat-color-main;
 
     .chat__status {
       padding: 6px 0 12px;
+      font-family: 'Roboto Medium', sans-serif;
+      font-size: 17px;
 
       &.chat__status--high {
         padding-top: 40px;
@@ -218,6 +220,8 @@ $chat-circle-circle2-color: $webchat-color-main;
       }
 
       &.chat__status--success {
+        width: 100%;
+        text-align: center;
         background-color: $webchat-color-main;
         color: white;
         padding: 57px 0;
@@ -537,6 +541,21 @@ $back-btn-border-radius: $back-btn-h * 0.5;
   }
   &.icon--lowered {
     margin-bottom: -3px;
+  }
+  &.icon--shifted {
+    margin-right: 5px;
+  }
+  &.icon--circled {
+    display: inline-block;
+    width: 1.2em;
+    height: 1.2em;
+    background: $webchat-color-stop;
+    border-radius: 50%;
+    font-size: 0.7em;
+    padding: 2px;
+    &:before {
+      vertical-align: middle;
+    }
   }
 }
 
