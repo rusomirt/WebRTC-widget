@@ -41,17 +41,24 @@ video {
   max-width: 100%;
 }
 
+// Generic buttons
 .btn {
   padding: 0;
   border: none;
   outline: none;
   cursor: pointer;
 }
-
 .btn--circle {
   @extend .btn;
   border-radius: 50%;
 }
+
+// Global colors
+$webchat-c-main: #00c48a;
+$webchat-c-stop: #c41200;
+$webchat-c-bluedark: #3b5d80;
+$webchat-c-bluelight: #75baff;
+
 
 $webchat-r: 20px;
 $webchat-b: 20px;
@@ -59,11 +66,7 @@ $webchat-launch-btn-size: 64px;
 $webchat-chat-btn-size: 50px;
 // Distance between chat type buttons (video, voice or text) and chat launch button:
 $webchat-chat-btn-shift: 40px;
-
-$webchat-c-main: #00c48a;
-$webchat-c-stop: #c41200;
-$webchat-c-bluedark: #3b5d80;
-$webchat-c-bluelight: #75baff;
+$webchat-btns-c: $webchat-c-main;
 
 .webchat {
   position: fixed;
@@ -82,7 +85,7 @@ $webchat-c-bluelight: #75baff;
 
     width: $webchat-launch-btn-size;
     height: $webchat-launch-btn-size;
-    background-color: $webchat-c-main;
+    background-color: $webchat-btns-c;
   }
   .webchat__chat-btn {
     @extend .btn--circle;
@@ -93,7 +96,7 @@ $webchat-c-bluelight: #75baff;
     width: $webchat-chat-btn-size;
     height: $webchat-chat-btn-size;
     display: none;  // initially hidden
-    background-color: $webchat-c-main;
+    background-color: $webchat-btns-c;
   }
   .webchat__chat-btn--showed {
     display: block; // displayed after click on 'launch-btn'
@@ -114,8 +117,7 @@ $webchat-c-bluelight: #75baff;
 }
 
 $modal-bg-transparency: 0.5;
-$modal-inner-w: 400px;
-//$modal-inner-h: 300px;
+$modal-inner-max-w: 90%;
 
 .modal {
   position: fixed;
@@ -130,9 +132,7 @@ $modal-inner-w: 400px;
   background: rgba(0, 0, 0, $modal-bg-transparency);
 
   .modal__inner {
-    //width: $modal-inner-w;
-    max-width: 90%;      // shrink to window on narrow screens (< $modal-inner-w)
-
+    max-width: $modal-inner-max-w;  // shrink to window on narrow screens (< $modal-inner-w)
   }
 }
 
@@ -186,7 +186,40 @@ $chat-panel-b: 26px;
 $chat-btns-group-mx: $chat-panel-h * 0.25;
 $chat-stop-btn-size: 64px;
 
+$chat-info-border-w: 10px;
+$chat-info-border-c: $webchat-c-bluedark;
+$chat-info-bg-c: white;
 $chat-info-mb: $chat-panel-b + $chat-panel-h + 24px;
+
+$chat-status-p: 6px 0 12px;
+$chat-status-font: 'Roboto Medium', sans-serif;
+$chat-status-font-size: 17px;
+$chat-status-font-c: $webchat-c-main;
+
+$chat-status-high-p: 40px 0 22px;
+
+$chat-status-success-bg-c: $webchat-c-main;
+$chat-status-success-font-c: white;
+$chat-status-success-p: 57px 0;
+
+$chat-status-fail-bg-c: $webchat-c-stop;
+$chat-status-fail-font-c: white;
+$chat-status-fail-p: 21px 0 30px;
+
+$chat-status-hdr-mb: 15px;
+$chat-status-hdr-font: 'Roboto Medium', sans-serif;
+$chat-status-hdr-font-size: 18px;
+
+$chat-status-txt-mb: 15px;
+$chat-status-txt-font: 'Roboto Regular', sans-serif;
+$chat-status-txt-font-size: 16px;
+
+$chat-phone-input-p: 9px 10px 11px;
+$chat-phone-input-font: 'Roboto Regular', sans-serif;
+$chat-phone-input-font-size: 12px;
+$chat-phone-input-btn-bg-c: $webchat-c-bluedark;
+$chat-phone-input-btn-size: 37px;
+$chat-phone-input-btn-font-c: white;
 
 $chat-circle-inner-w: 2px;
 $chat-circle-inner-c: $webchat-c-main;
@@ -194,6 +227,19 @@ $chat-circle-circle1-w: 2px;
 $chat-circle-circle1-c: white;
 $chat-circle-circle2-w: 3px;
 $chat-circle-circle2-c: $webchat-c-main;
+
+$chat-logo-mt: 10px;
+$chat-tips-w: 400px;
+$chat-tips-h: 100px;
+$chat-tips-font: 'Roboto Regular', sans-serif;
+$chat-tips-font-size: 16px;
+$chat-tips-font-c: black;
+$chat-tips-p: 78px 0;
+
+$chat-video-out-top: 10px;
+$chat-video-out-right: 10px;
+
+// TODO: messenger variables
 
 .chat {
   position: relative;   /* for abs-positioned .chat__panel*/
@@ -207,10 +253,10 @@ $chat-circle-circle2-c: $webchat-c-main;
     align-items: center;
     justify-content: flex-start;
 
-    background: white;
+    background: $chat-info-bg-c;
 
     &.chat__info--bordered {
-      border-top: 10px solid $webchat-c-bluedark;
+      border-top: $chat-info-border-w solid $chat-info-border-c;
     }
 
     &.chat__info--short {
@@ -218,46 +264,45 @@ $chat-circle-circle2-c: $webchat-c-main;
     }
 
     .chat__status {
-      padding: 6px 0 12px;
-      font-family: 'Roboto Medium', sans-serif;
-      font-size: 17px;
-      color: $webchat-c-main;
+      padding: $chat-status-p;
+      font-family: $chat-status-font;
+      font-size: $chat-status-font-size;
+      color: $chat-status-font-c;
 
       &.chat__status--high {
-        padding-top: 40px;
-        padding-bottom: 22px;
+        padding: $chat-status-high-p;
       }
 
       &.chat__status--success {
         width: 100%;
         text-align: center;
-        background-color: $webchat-c-main;
-        color: white;
-        padding: 57px 0;
+        background-color: $chat-status-success-bg-c;
+        color: $chat-status-success-font-c;
+        padding: $chat-status-success-p;
       }
 
       &.chat__status--fail {
         width: 100%;
         text-align: center;
-        background-color: $webchat-c-stop;
-        color: white;
-        padding: 21px 0 30px;
+        background-color: $chat-status-fail-bg-c;
+        color: $chat-status-fail-font-c;
+        padding: $chat-status-fail-p;
       }
 
       .chat__phone-input-wrapper {
         .chat__phone-input {
-          padding: 9px 10px 11px;
+          padding: $chat-phone-input-p;
           outline: none;
           border: none;
-          font-family: 'Roboto Regular', sans-serif;
-          font-size: 12px;
+          font-family: $chat-phone-input-font;
+          font-size: $chat-phone-input-font-size;
         }
         .chat__phone-input-btn {
           @extend .btn;
-          background: $webchat-c-bluedark;
-          width: 37px;
-          height: 37px;
-          color: white;
+          background: $chat-phone-input-btn-bg-c;
+          width: $chat-phone-input-btn-size;
+          height: $chat-phone-input-btn-size;
+          color: $chat-phone-input-btn-font-c;
         }
       }
 
@@ -267,14 +312,14 @@ $chat-circle-circle2-c: $webchat-c-main;
         align-items: center;
       }
       .chat__status-hdr {
-        margin-bottom: 15px;
-        font-family: 'Roboto Medium', sans-serif;
-        font-size: 18px;
+        margin-bottom: $chat-status-hdr-mb;
+        font-family: $chat-status-hdr-font;
+        font-size: $chat-status-hdr-font-size;
       }
       .chat__status-txt {
-        margin-bottom: 15px;
-        font-family: 'Roboto Regular', sans-serif;
-        font-size: 16px;
+        margin-bottom: $chat-status-txt-mb;
+        font-family: $chat-status-txt-font;
+        font-size: $chat-status-txt-font-size;
       }
 
       .chat__timer-wrapper {
@@ -283,16 +328,16 @@ $chat-circle-circle2-c: $webchat-c-main;
       }
     }
     .chat__logo {
-      margin-top: 10px;
+      margin-top: $chat-logo-mt;
     }
     .chat__tips {
-      width: 400px;
-      height: 100px;
+      width: $chat-tips-w;
+      height: $chat-tips-h;
 
-      font-family: 'Roboto Regular', sans-serif;
-      font-size: 16px;
-      color: black;
-      padding: 78px 0;
+      font-family: $chat-tips-font;
+      font-size: $chat-tips-font-size;
+      color: $chat-tips-font-c;
+      padding: $chat-tips-p;
       text-align: center;
     }
 
@@ -347,8 +392,8 @@ $chat-circle-circle2-c: $webchat-c-main;
     }
     .chat__video-out {
       position: absolute;
-      top: 10px;
-      right: 10px;
+      top: $chat-video-out-top;
+      right: $chat-video-out-right;
       width: $chat-video-out-w;
     }
   }
@@ -633,9 +678,6 @@ $back-btn-border-radius: 100px;
   &.icon--white {
     color: white;
   }
-  &.icon--red {
-    color: $webchat-c-stop;
-  }
   &.icon--color {
     color: $webchat-c-main;
   }
@@ -689,8 +731,12 @@ $back-btn-border-radius: 100px;
   }
 }
 
+$timer-font: 'Roboto Medium', sans-serif;
+$timer-font-size: 10px;
+$timer-font-c: $webchat-c-main;
+
 .timer {
-  font-family: 'Roboto Medium', sans-serif;
-  font-size: 10px;
-  color: $webchat-c-main;
+  font-family: $timer-font;
+  font-size: $timer-font-size;
+  color: $timer-font-c;
 }
