@@ -220,6 +220,7 @@ $chat-circle-circle2-color: $webchat-color-main;
       padding: 6px 0 12px;
       font-family: 'Roboto Medium', sans-serif;
       font-size: 17px;
+      color: $webchat-color-main;
 
       &.chat__status--high {
         padding-top: 40px;
@@ -234,17 +235,45 @@ $chat-circle-circle2-color: $webchat-color-main;
         padding: 57px 0;
       }
 
+      &.chat__status--fail {
+        width: 100%;
+        text-align: center;
+        background-color: $webchat-color-stop;
+        color: white;
+        padding: 21px 0 30px;
+      }
+
+      .chat__phone-input-wrapper {
+        .chat__phone-input {
+          padding: 9px 10px 11px;
+          outline: none;
+          border: none;
+          font-family: 'Roboto Regular', sans-serif;
+          font-size: 12px;
+        }
+        .chat__phone-input-btn {
+          @extend .btn;
+          background: $webchat-color-bluedark;
+          width: 37px;
+          height: 37px;
+          color: white;
+        }
+      }
+
       .chat__status-txt-wrapper {
         display: flex;
         justify-content: center;
         align-items: center;
       }
-
-      .chat__status-txt {
-        margin-left: 5px;
+      .chat__status-hdr {
+        margin-bottom: 15px;
         font-family: 'Roboto Medium', sans-serif;
         font-size: 18px;
-        color: $webchat-color-main;
+      }
+      .chat__status-txt {
+        margin-bottom: 15px;
+        font-family: 'Roboto Regular', sans-serif;
+        font-size: 16px;
       }
 
       .chat__timer-wrapper {
