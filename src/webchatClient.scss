@@ -488,7 +488,7 @@ $rating-star-spacing: 7px;
   }
 
   .rating__half-star:before {   // left half-star
-    content: "\f089";           // fa-star-half
+    content: '\f089';           // fa-star-half
     position: absolute;
     opacity: 0;
   }
@@ -499,13 +499,13 @@ $rating-star-spacing: 7px;
   }
 
   .rating__full-star:before {   // empty star
-    content: "\f006";           // fa-star-o
+    content: '\f006';           // fa-star-o
   }
 
   &.hoverable .rating__full-star:hover:before,          // fill empty star when it's hovered
   input:checked ~ .rating__full-star:before,            // fill checked empty star and all empty stars left to it
   &.hoverable label:hover ~ .rating__full-star:before { // Fill all stars preceding to hovered one
-    content: "\f005";           // fa-star
+    content: '\f005';           // fa-star
   }
 }
 
