@@ -19,6 +19,8 @@ let username,             // VoxImplant connection parameters
 
 let currentCall = null;   // call global instances
 
+let currentConv = null;
+
 let voxAPI;               // object for VoxImplant instance
 let voxChatAPI;
 
@@ -65,20 +67,32 @@ export function initMessenger() {
 
     voxChatAPI.on(VoxImplant.MessagingEvents.isDelivered, (e) => {console.log('<<<<<<<<<< isDelivered() >>>>>>>>>>')});
     voxChatAPI.on(VoxImplant.MessagingEvents.isRead, (e) => {console.log('<<<<<<<<<< isRead() >>>>>>>>>>')});
-    voxChatAPI.on(VoxImplant.MessagingEvents.onCreateConversation, (e) => {console.log('<<<<<<<<<< onCreateConversation() >>>>>>>>>>')});
+    voxChatAPI.on(VoxImplant.MessagingEvents.onCreateConversation, (e) => {
+        console.log('<<<<<<<<<< onCreateConversation()');
+        console.log(e.conversation);
+        currentConv = e.conversation;
+        console.log('           onCreateConversation() >>>>>>>>>>');
+    });
     voxChatAPI.on(VoxImplant.MessagingEvents.onError, (e) => {
         console.log('<<<<<<<<<< onError begin');
         console.log(e);
         console.log('          onError end >>>>>>>>>>');
     });
-    voxChatAPI.on(VoxImplant.MessagingEvents.onGetConversation, (e) => {console.log('<<<<<<<<<< onGetConversation() >>>>>>>>>>')});
+    voxChatAPI.on(VoxImplant.MessagingEvents.onGetConversation, (e) => { console.log('<<<<<<<<<< onGetConversation() >>>>>>>>>>'); });
     voxChatAPI.on(VoxImplant.MessagingEvents.onRemoveConversation, (e) => {console.log('<<<<<<<<<< onRemoveConversation() >>>>>>>>>>')});
     voxChatAPI.on(VoxImplant.MessagingEvents.onGetUser, (e) => {console.log('<<<<<<<<<< onGetUser() >>>>>>>>>>')});
     voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, (e) => {
         console.log('<<<<<<<<<< onSendMessage()');
+        console.log(e);
         console.log(e.message);
         console.log(e.message.sender);
         console.log(e.message.text);
+        console.log(e.message.conversation);
+        // If this message has been sent by other user
+        if (e.message.sender !== username + '@' + application_name + '.' + account_name) {
+            currentConv.sendMessage(e.message.text);
+            console.log('message retranslated');
+        }
         console.log('           onSendMessage() >>>>>>>>>>');
     });
     voxChatAPI.on(VoxImplant.MessagingEvents.onSetStatus, (e) => {console.log('<<<<<<<<<< onSetStatus() >>>>>>>>>>')});
