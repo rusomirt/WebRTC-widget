@@ -70,17 +70,22 @@ export function init(settings) {
 // Initialize messenger
 export function initMessenger() {
     console.log('<<<<<<<<<< initMessenger() begin');
+
+    console.log('currentCall:');
+    console.log(currentCall);
+    
     // Create messenger instance
     voxChatAPI = VoxImplant.getMessenger();
 
     voxChatAPI.on(VoxImplant.MessagingEvents.onCreateConversation, (e) => {
         console.log('<<<<<<<<<< onCreateConversation begin');
-        console.log('conversations:');
+
+        console.log('conversations array before push:');
         console.log(conversations);
 
         conversations.push(e.conversation);
 
-        console.log('conversations:');
+        console.log('conversations array after push:');
         console.log(conversations);
 
         currentConv = conversations[0];
@@ -91,9 +96,12 @@ export function initMessenger() {
         console.log('           onCreateConversation end >>>>>>>>>>');
     });
     voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, (e) => {
+        console.log('<<<<<<<<<< onSendMessage');
+        console.log('e.message:');
         console.log(e.message);
         console.log(e.message.sender);
         console.log(e.message.text);
+        console.log('           onSendMessage >>>>>>>>>>');
     });
     voxChatAPI.on(VoxImplant.MessagingEvents.onRemoveConversation, (e) => {
         console.log('<<<<<<<<<< onRemoveConversation begin');
@@ -108,8 +116,6 @@ export function initMessenger() {
         console.log('          onError end >>>>>>>>>>');
     });
 
-    console.log('voxChatAPI:');
-    console.log(voxChatAPI);
     console.log('           initMessenger() end >>>>>>>>>>');
 }
 // Deinitialize all
@@ -150,6 +156,16 @@ export function beginCall(callMode) {
 // Begin text chat
 export function beginChat() {
     console.log('<<<<<<<<<< beginChat() begin');
+
+    console.log('voxAPI:');
+    console.log(voxAPI);
+
+    console.log('voxChatAPI:');
+    console.log(voxChatAPI);
+
+    console.log('currentCall:');
+    console.log(currentCall);
+
     try {
         const participants = [{
             userId: dest_username + '@' + application_name + '.' + account_name,
