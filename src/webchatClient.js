@@ -342,7 +342,7 @@ const Chat = (props) => {
 
     let chatInfo = null;
     let videoContainer = null;
-    let messengerContainer = null;
+    let messenger= null;
     switch (props.chatMode) {
         case 'connectingVoice': chatInfo =
             <div className={cn('chat__info', 'chat__info--bordered')}>
@@ -458,8 +458,10 @@ const Chat = (props) => {
                         </div>
                     </div>
                 </div>;
-            messengerContainer =
-                <div className={cn('chat__msg-container')}>
+            messenger =
+                <div className={cn('msgr')}>
+                    <div className={cn('msgr__history')}></div>
+                    <input className={cn('msgr__input')} type='text' name='message'/>
                 </div>;
             break;
         case 'endCall':
@@ -581,7 +583,7 @@ const Chat = (props) => {
         <div className={cn('chat')}>
             {chatInfo}
             {videoContainer}
-            {messengerContainer}
+            {messenger}
             {chatPanel}
             {toYelpBtn}
         </div>
