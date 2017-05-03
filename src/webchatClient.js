@@ -130,8 +130,10 @@ class WebchatClient extends Component {
             mode = this.state.chatMode;
         }
         vox.stopChat(mode);
+        const isConnectingMode = (this.state.chatMode === 'connectingVoice') ||
+            (this.state.chatMode === 'connectingVideo');
         this.setState({
-            chatMode: 'endCall',
+            chatMode: (isConnectingMode) ? 'idle' : 'endCall',
             isModeChanged: true,
         });
         console.log('           stopChat() end =========>');
@@ -144,9 +146,10 @@ class WebchatClient extends Component {
     }
 
     // Events from VoxImplant
-    onAuthResult() {
+    onAuthResult(e) {
         console.log('<========= onAuthResult() begin');
         console.log('this.state.chatMode = ' + this.state.chatMode);
+        console.log('Auth result: ' + e.result);
 
         if (this.state.chatMode === 'connectingVideo' || this.state.chatMode === 'connectingVoice') {
             const nextMode = (this.state.chatMode === 'connectingVideo') ? 'video' : 'voice';
