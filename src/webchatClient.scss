@@ -720,8 +720,10 @@ $back-btn-border-radius: 100px;
       transform: rotate(-45deg);
     }
   }
+  // Icon before text
   &.icon--shifted {
     margin-right: 5px;
+    margin-bottom: 3px;
   }
   &.icon--circled {
     display: inline-block;
