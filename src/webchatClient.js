@@ -182,9 +182,6 @@ class WebchatClient extends Component {
         console.log('           backToInitial() end =========>');
     }
 
-    // Events from VoxImplant
-    // They are handled here because the component must now that they happened.
-
     // When user has been logged in, begin chat and assign it's events handlers
     onAuthResult(e) {
         console.log('<========= onAuthResult() begin');
@@ -245,8 +242,8 @@ class WebchatClient extends Component {
         console.log('new chatMode = ' + this.state.chatMode);
         console.log('           onCallFailed() end =========>');
     }
-    //
 
+    // Functions from Messenger
 
     // Send text from input field and add it in the messages list
     onSend(messageText) {
@@ -303,7 +300,7 @@ class WebchatClient extends Component {
             const messageTime = nowHours + ':' + nowMinutes + dayTime;
 
             const message = {
-                fromMe: true,
+                fromMe: false,
                 text: e.message.text,
                 timeStamp: messageTime
             };
