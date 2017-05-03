@@ -152,6 +152,9 @@ class WebchatClient extends Component {
     }
 
     // Events from VoxImplant
+    // They are handled here because the component must now that they happened.
+
+    // When user has been logged in, begin chat and assign it's events handlers
     onAuthResult(e) {
         console.log('<========= onAuthResult() begin');
         console.log('this.state.chatMode = ' + this.state.chatMode);
@@ -170,6 +173,7 @@ class WebchatClient extends Component {
         }
         console.log('           onAuthResult() end =========>');
     }
+    // When call has been connected, change state from connecting to calling
     onCallConnected() {
         console.log('<========= onCallConnected() begin');
 
@@ -183,6 +187,8 @@ class WebchatClient extends Component {
         console.log('new chatMode = ' + this.state.chatMode);
         console.log('             onCallConnected() end =========>');
     }
+    // When call has been disconnected, change state to endCall or to idle
+    // (if call was not connected by the moment of 'stop' button click)
     onCallDisconnected() {
         console.log('<========= onCallDisconnected() begin');
         vox.currentCall = null; // clear call instance
@@ -195,6 +201,7 @@ class WebchatClient extends Component {
         console.log('new chatMode = ' + this.state.chatMode);
         console.log('           onCallDisconnected() end =========>');
     }
+    // When call fails - fo to 'not available' screen
     onCallFailed(e) {
         console.log('<========= onCallFailed() begin');
         console.log('Call id: '+vox.currentCall.id()+', code: '+e.code+', reason: '+e.reason);
@@ -208,6 +215,7 @@ class WebchatClient extends Component {
     }
 
     // Component events
+
     componentDidMount() {
         const hashParams = this.getHashParams();
         const voxParams = {
@@ -223,14 +231,15 @@ class WebchatClient extends Component {
                 hashParams.op_username : this.props.settings.op_username
         };
         vox.init(voxParams);
-        // Assign event handler here because this event needs to be handled in preact component
+        // Assign event handler here because this event needs to be handled in the component
         vox.voxAPI.addEventListener(VoxImplant.Events.AuthResult, this.onAuthResult);
     }
     componentDidUpdate() {
         if (this.state.isModeChanged) {
             this.setState({isModeChanged: false});
 
-            // Mode changed to 'voice' or 'video'
+            // If component rerender was caused by state change from connecting to calling
+            // or by switching between call modes
             if (this.state.chatMode === 'voice' || this.state.chatMode === 'video') {
                 console.log('<========= componentDidUpdate() begin');
                 console.log(document.getElementById('video-in'));
