@@ -400,22 +400,28 @@ $chat-video-out-right: 10px;
       width: $chat-video-out-w;
     }
   }
+}
 
-  .chat__msg-container {
+.chat__msg-container {
+  height: 400px;  // debug
 
-    .chat__msg {
-      border-radius: 26px;
-      color: white;
-      font-family: 'Lucida Grande', sans-serif;
-    }
-    .chat__msg--in {
-      background-color: $webchat-c-bluedark;
-      border-bottom-right-radius: 0;
-    }
-    .chat__msg--out {
-      background-color: $webchat-c-bluelight;
-      border-bottom-left-radius: 0;
-    }
+  width: 400px;
+  max-width: 100%;
+  background: white;
+  margin-bottom: $chat-panel-b + $chat-panel-h + 14px;
+
+  .chat__msg {
+    border-radius: 26px;
+    color: white;
+    font-family: 'Lucida Grande', sans-serif;
+  }
+  .chat__msg--in {
+    background-color: $webchat-c-bluedark;
+    border-bottom-right-radius: 0;
+  }
+  .chat__msg--out {
+    background-color: $webchat-c-bluelight;
+    border-bottom-left-radius: 0;
   }
 }
 
