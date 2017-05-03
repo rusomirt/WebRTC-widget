@@ -12,7 +12,7 @@ import * as VoxImplant from '../lib/voximplant.min.js';
 // VoxImplant globals
 //=============================================================================
 
-let username,                       // VoxImplant connection parameters
+export let username,                       // VoxImplant connection parameters
     password,
     dest_username,
     application_name,
@@ -22,7 +22,7 @@ let username,                       // VoxImplant connection parameters
 // assigning in Preact component
 export let currentCall = null;      // call global instances
 
-let currentConv;
+export let currentConv;
 let conversations = [];
 
 export let voxAPI;                  // object for VoxImplant instance
@@ -91,17 +91,9 @@ export function initMessenger() {
         currentConv = conversations[0];
         console.log('currentConv:');
         console.log(currentConv);
-        currentConv.sendMessage('Hello!');
+        // currentConv.sendMessage('Hello!');
 
         console.log('           onCreateConversation end >>>>>>>>>>');
-    });
-    voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, (e) => {
-        console.log('<<<<<<<<<< onSendMessage');
-        console.log('e.message:');
-        console.log(e.message);
-        console.log(e.message.sender);
-        console.log(e.message.text);
-        console.log('           onSendMessage >>>>>>>>>>');
     });
     voxChatAPI.on(VoxImplant.MessagingEvents.onRemoveConversation, (e) => {
         console.log('<<<<<<<<<< onRemoveConversation begin');
@@ -289,4 +281,9 @@ export function turnMic(flag) {
     }
 
     console.log('           turnMic() end >>>>>>>>>>');
+}
+
+//
+export function sendMessage(text) {
+    currentConv.sendMessage(text);
 }

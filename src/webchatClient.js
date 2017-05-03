@@ -34,7 +34,24 @@ class WebchatClient extends Component {
             // 'idle', 'connectingVideo', 'video', 'connectingVoice',
             // 'voice', 'text', 'endCall', 'notAvailable'.
             chatMode: 'idle',
-            isModeChanged: false    // checked in componentDidUpdated()
+            isModeChanged: false,   // checked in componentDidUpdated()
+            messages: [
+                {
+                    fromMe: false,
+                    text: 'Hello! how can I help you?',
+                    timeStamp: '5:22pm'
+                },
+                {
+                    fromMe: true,
+                    text: 'Hey! Can I make reservation for 2? Let\'s say 8 pm?',
+                    timeStamp: '5:23pm'
+                },
+                {
+                    fromMe: false,
+                    text: 'Sure! under which name?',
+                    timeStamp: '5:23pm'
+                },
+            ]
         };
 
         // These bindings are necessary to make `this` work in the callbacks
@@ -50,6 +67,10 @@ class WebchatClient extends Component {
         this.onCallConnected = this.onCallConnected.bind(this);
         this.onCallDisconnected = this.onCallDisconnected.bind(this);
         this.onCallFailed = this.onCallFailed.bind(this);
+
+        this.addMessageToList = this.addMessageToList.bind(this);
+        this.onSend = this.onSend.bind(this);
+        this.onReceiveMessage = this.onReceiveMessage.bind(this);
     }
     // Get values from URL hash
     getHashParams() {
@@ -99,6 +120,7 @@ class WebchatClient extends Component {
             else if (demandedMode === 'text') {
                 if (!vox.voxChatAPI) {
                     vox.initMessenger();
+                    vox.voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, this.onReceiveMessage);
                 }
                 vox.beginChat();
             }
@@ -178,6 +200,7 @@ class WebchatClient extends Component {
             vox.currentCall.addEventListener(VoxImplant.CallEvents.Failed, this.onCallFailed);
         } else if (this.state.chatMode === 'text') {
             vox.initMessenger();
+            vox.voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, this.onReceiveMessage);
             vox.beginChat();
         }
         console.log('           onAuthResult() end =========>');
@@ -221,6 +244,76 @@ class WebchatClient extends Component {
             });
         console.log('new chatMode = ' + this.state.chatMode);
         console.log('           onCallFailed() end =========>');
+    }
+    //
+
+
+    // Send text from input field and add it in the messages list
+    onSend(messageText) {
+        // console.log('<========= onSend() in Messenger');
+        // console.log('messageText = ' + messageText);
+
+        const now = new Date();
+        const nowHours = (now.getHours() <= 12) ? ((now.getHours() === 0) ? 12 : now.getHours()) : (now.getHours() - 12);
+        const dayTime = (now.getHours() < 12) ? 'am' : 'pm';
+        const nowMinutes = ((now.getMinutes() < 10) ? '0' : '') + now.getMinutes();
+        const messageTime = nowHours + ':' + nowMinutes + dayTime;
+        // console.log(now);
+        // console.log(nowHours);
+        // console.log(dayTime);
+        // console.log(nowMinutes);
+        // console.log('messageTime = ' + messageTime);
+
+        const message = {
+            fromMe: true,
+            text: messageText,
+            timeStamp: messageTime
+        };
+        // console.log('message:');
+        // console.log(message);
+
+        this.addMessageToList(message);
+
+        // console.log('new state:');
+        // console.log(this.state);
+
+        vox.sendMessage(messageText);
+
+        // console.log('          onSend() in Messenger =========>');
+    }
+    // Append the message to the component state
+    addMessageToList(message) {
+        const messages = this.state.messages;
+        messages.push(message);
+        this.setState({ messages });
+    }
+    onReceiveMessage(e) {
+        console.log('<========= onReceiveMessage');
+        console.log('e.message:');
+        console.log(e.message);
+        console.log(e.message.sender);
+        console.log(e.message.text);
+
+        // If this message has been sent by other user
+        if (e.message.sender !== vox.username + '@' + vox.application_name + '.' + vox.account_name) {
+            const now = new Date();
+            const nowHours = (now.getHours() <= 12) ? ((now.getHours() === 0) ? 12 : now.getHours()) : (now.getHours() - 12);
+            const dayTime = (now.getHours() < 12) ? 'am' : 'pm';
+            const nowMinutes = ((now.getMinutes() < 10) ? '0' : '') + now.getMinutes();
+            const messageTime = nowHours + ':' + nowMinutes + dayTime;
+
+            const message = {
+                fromMe: true,
+                text: e.message.text,
+                timeStamp: messageTime
+            };
+            // console.log('message:');
+            // console.log(message);
+
+            this.addMessageToList(message);
+        }
+
+        console.log('           onReceiveMessage =========>');
     }
 
     // Component events
@@ -280,6 +373,8 @@ class WebchatClient extends Component {
                             stopChat={this.stopChat}
                             switchMode={this.switchMode}
                             backToInitial={this.backToInitial}
+                            onSend={this.onSend}
+                            messages={this.state.messages}
                         />
                         <div className={cn('copyright')}>
                             <div className={cn('copyright__sign')}></div>
@@ -458,7 +553,7 @@ const Chat = (props) => {
                         </div>
                     </div>
                 </div>;
-            messenger = <Messenger />;
+            messenger = <Messenger onSend={props.onSend} messages={props.messages} />;
             break;
         case 'endCall':
             chatInfo =
@@ -592,69 +687,13 @@ const Chat = (props) => {
 class Messenger extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            messages: [
-                {
-                    fromMe: false,
-                    text: 'Hello! how can I help you?',
-                    timeStamp: '5:22pm'
-                },
-                {
-                    fromMe: true,
-                    text: 'Hey! Can I make reservation for 2? Let\'s say 8 pm?',
-                    timeStamp: '5:23pm'
-                },
-                {
-                    fromMe: false,
-                    text: 'Sure! under which name?',
-                    timeStamp: '5:23pm'
-                },
-            ]
-        };
-        this.onSend = this.onSend.bind(this);
-    }
-    // Send text from input field and add it in the messages list
-    onSend(messageText) {
-        // console.log('<========= onSend() in Messenger');
-        // console.log('messageText = ' + messageText);
-
-        const now = new Date();
-        const nowHours = (now.getHours() <= 12) ? ((now.getHours() === 0) ? 12 : now.getHours()) : (now.getHours() - 12);
-        const dayTime = (now.getHours() < 12) ? 'am' : 'pm';
-        const nowMinutes = ((now.getMinutes() < 10) ? '0' : '') + now.getMinutes();
-        const messageTime = nowHours + ':' + nowMinutes + dayTime;
-        // console.log(now);
-        // console.log(nowHours);
-        // console.log(dayTime);
-        // console.log(nowMinutes);
-        // console.log('messageTime = ' + messageTime);
-
-        const message = {
-            fromMe: true,
-            text: messageText,
-            timeStamp: messageTime
-        };
-        // console.log('message:');
-        // console.log(message);
-
-        this.addMessageToList(message);
-
-        // console.log('new state:');
-        // console.log(this.state);
-        //
-        // console.log('          onSend() in Messenger =========>');
-    }
-    // Append the message to the component state
-    addMessageToList(message) {
-        const messages = this.state.messages;
-        messages.push(message);
-        this.setState({ messages });
+        this.state = {};
     }
     render(props, state) {
         return (
             <div className={cn('msgr')}>
-                <Messages messages={this.state.messages} />
-                <ChatInput onSend={this.onSend} />
+                <Messages messages={props.messages} />
+                <ChatInput onSend={props.onSend} />
             </div>
         );
     }
