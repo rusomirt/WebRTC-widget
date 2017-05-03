@@ -752,9 +752,6 @@ class ChatInput extends Component {
     }
 }
 
-
-
-
 // Panel providing chat actions
 class ChatPanel extends Component {
     constructor() {
@@ -866,7 +863,7 @@ class ChatPanel extends Component {
         }
 
         return (
-            <div className={cn('chat__panel')}>
+            <div className={cn('chat__panel', {'chat__panel--low': props.chatMode === 'text'})}>
                 {leftGroup}
                 {stopBtn}
                 {rightGroup}
