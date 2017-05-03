@@ -35,23 +35,7 @@ class WebchatClient extends Component {
             // 'voice', 'text', 'endCall', 'notAvailable'.
             chatMode: 'idle',
             isModeChanged: false,   // checked in componentDidUpdated()
-            messages: [
-                {
-                    fromMe: false,
-                    text: 'Hello! how can I help you?',
-                    timeStamp: '5:22pm'
-                },
-                {
-                    fromMe: true,
-                    text: 'Hey! Can I make reservation for 2? Let\'s say 8 pm?',
-                    timeStamp: '5:23pm'
-                },
-                {
-                    fromMe: false,
-                    text: 'Sure! under which name?',
-                    timeStamp: '5:23pm'
-                },
-            ]
+            messages: []
         };
 
         // These bindings are necessary to make `this` work in the callbacks
@@ -335,7 +319,10 @@ class WebchatClient extends Component {
     }
     componentDidUpdate() {
         if (this.state.isModeChanged) {
-            this.setState({isModeChanged: false});
+            this.setState({
+                isModeChanged: false,
+                messages: []
+            });
 
             // If component rerender was caused by state change from connecting to calling
             // or by switching between call modes
@@ -677,7 +664,6 @@ const Chat = (props) => {
         </div>
     );
 };
-
 
 // Text messenger
 // https://www.coderfactoryacademy.edu.au/posts/how-you-can-build-facebook-messenger-chat-app-with-reactjs
