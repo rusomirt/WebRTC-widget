@@ -26,7 +26,7 @@ let currentConv;
 let conversations = [];
 
 export let voxAPI;                  // object for VoxImplant instance
-export let voxChatAPI;
+export let voxChatAPI;              // object for messenger instance
 
 //=============================================================================
 // VoxImplant functions
@@ -45,11 +45,17 @@ export function init(settings) {
     dest_username = settings.op_username;
 
     // Assign handlers
-    voxAPI.addEventListener(VoxImplant.Events.SDKReady, onSdkReady);
-    voxAPI.addEventListener(VoxImplant.Events.ConnectionEstablished, onConnectionEstablished);
-    voxAPI.addEventListener(VoxImplant.Events.ConnectionFailed, onConnectionFailed);
-    voxAPI.addEventListener(VoxImplant.Events.ConnectionClosed, onConnectionClosed);
-    // voxAPI.addEventListener(VoxImplant.Events.AuthResult, onAuthResult);
+    voxAPI.addEventListener(VoxImplant.Events.SDKReady, () => {});
+    voxAPI.addEventListener(VoxImplant.Events.ConnectionEstablished, () => {
+        voxAPI.login(username + '@' + application_name + '.' + account_name + '.voximplant.com', password);
+    });
+    voxAPI.addEventListener(VoxImplant.Events.ConnectionFailed, () => {
+        // Reconnect in 1 second
+        setTimeout(function () {
+            voxAPI.connect();
+        }, 1000);
+    });
+    voxAPI.addEventListener(VoxImplant.Events.ConnectionClosed, () => {});
 
     // Initialize SDK
     voxAPI.init({
@@ -121,9 +127,6 @@ export function beginCall(callMode) {
     let useVideo = true;//(callMode === 'video');
     currentCall = voxAPI.call(dest_username, useVideo, 'TEST CUSTOM DATA', {'X-DirectCall': 'true'});
 
-    // currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
-    // currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
-    // currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
     currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
         console.log('<+++++++++ onProgressToneStart() +++++++++>');
         voxAPI.playProgressTone();
@@ -132,22 +135,16 @@ export function beginCall(callMode) {
         console.log('<+++++++++ onProgressToneStop() +++++++++>');
         voxAPI.stopProgressTone();
     });
-
-    // currentCall.addEventListener(VoxImplant.CallEvents.ICECompleted, () => console.log('<<<<<<<<<< onICECompleted() >>>>>>>>>>'));
-    // currentCall.addEventListener(VoxImplant.CallEvents.ICETimeout, () => console.log('<<<<<<<<<< onICETimeout() >>>>>>>>>>'));
     currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, (e) => {
         console.log('<<<<<<<<<< onMediaElementCreated() begin');
         console.log(e.element);
         e.element.style.display = 'none';
         console.log('           onMediaElementCreated() end >>>>>>>>>>');
     });
-    // currentCall.addEventListener(VoxImplant.CallEvents.TransferComplete, () => console.log('<<<<<<<<<< onTransferComplete() >>>>>>>>>>'));
-    // currentCall.addEventListener(VoxImplant.CallEvents.Updated, () => console.log('<<<<<<<<<< onUpdated() >>>>>>>>>>'));
-    // currentCall.addEventListener(VoxImplant.CallEvents.VideoPlaybackStarted, () => console.log('<<<<<<<<<< VideoPlaybackStarted() >>>>>>>>>>'));
+
     // currentCall.setVideoSettings({width: 720});
 
-    console.log('currentCall.getVideoElementId():');
-    console.log(currentCall.getVideoElementId());
+    console.log('currentCall.getVideoElementId(): ' + currentCall.getVideoElementId());
     console.log('          beginCall() end >>>>>>>>>>');
 }
 // Begin text chat
@@ -277,25 +274,3 @@ export function turnMic(flag) {
 
     console.log('           turnMic() end >>>>>>>>>>');
 }
-
-//=============================================================================
-// Global VoxImplant instance event handlers
-//=============================================================================
-
-// SDK ready - functions can be called now
-function onSdkReady() {}
-
-// Connection with VoxImplant established
-function onConnectionEstablished() {
-    voxAPI.login(username + '@' + application_name + '.' + account_name + '.voximplant.com', password);
-}
-
-// Connection with VoxImplant failed
-function onConnectionFailed() {
-    setTimeout(function () {
-        voxAPI.connect();
-    }, 1000);
-}
-
-// Connection with VoxImplant closed
-function onConnectionClosed() {}
