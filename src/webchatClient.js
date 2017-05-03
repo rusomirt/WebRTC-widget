@@ -1,12 +1,21 @@
+// Preact imports
 import {h, render, Component} from 'preact';
 import classNames from 'classnames/bind';
-import 'font-awesome-webpack';
-// import * as VoxImplant from 'voximplant-websdk';
-import * as VoxImplant from './lib/voximplant.min.js';
 
+// NPM package for working with font-awesome icons
+import 'font-awesome-webpack';
+
+// VoxImplant library
+// import * as VoxImplant from 'voximplant-websdk';
+import * as VoxImplant from './lib/voximplant.min.js';  // onProgressToneStart event fixed
+
+// VoxImplant API custom functions
 import * as vox from 'api/voxClient';
+
+// Stylesheets for component
 import styles from './webchatClient.scss';
 
+// Images
 import lukesLogo from './img/lukes-logo.png';
 import mewLogo from './img/mew-logo.png';
 import oxidoLogo from './img/oxido-logo.png';
@@ -16,6 +25,7 @@ import flexMusselsLogo from './img/flex-mussels-logo.png';
 // instead of cn(styles['class1'], styles['class2'])
 let cn = classNames.bind(styles);
 
+// Top-level webchat client component
 class WebchatClient extends Component {
     constructor() {
         super();
@@ -282,6 +292,7 @@ class WebchatClient extends Component {
     }
 }
 
+// Shown in initial mode and allows to select chat mode (voice/video/text)
 class SelectMode extends Component {
     constructor() {
         super();
@@ -326,125 +337,7 @@ class SelectMode extends Component {
     }
 }
 
-class ChatPanel extends Component {
-    constructor() {
-        super();
-        this.state = {
-            isSoundOn: true,
-            isMicOn: true,
-        };
-        this.turnSound = this.turnSound.bind(this);
-        this.turnMic = this.turnMic.bind(this);
-    }
-
-    turnSound() {
-        vox.turnSound(!this.state.isSoundOn);
-        this.setState({isSoundOn: !this.state.isSoundOn});
-    }
-    turnMic() {
-        vox.turnMic(!this.state.isMicOn);
-        this.setState({isMicOn: !this.state.isMicOn});
-    }
-
-    render(props, state) {
-        const stopBtn =
-            <button
-                className={cn('chat__btn--stop')}
-                onClick={props.stopChat}>
-                <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--lg')}></span>
-            </button>;
-
-        let switchVideoMode = () => {
-            if (props.chatMode === 'video') {
-                props.switchMode('voice');
-            } else {
-                props.switchMode('video');
-            }
-        };
-
-        const videoBtn =
-            <button className={cn('chat__btn--small')}
-                    onClick={switchVideoMode}>
-                <span className={cn('fa fa-video-camera', {'icon--crossed': props.chatMode === 'video'},
-                    'icon', 'icon--color', 'icon--xs')}></span>
-            </button>;
-
-        const voiceBtn =
-            <button className={cn('chat__btn--small')}
-                    onClick={() => props.switchMode('voice')}>
-                <span className={cn('fa fa-phone', 'icon--arrowed', 'icon', 'icon--color', 'icon--xs')}></span>
-            </button>;
-
-        const textBtn =
-            <button className={cn('chat__btn--small')}
-                    onClick={() => props.switchMode('text')}>
-                <span className={cn('fa fa-comments', 'icon', 'icon--color', 'icon--sm')}></span>
-            </button>;
-
-        const soundBtn =
-            <button className={cn('chat__btn--small')}
-                    onClick={this.turnSound}>
-                <span className={cn('fa', {'fa-volume-off': this.state.isSoundOn}, {'fa-volume-up': !this.state.isSoundOn},
-                    'icon', 'icon--color', 'icon--sm')}></span>
-            </button>;
-
-        const micBtn =
-            <button className={cn('chat__btn--small')}
-                    onClick={this.turnMic}>
-                <span className={cn('fa', {'fa-microphone-slash': this.state.isMicOn}, {'fa-microphone': !this.state.isMicOn},
-                    'icon', 'icon--color', 'icon--sm')}></span>
-            </button>;
-
-        let leftGroup = null;
-        let rightGroup = null;
-        switch (props.chatMode) {
-            case 'connectingVideo':
-            case 'connectingVoice':
-            case 'voice':
-                leftGroup =
-                    <div className={cn('chat__btns-group')}>
-                        {videoBtn}
-                        {textBtn}
-                    </div>;
-                rightGroup =
-                    <div className={cn('chat__btns-group')}>
-                        {soundBtn}
-                        {micBtn}
-                    </div>;
-                break;
-            case 'video':
-                leftGroup =
-                    <div className={cn('chat__btns-group')}>
-                        {videoBtn}
-                    </div>;
-                rightGroup =
-                    <div className={cn('chat__btns-group')}>
-                        {textBtn}
-                        {micBtn}
-                    </div>;
-                break;
-            case 'text':
-                leftGroup =
-                    <div className={cn('chat__btns-group')}>
-                        {videoBtn}
-                    </div>;
-                rightGroup =
-                    <div className={cn('chat__btns-group')}>
-                        {voiceBtn}
-                    </div>;
-                break;
-        }
-
-        return (
-            <div className={cn('chat__panel')}>
-                {leftGroup}
-                {stopBtn}
-                {rightGroup}
-            </div>
-        );
-    }
-}
-
+// Chat block
 const Chat = (props) => {
 
     let chatInfo = null;
@@ -695,6 +588,127 @@ const Chat = (props) => {
     );
 };
 
+// Panel providing chat actions
+class ChatPanel extends Component {
+    constructor() {
+        super();
+        this.state = {
+            isSoundOn: true,
+            isMicOn: true,
+        };
+        this.turnSound = this.turnSound.bind(this);
+        this.turnMic = this.turnMic.bind(this);
+    }
+
+    turnSound() {
+        vox.turnSound(!this.state.isSoundOn);
+        this.setState({isSoundOn: !this.state.isSoundOn});
+    }
+    turnMic() {
+        vox.turnMic(!this.state.isMicOn);
+        this.setState({isMicOn: !this.state.isMicOn});
+    }
+
+    render(props, state) {
+        const stopBtn =
+            <button
+                className={cn('chat__btn--stop')}
+                onClick={props.stopChat}>
+                <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--lg')}></span>
+            </button>;
+
+        let switchVideoMode = () => {
+            if (props.chatMode === 'video') {
+                props.switchMode('voice');
+            } else {
+                props.switchMode('video');
+            }
+        };
+
+        const videoBtn =
+            <button className={cn('chat__btn--small')}
+                    onClick={switchVideoMode}>
+                <span className={cn('fa fa-video-camera', {'icon--crossed': props.chatMode === 'video'},
+                    'icon', 'icon--color', 'icon--xs')}></span>
+            </button>;
+
+        const voiceBtn =
+            <button className={cn('chat__btn--small')}
+                    onClick={() => props.switchMode('voice')}>
+                <span className={cn('fa fa-phone', 'icon--arrowed', 'icon', 'icon--color', 'icon--xs')}></span>
+            </button>;
+
+        const textBtn =
+            <button className={cn('chat__btn--small')}
+                    onClick={() => props.switchMode('text')}>
+                <span className={cn('fa fa-comments', 'icon', 'icon--color', 'icon--sm')}></span>
+            </button>;
+
+        const soundBtn =
+            <button className={cn('chat__btn--small')}
+                    onClick={this.turnSound}>
+                <span className={cn('fa', {'fa-volume-off': this.state.isSoundOn}, {'fa-volume-up': !this.state.isSoundOn},
+                    'icon', 'icon--color', 'icon--sm')}></span>
+            </button>;
+
+        const micBtn =
+            <button className={cn('chat__btn--small')}
+                    onClick={this.turnMic}>
+                <span className={cn('fa', {'fa-microphone-slash': this.state.isMicOn}, {'fa-microphone': !this.state.isMicOn},
+                    'icon', 'icon--color', 'icon--sm')}></span>
+            </button>;
+
+        let leftGroup = null;
+        let rightGroup = null;
+        switch (props.chatMode) {
+            case 'connectingVideo':
+            case 'connectingVoice':
+            case 'voice':
+                leftGroup =
+                    <div className={cn('chat__btns-group')}>
+                        {videoBtn}
+                        {textBtn}
+                    </div>;
+                rightGroup =
+                    <div className={cn('chat__btns-group')}>
+                        {soundBtn}
+                        {micBtn}
+                    </div>;
+                break;
+            case 'video':
+                leftGroup =
+                    <div className={cn('chat__btns-group')}>
+                        {videoBtn}
+                    </div>;
+                rightGroup =
+                    <div className={cn('chat__btns-group')}>
+                        {textBtn}
+                        {micBtn}
+                    </div>;
+                break;
+            case 'text':
+                leftGroup =
+                    <div className={cn('chat__btns-group')}>
+                        {videoBtn}
+                    </div>;
+                rightGroup =
+                    <div className={cn('chat__btns-group')}>
+                        {voiceBtn}
+                    </div>;
+                break;
+        }
+
+        return (
+            <div className={cn('chat__panel')}>
+                {leftGroup}
+                {stopBtn}
+                {rightGroup}
+            </div>
+        );
+    }
+}
+
+// Timer of call duration
 class Timer extends Component {
     constructor() {
         super();
@@ -732,6 +746,7 @@ class Timer extends Component {
     }
 }
 
+// Star rating
 const Rating = (props) => {
     let starsArray = [];
     // Each star is represented by full star input (hidden), full star label,
@@ -773,6 +788,7 @@ const Rating = (props) => {
     );
 };
 
+// Parameterized render to HTML
 module.exports = function createWidget(node, settings) {
     render(<WebchatClient settings={settings}/>, node);
 };
