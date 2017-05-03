@@ -94,6 +94,7 @@ class WebchatClient extends Component {
                 vox.beginChat();
             }
         }
+        console.log('new chatMode = ' + this.state.chatMode);
         console.log('           startChat() end =========>');
     }
     switchMode(nextMode) {
@@ -117,6 +118,7 @@ class WebchatClient extends Component {
             chatMode: nextMode,
             isModeChanged: true
         });
+        console.log('new chatMode = ' + this.state.chatMode);
         console.log('           switchMode() end =========>');
     }
     stopChat() {
@@ -136,13 +138,17 @@ class WebchatClient extends Component {
             chatMode: (isConnectingMode) ? 'idle' : 'endCall',
             isModeChanged: true,
         });
+        console.log('new chatMode = ' + this.state.chatMode);
         console.log('           stopChat() end =========>');
     }
     backToInitial() {
+        console.log('<========= backToInitial() begin');
         this.setState({
             chatMode: 'idle',
             isModeChanged: true,
         });
+        console.log('new chatMode = ' + this.state.chatMode);
+        console.log('           backToInitial() end =========>');
     }
 
     // Events from VoxImplant
@@ -174,15 +180,19 @@ class WebchatClient extends Component {
         }
         this.setState({isModeChanged: true});
 
-        console.log('            onCallConnected() end =========>');
+        console.log('new chatMode = ' + this.state.chatMode);
+        console.log('             onCallConnected() end =========>');
     }
     onCallDisconnected() {
         console.log('<========= onCallDisconnected() begin');
         vox.currentCall = null; // clear call instance
         this.setState({
-            chatMode: 'endCall',
+            // If chat has been stopped while call connecting, keep 'idle' state,
+            // if chat was connected - go to 'endCall' screen
+            chatMode: (this.state.chatMode === 'idle') ? 'idle' : 'endCall',
             isModeChanged: true,
         });
+        console.log('new chatMode = ' + this.state.chatMode);
         console.log('           onCallDisconnected() end =========>');
     }
     onCallFailed(e) {
@@ -193,6 +203,7 @@ class WebchatClient extends Component {
                 chatMode: 'notAvailable',
                 isModeChanged: true,
             });
+        console.log('new chatMode = ' + this.state.chatMode);
         console.log('           onCallFailed() end =========>');
     }
 
