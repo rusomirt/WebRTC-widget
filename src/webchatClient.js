@@ -723,17 +723,19 @@ const Rating = (props) => {
         const fullId = props.inputName + '_star_' + i + '_0';
         const fullValue = i;
         const fullChecked = ((props.initValue - fullValue) >= 0) && ((props.initValue - fullValue) < 0.5);
+        const fullTitle = (props.clickable) ? (i + ' stars') : (props.initValue + ' stars');
         const inputFull = <input type='radio' id={fullId} name={props.inputName} value={fullValue}
                    defaultChecked={fullChecked} disabled={!props.clickable}/>;
-        const labelFull = <label className={cn('rating__full-star')} htmlFor={fullId}></label>;
+        const labelFull = <label className={cn('rating__full-star')} htmlFor={fullId} title={fullTitle}></label>;
 
         // Half star
         const halfId = props.inputName + '_star_' + (i - 1) + '_5';
         const halfValue = i - 0.5;
         const halfChecked = ((props.initValue - halfValue) >= 0) && ((props.initValue - halfValue) < 0.5);
+        const halfTitle = (props.clickable) ? ((i - 0.5) + ' stars') : (props.initValue + ' stars');
         const inputHalf = <input type='radio' id={halfId} name={props.inputName} value={halfValue}
                    defaultChecked={halfChecked} disabled={!props.clickable}/>;
-        const labelHalf = <label className={cn('rating__half-star')} htmlFor={halfId}></label>;
+        const labelHalf = <label className={cn('rating__half-star')} htmlFor={halfId} title={halfTitle}></label>;
 
         // Add in array
         starsArray.push(inputFull);
@@ -741,6 +743,7 @@ const Rating = (props) => {
         starsArray.push(inputHalf);
         starsArray.push(labelHalf);
     }
+
     return (
         <fieldset
             className={cn('rating', {'hoverable': props.clickable})}
