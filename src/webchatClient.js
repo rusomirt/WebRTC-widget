@@ -1,6 +1,5 @@
 import {h, render, Component} from 'preact';
 import classNames from 'classnames/bind';
-import './font-awesome/css/font-awesome.css';
 import 'font-awesome-webpack';
 // import * as VoxImplant from 'voximplant-websdk';
 import * as VoxImplant from './lib/voximplant.min.js';
