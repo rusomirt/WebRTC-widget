@@ -458,11 +458,7 @@ const Chat = (props) => {
                         </div>
                     </div>
                 </div>;
-            messenger =
-                <div className={cn('msgr')}>
-                    <div className={cn('msgr__history')}></div>
-                    <input className={cn('msgr__input')} type='text' name='message'/>
-                </div>;
+            messenger = <Messenger />;
             break;
         case 'endCall':
             chatInfo =
@@ -589,6 +585,175 @@ const Chat = (props) => {
         </div>
     );
 };
+
+
+// Text messenger
+// https://www.coderfactoryacademy.edu.au/posts/how-you-can-build-facebook-messenger-chat-app-with-reactjs
+class Messenger extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            messages: [
+                {
+                    fromMe: false,
+                    text: 'Hello! how can I help you?',
+                    timeStamp: '5:22pm'
+                },
+                {
+                    fromMe: true,
+                    text: 'Hey! Can I make reservation for 2? Let\'s say 8 pm?',
+                    timeStamp: '5:23pm'
+                },
+                {
+                    fromMe: false,
+                    text: 'Sure! under which name?',
+                    timeStamp: '5:23pm'
+                },
+            ]
+        };
+        this.onSend = this.onSend.bind(this);
+    }
+    // Send text from input field and add it in the messages list
+    onSend(messageText) {
+        // console.log('<========= onSend() in Messenger');
+        // console.log('messageText = ' + messageText);
+
+        const now = new Date();
+        const nowHours = (now.getHours() <= 12) ? ((now.getHours() === 0) ? 12 : now.getHours()) : (now.getHours() - 12);
+        const dayTime = (now.getHours() < 12) ? 'am' : 'pm';
+        const nowMinutes = ((now.getMinutes() < 10) ? '0' : '') + now.getMinutes();
+        const messageTime = nowHours + ':' + nowMinutes + dayTime;
+        // console.log(now);
+        // console.log(nowHours);
+        // console.log(dayTime);
+        // console.log(nowMinutes);
+        // console.log('messageTime = ' + messageTime);
+
+        const message = {
+            fromMe: true,
+            text: messageText,
+            timeStamp: messageTime
+        };
+        // console.log('message:');
+        // console.log(message);
+
+        this.addMessageToList(message);
+
+        // console.log('new state:');
+        // console.log(this.state);
+        //
+        // console.log('          onSend() in Messenger =========>');
+    }
+    // Append the message to the component state
+    addMessageToList(message) {
+        const messages = this.state.messages;
+        messages.push(message);
+        this.setState({ messages });
+    }
+    render(props, state) {
+        return (
+            <div className={cn('msgr')}>
+                <Messages messages={this.state.messages} />
+                <ChatInput onSend={this.onSend} />
+            </div>
+        );
+    }
+}
+// Text messenger: messages
+class Messages extends Component {
+    componentDidUpdate() {
+        console.log('<========= componentDidUpdate()');
+        // There is a new message in the list, scroll to bottom of list
+        const objDiv = this.nodeMessages;
+        console.log(objDiv);
+        objDiv.scrollTop = objDiv.scrollHeight;
+        console.log('           componentDidUpdate() =========>');
+    }
+    render(props, state) {
+        // Loop through all the messages in the state and create a Message component for each
+        const messages = this.props.messages.map((message, i) => {
+            return (
+                <Message
+                    key={i}
+                    text={message.text}
+                    fromMe={message.fromMe}
+                    timeStamp={message.timeStamp}/>
+            );
+        });
+
+        return (
+            <div className={cn('msgr__list')} ref={node => this.nodeMessages = node}>
+                { messages }
+            </div>
+        );
+    }
+}
+// Text messenger: message
+class Message extends Component {
+    render(props, state) {
+        // Was the message sent by the current user. If so, add a css class
+        const msgClassModifier = this.props.fromMe ? 'msgr__msg--out' : 'msgr__msg--in';
+        const msgBodyClassModifier = this.props.fromMe ? 'msgr__msg-body--out' : 'msgr__msg-body--in';
+        const msgInfoClassModifier = this.props.fromMe ? 'msgr__msg-info--out' : 'msgr__msg-info--in';
+        const msgAuthor = this.props.fromMe ? 'me' : 'Luke\'s';
+        const msgTime = this.props.timeStamp;
+
+        return (
+            <div className={cn('msgr__msg', `${msgClassModifier}`)}>
+                <div className={cn('msgr__msg-body', `${msgBodyClassModifier}`)}>
+                    { this.props.text }
+                </div>
+                <div className={cn('msgr__msg-info', `${msgInfoClassModifier}`)}>
+                    { msgAuthor + ' ' + msgTime }
+                </div>
+            </div>
+        );
+    }
+}
+// Text messenger: input
+class ChatInput extends Component {
+    constructor(props) {
+        super(props);
+        this.state = { chatInput: '' };
+
+        this.onSubmit = this.onSubmit.bind(this);
+        this.textChangeHandler = this.textChangeHandler.bind(this);
+    }
+
+    onSubmit(event) {
+        // console.log('<========= onSubmit() in ChatInput');
+        // console.log('this.state.chatInput:');
+        // console.log(this.state.chatInput);
+
+        event.preventDefault();     // Stop the form from refreshing the page on submit
+        // Call the onSend callback with the chatInput message
+        this.props.onSend(this.state.chatInput);
+        // Clear the input box
+        this.setState({ chatInput: '' });
+
+        // console.log('        onSubmit() in ChatInput ======>');
+    }
+
+    textChangeHandler(event)  {
+        this.setState({ chatInput: event.target.value });
+    }
+
+    render(props, state) {
+        return (
+            <form className={cn('msgr__input-form')} onSubmit={this.onSubmit}>
+                <input type="text"
+                       className={cn('msgr__input')}
+                       onChange={this.textChangeHandler}
+                       placeholder="Write a message..."
+                       value={this.state.chatInput}
+                       required />
+            </form>
+        );
+    }
+}
+
+
+
 
 // Panel providing chat actions
 class ChatPanel extends Component {
