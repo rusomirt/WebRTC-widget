@@ -90,16 +90,17 @@ $webchat-btns-c: $webchat-c-main;
   .webchat__chat-btn {
     @extend .btn--circle;
     position: absolute;
-    right: 0;
-    bottom: 0;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 1s;
 
     width: $webchat-chat-btn-size;
     height: $webchat-chat-btn-size;
-    display: none;  // initially hidden
     background-color: $webchat-btns-c;
   }
-  .webchat__chat-btn--showed {
-    display: block; // displayed after click on 'launch-btn'
+  .webchat__chat-btn--hidden {
+    opacity: 0 !important;
+    visibility: hidden !important;
   }
 
   .webchat__chat-btn--video {

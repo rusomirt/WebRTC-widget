@@ -395,19 +395,19 @@ class SelectMode extends Component {
                 </button>
                 <button
                     className={ cn('webchat__chat-btn', 'webchat__chat-btn--video',
-                        {'webchat__chat-btn--showed': this.state.isChatBtnsOpen})}
+                        {'webchat__chat-btn--hidden': !this.state.isChatBtnsOpen})}
                     onClick={() => props.startChat('video')}>
                 <span className={cn('fa fa-video-camera', 'icon', 'icon--white', 'icon--sm')}></span>
                 </button>
                 <button
                     className={ cn('webchat__chat-btn', 'webchat__chat-btn--voice',
-                        {'webchat__chat-btn--showed': this.state.isChatBtnsOpen})}
+                        {'webchat__chat-btn--hidden': !this.state.isChatBtnsOpen})}
                     onClick={() => props.startChat('voice')}>
                     <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--sm')}></span>
                 </button>
                 <button
                     className={ cn('webchat__chat-btn', 'webchat__chat-btn--text',
-                        {'webchat__chat-btn--showed': this.state.isChatBtnsOpen})}
+                        {'webchat__chat-btn--hidden': !this.state.isChatBtnsOpen})}
                     onClick={() => props.startChat('text')}>
                     <span className={cn('fa fa-comments', 'icon', 'icon--white', 'icon--sm')}></span>
                 </button>
