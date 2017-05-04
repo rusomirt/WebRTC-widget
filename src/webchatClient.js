@@ -208,7 +208,7 @@ class WebchatClient extends Component {
         this.setState({
             // If chat has been stopped while call connecting, keep 'idle' state,
             // if chat was connected - go to 'endCall' screen
-            chatMode: (this.state.chatMode === 'idle') ? 'idle' : 'endCall',
+            chatMode: (this.state.chatMode === 'idle') ? 'idle' : ((this.state.chatMode === 'text') ? 'text' : 'endCall'),
             isModeChanged: true,
         });
         console.log('new chatMode = ' + this.state.chatMode);

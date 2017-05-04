@@ -486,7 +486,6 @@ $msgr-input-font-color: #4a4a4a;
       margin-bottom: 14px;
       clear: both;
       max-width: 100%;
-      word-wrap: break-word;
 
       &.msgr__msg--in {
         align-self: flex-end;
@@ -502,6 +501,7 @@ $msgr-input-font-color: #4a4a4a;
         color: white;
         font-family: 'Lucida Grande', sans-serif;
         font-size: 16px;
+        word-wrap: break-word;
 
         &.msgr__msg-body--in {
           background-color: $webchat-c-bluedark;

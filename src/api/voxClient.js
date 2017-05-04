@@ -23,7 +23,6 @@ export let username,                       // VoxImplant connection parameters
 export let currentCall = null;      // call global instances
 
 export let currentConv;
-let conversations = [];
 
 export let voxAPI;                  // object for VoxImplant instance
 export let voxChatAPI;              // object for messenger instance
@@ -80,32 +79,55 @@ export function initMessenger() {
     voxChatAPI.on(VoxImplant.MessagingEvents.onCreateConversation, (e) => {
         console.log('<<<<<<<<<< onCreateConversation begin');
 
-        console.log('conversations array before push:');
-        console.log(conversations);
-
-        conversations.push(e.conversation);
-
-        console.log('conversations array after push:');
-        console.log(conversations);
-
-        currentConv = conversations[0];
+        currentConv = e.conversation;
         console.log('currentConv:');
         console.log(currentConv);
-        // currentConv.sendMessage('Hello!');
+
+        // voxChatAPI.getUser('skalatskyalexey-2nd@videochat.xlucidity');
+        // voxChatAPI.getUser('blablabla');
 
         console.log('           onCreateConversation end >>>>>>>>>>');
     });
     voxChatAPI.on(VoxImplant.MessagingEvents.onRemoveConversation, (e) => {
         console.log('<<<<<<<<<< onRemoveConversation begin');
-        console.log(e);
-        console.log('conversations:');
-        console.log(conversations);
+        console.log('removed conversation uuid: ' + e.conversation.uuid);
         console.log('           onRemoveConversation end >>>>>>>>>>');
     });
     voxChatAPI.on(VoxImplant.MessagingEvents.onError, (e) => {
         console.log('<<<<<<<<<< onError begin');
         console.log(e);
         console.log('          onError end >>>>>>>>>>');
+    });
+    voxChatAPI.on(VoxImplant.MessagingEvents.onGetUser, (e) => {
+        console.log('<<<<<<<<<< onGetUser begin');
+        console.log(e.user);
+        console.log('currentConv:');
+        console.log(currentConv);
+
+        // If it's local user
+        if (e.user.userId === voxChatAPI.getMe()) {
+            console.log('My conversations.length:');
+            console.log(e.user.conversationsList.length);
+
+            // If there is an unremoved conversation from last messenger launch - remove it.
+            // It may happen if chat was not closed correctly (page reload or network disconnect).
+            if (e.user.conversationsList.length > 0) {
+                console.log('Removing pending conversation ' + e.user.conversationsList[0]);
+                voxChatAPI.removeConversation(e.user.conversationsList[0]);
+            }
+
+            // Create new conversation
+            const participants = [{
+                userId: dest_username + '@' + application_name + '.' + account_name,
+                canManageParticipants: false, canWrite: true
+            }];
+            const title = 'Test text chat';
+            const isDistinct = false;
+            const enablePublicJoin = true;
+            voxChatAPI.createConversation(participants, title, isDistinct, enablePublicJoin);
+        }
+
+        console.log('          onGetUser end >>>>>>>>>>');
     });
 
     console.log('           initMessenger() end >>>>>>>>>>');
@@ -149,31 +171,19 @@ export function beginCall(callMode) {
 export function beginChat() {
     console.log('<<<<<<<<<< beginChat() begin');
 
-    console.log('voxAPI:');
-    console.log(voxAPI);
+    // console.log('voxAPI:');
+    // console.log(voxAPI);
+    //
+    // console.log('voxChatAPI:');
+    // console.log(voxChatAPI);
+    //
+    // console.log('currentCall:');
+    // console.log(currentCall);
 
-    console.log('voxChatAPI:');
-    console.log(voxChatAPI);
+    // Get local user to check if there is unremoved conversation
+    // and to create a new conversation
+    voxChatAPI.getUser(voxChatAPI.getMe());
 
-    console.log('currentCall:');
-    console.log(currentCall);
-
-    try {
-        const participants = [{
-            userId: dest_username + '@' + application_name + '.' + account_name,
-            canManageParticipants: false, canWrite: true
-        }];
-        const title = 'Test text chat';
-        const isDistinct = false;
-        const enablePublicJoin = true;
-        voxChatAPI.createConversation(participants, title, isDistinct, enablePublicJoin);
-
-        console.log('conversations:');
-        console.log(conversations);
-    } catch (e) {
-        console.log('! CAUGHT ERROR !');
-        console.log(e);
-    }
     console.log('           beginChat() end >>>>>>>>>>');
 }
 // Hangup outbound chat
@@ -189,7 +199,9 @@ export function stopChat(callMode) {
         console.log(currentCall);
     } else if (callMode === 'text') {
         console.log('stopping text chat');
-        conversations = [];
+        console.log('removing conversation with uuid ' + currentConv.uuid);
+        voxChatAPI.removeConversation(currentConv.uuid);
+        currentConv = null;
         console.log('text chat has been stopped');
     }
     console.log('           stopChat() end >>>>>>>>>>');
