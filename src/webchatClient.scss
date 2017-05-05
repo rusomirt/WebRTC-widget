@@ -476,10 +476,10 @@ $msgr-input-font-color: #4a4a4a;
   padding: $msgr-p;
 
   .msgr__list {
-    height: 400px;  // debug
+    height: 280px;      // debug
 
     width: $msgr-list-w;
-    max-width: 100%; // shrink on screens < $msgr-list-w
+    max-width: 100%;    // shrink on screens < $msgr-list-w
     overflow-y: auto;
     overflow-x: hidden;
     display: flex;
