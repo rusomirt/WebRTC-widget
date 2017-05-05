@@ -86,7 +86,7 @@ class WebchatClient extends Component {
         } else {
             return;
         }
-
+        
         this.setState({isModeChanged: true});
         // vox.createChat(demandedMode);
 
@@ -116,23 +116,23 @@ class WebchatClient extends Component {
         console.log('<========= switchMode() begin');
         console.log('nextMode = ' + nextMode);
 
-        if (this.state.chatMode === 'text') {
-            // TODO: Hangup chat correctly
-
-            console.log('starting call');
-            this.startChat(nextMode);
-        }
-        else if (nextMode === 'text') {
-            console.log('stopping call');
+        // If this is switching between voice & video - just change chatMode.
+        // Video displaying parameters will be set in componentDidUpdate() event handler.
+        if (this.state.chatMode !== 'text' && nextMode !== 'text') {
+            console.log('Just change chatMode');
+            this.setState({
+                chatMode: nextMode,
+                isModeChanged: true
+            });
+        } else {
+            // if this is switching between voice/video call & text chat -
+            // stop current chat and start a new one
+            console.log('stopping ' + this.state.chatMode);
             vox.stopChat(this.state.chatMode);
-            console.log('starting text chat');
+            console.log('starting ' + nextMode);
             this.startChat(nextMode);
         }
 
-        this.setState({
-            chatMode: nextMode,
-            isModeChanged: true
-        });
         console.log('new chatMode = ' + this.state.chatMode);
         console.log('           switchMode() end =========>');
     }
