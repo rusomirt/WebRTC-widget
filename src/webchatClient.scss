@@ -480,7 +480,7 @@ $msgr-input-font-color: #4a4a4a;
 
     width: $msgr-list-w;
     max-width: 100%;    // shrink on screens < $msgr-list-w
-    overflow-y: auto;
+    overflow-y: hidden;
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
