@@ -701,8 +701,10 @@ class Messages extends Component {
         });
 
         return (
-            <div className={cn('msgr__list')} ref={node => this.nodeMessages = node}>
-                { messages }
+            <div className={cn('msgr__list-wrapper')}>
+                <div className={cn('msgr__list')} ref={node => this.nodeMessages = node}>
+                    { messages }
+                </div>
             </div>
         );
     }

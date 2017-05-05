@@ -475,58 +475,65 @@ $msgr-input-font-color: #4a4a4a;
   margin-bottom: $msgr-mb;
   padding: $msgr-p;
 
-  .msgr__list {
-    height: 280px;      // debug
+  .msgr__list-wrapper {
+    height: 280px; // debug
 
     width: $msgr-list-w;
-    max-width: 100%;    // shrink on screens < $msgr-list-w
-    overflow-y: hidden;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
+    max-width: 100%; // shrink on screens < $msgr-list-w
+    overflow: hidden;
 
-    .msgr__msg {
-      margin-bottom: 14px;
-      clear: both;
-      max-width: 100%;
+    .msgr__list {
+      width: 100%;
+      height: 100%;
+      padding-right: 18px;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
 
-      &.msgr__msg--in {
-        align-self: flex-end;
-      }
-      &.msgr__msg--out {
-        align-self: flex-start;
-      }
+      .msgr__msg {
+        margin-bottom: 14px;
+        clear: both;
+        max-width: 100%;
 
-      .msgr__msg-body {
-        margin-bottom: 4px;
-        padding: 8px 16px;
-        border-radius: 26px;
-        color: white;
-        font-family: 'Lucida Grande', sans-serif;
-        font-size: 16px;
-        word-wrap: break-word;
-
-        &.msgr__msg-body--in {
-          background-color: $webchat-c-bluedark;
-          border-bottom-right-radius: 0;
-          text-align: right;
+        &.msgr__msg--in {
+          align-self: flex-end;
         }
-        &.msgr__msg-body--out {
-          background-color: $webchat-c-bluelight;
-          border-bottom-left-radius: 0;
+        &.msgr__msg--out {
+          align-self: flex-start;
         }
-      }
-      .msgr__msg-info {
-        font-family: 'Lucida Grande', sans-serif;
-        font-size: 12px;
 
-        &.msgr__msg-info--in {
-          float: right;
-          color: $webchat-c-bluedark;
+        .msgr__msg-body {
+          margin-bottom: 4px;
+          padding: 8px 16px;
+          border-radius: 26px;
+          color: white;
+          font-family: 'Lucida Grande', sans-serif;
+          font-size: 16px;
+          word-wrap: break-word;
+
+          &.msgr__msg-body--in {
+            background-color: $webchat-c-bluedark;
+            border-bottom-right-radius: 0;
+            text-align: right;
+          }
+          &.msgr__msg-body--out {
+            background-color: $webchat-c-bluelight;
+            border-bottom-left-radius: 0;
+          }
         }
-        &.msgr__msg-info--out {
-          float: left;
-          color: $webchat-c-bluelight;
+        .msgr__msg-info {
+          font-family: 'Lucida Grande', sans-serif;
+          font-size: 12px;
+
+          &.msgr__msg-info--in {
+            float: right;
+            color: $webchat-c-bluedark;
+          }
+          &.msgr__msg-info--out {
+            float: left;
+            color: $webchat-c-bluelight;
+          }
         }
       }
     }
