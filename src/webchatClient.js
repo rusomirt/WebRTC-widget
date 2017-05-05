@@ -2,7 +2,7 @@
 import {h, render, Component} from 'preact';
 import classNames from 'classnames/bind';
 
-// NPM package for working with font-awesome icons
+// NPM package for working with font-awesome icons classes
 import 'font-awesome-webpack';
 
 // VoxImplant library
@@ -684,12 +684,9 @@ class Messenger extends Component {
 // Text messenger: messages
 class Messages extends Component {
     componentDidUpdate() {
-        console.log('<========= componentDidUpdate()');
         // There is a new message in the list, scroll to bottom of list
         const objDiv = this.nodeMessages;
-        console.log(objDiv);
         objDiv.scrollTop = objDiv.scrollHeight;
-        console.log('           componentDidUpdate() =========>');
     }
     render(props, state) {
         // Loop through all the messages in the state and create a Message component for each
