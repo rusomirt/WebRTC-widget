@@ -509,10 +509,16 @@ $msgr-input-font-color: #4a4a4a;
         &.msgr__msg-body--in {
           background-color: $webchat-c-bluedark;
           border-bottom-right-radius: 0;
+          text-align: right;
         }
         &.msgr__msg-body--out {
           background-color: $webchat-c-bluelight;
           border-bottom-left-radius: 0;
+        }
+
+        .msgr__msg-body-inner {
+          display: inline;
+          background: green;
         }
       }
       .msgr__msg-info {
