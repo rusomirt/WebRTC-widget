@@ -67,6 +67,7 @@ $webchat-chat-btn-size: 50px;
 // Distance between chat type buttons (video, voice or text) and chat launch button:
 $webchat-chat-btn-shift: 40px;
 $webchat-btns-c: $webchat-c-main;
+$webchat-btns-show-time: 1s;
 
 .webchat {
   position: fixed;
@@ -92,7 +93,7 @@ $webchat-btns-c: $webchat-c-main;
     position: absolute;
     opacity: 1;
     visibility: visible;
-    transition: opacity 1s;
+    transition: opacity $webchat-btns-show-time;
 
     width: $webchat-chat-btn-size;
     height: $webchat-chat-btn-size;
