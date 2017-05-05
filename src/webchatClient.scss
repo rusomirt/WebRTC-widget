@@ -459,7 +459,7 @@ $temp1: 100% - $chat-btns-group-mx*4;
 
 $msgr-bg-c: white;
 $msgr-mb: $chat-panel-low-b + $chat-panel-h + 14px;
-$msgr-history-w: 400px;
+$msgr-list-w: 400px;
 $msgr-p: 0 15px 15px;
 $msgr-input-w: calc(100% - 30px);
 $msgr-input-p: 10px 16px 12px;
@@ -478,7 +478,8 @@ $msgr-input-font-color: #4a4a4a;
   .msgr__list {
     height: 400px;  // debug
 
-    width: $msgr-history-w;
+    width: $msgr-list-w;
+    max-width: 100%; // shrink on screens < $msgr-list-w
     overflow-y: auto;
     overflow-x: hidden;
     display: flex;
