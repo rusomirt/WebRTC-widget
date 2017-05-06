@@ -683,10 +683,23 @@ class Messenger extends Component {
 }
 // Text messenger: messages
 class Messages extends Component {
+    componentDidMount() {
+        console.log('<========= Messages componentDidMount()');
+        // Hide the scrollbar:
+        // create wrapper with overflow:hidden and expand element by the scrollbar width.
+        const list = this.nodeList;
+        console.log('list.offsetWidth = ' + list.offsetWidth);
+        console.log('list.clientWidth = ' + list.clientWidth);
+        const scrollbarWidth = list.offsetWidth - list.clientWidth;
+        console.log('scrollbarWidth = ' + scrollbarWidth);
+        list.setAttribute('style', `width: calc(100% + ${scrollbarWidth}px)`);
+        console.log('           Messages componentDidMount() =========>');
+    }
+    // There is a new message in the list
     componentDidUpdate() {
-        // There is a new message in the list, scroll to bottom of list
-        const objDiv = this.nodeMessages;
-        objDiv.scrollTop = objDiv.scrollHeight;
+        const list = this.nodeList;
+        // Scroll to bottom of list
+        list.scrollTop = list.scrollHeight;
     }
     render(props, state) {
         // Loop through all the messages in the state and create a Message component for each
@@ -699,10 +712,9 @@ class Messages extends Component {
                     timeStamp={message.timeStamp}/>
             );
         });
-
         return (
             <div className={cn('msgr__list-wrapper')}>
-                <div className={cn('msgr__list')} ref={node => this.nodeMessages = node}>
+                <div className={cn('msgr__list')} ref={node => this.nodeList = node}>
                     { messages }
                 </div>
             </div>

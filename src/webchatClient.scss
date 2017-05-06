@@ -479,17 +479,16 @@ $msgr-input-font-color: #4a4a4a;
   margin-bottom: $msgr-mb;
   padding: $msgr-p;
 
-  .msgr__list-wrapper {
-    height: 280px; // debug
+  .msgr__list-wrapper { // needed for hiding scrollbar
+    height: 280px;      // debug
 
     width: $msgr-list-w;
-    max-width: 100%; // shrink on screens < $msgr-list-w
+    max-width: 100%;    // shrink on screens < $msgr-list-w
     overflow: hidden;
 
     .msgr__list {
-      width: 100%;
+      //width: 100%;    // width is increased by JavaScript to hide scrollbar
       height: 100%;
-      padding-right: 18px;
       overflow-y: scroll;
       overflow-x: hidden;
       display: flex;
