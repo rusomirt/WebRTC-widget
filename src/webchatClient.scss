@@ -244,8 +244,9 @@ $chat-video-out-right: 10px;
 
 .chat {
   position: relative;   /* for abs-positioned .chat__panel*/
-  height: 100%;
-
+  //height: 100%;
+  padding: 1px;
+  
   .chat__info {
     margin-bottom: $chat-info-mb;
 
