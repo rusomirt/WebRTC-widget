@@ -761,13 +761,18 @@ class ChatInput extends Component {
     onSubmit(event) {
         // console.log('<========= onSubmit() in ChatInput');
         // console.log('this.state.chatInput:');
-        // console.log(this.state.chatInput);
+        // console.log('\"' + this.state.chatInput + '\"');
+        const trimmedText = this.state.chatInput.trim();
+        // console.log('\"' + trimmedText + '\"');
 
         event.preventDefault();     // Stop the form from refreshing the page on submit
-        // Call the onSend callback with the chatInput message
-        this.props.onSend(this.state.chatInput);
-        // Clear the input box
-        this.setState({ chatInput: '' });
+
+        if (trimmedText !== '') {
+            // Call the onSend callback with the chatInput message
+            this.props.onSend(trimmedText);
+            // Clear the input box
+            this.setState({chatInput: ''});
+        }
 
         // console.log('        onSubmit() in ChatInput ======>');
     }
@@ -788,7 +793,7 @@ class ChatInput extends Component {
                        onInput={this.textChangeHandler}
                        placeholder="Write a message..."
                        value={this.state.chatInput}
-                       required />
+                />
             </form>
         );
     }
