@@ -602,7 +602,7 @@ const Chat = (props) => {
                             <img className={cn('similar__logo')} src={oxidoLogo}/>
                             <div className={cn('similar__info')}>
                                 <div className={cn('similar__name')}>
-                                    MEW <span className={cn('fa fa-info-circle')}></span>
+                                    Oxido <span className={cn('fa fa-info-circle')}></span>
                                 </div>
                                 <div className={cn('similar__desc')}>
                                     Mexican, Cocktail Bars
@@ -619,7 +619,7 @@ const Chat = (props) => {
                             <img className={cn('similar__logo')} src={flexMusselsLogo}/>
                             <div className={cn('similar__info')}>
                                 <div className={cn('similar__name')}>
-                                    MEW <span className={cn('fa fa-info-circle')}></span>
+                                    Flex Mussels <span className={cn('fa fa-info-circle')}></span>
                                 </div>
                                 <div className={cn('similar__desc')}>
                                     Seafood, Bars
