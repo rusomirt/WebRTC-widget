@@ -67,7 +67,8 @@ let config = {
     },
     resolve: {
         root: [ path.resolve('./src')]
-    }
+    },
+    devtool: 'source-map'
 };
 
 if ( NODE_ENV == 'development' ) {
