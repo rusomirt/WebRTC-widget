@@ -758,18 +758,10 @@ class ChatInput extends Component {
         this.onSubmit = this.onSubmit.bind(this);
         this.textChangeHandler = this.textChangeHandler.bind(this);
     }
-    componentDidMount() {
-        console.log('<========= ChatInput componentDidMount() =========>');
-    }
-    componentDidUpdate() {
-        console.log('<========= ChatInput componentDidUpdate()');
-        console.log('this.state.chatInput = ' + this.state.chatInput);
-        console.log('           ChatInput componentDidUpdate() =========>');
-    }
     onSubmit(event) {
-        console.log('<========= onSubmit() in ChatInput');
-        console.log('this.state.chatInput:');
-        console.log(this.state.chatInput);
+        // console.log('<========= onSubmit() in ChatInput');
+        // console.log('this.state.chatInput:');
+        // console.log(this.state.chatInput);
 
         event.preventDefault();     // Stop the form from refreshing the page on submit
         // Call the onSend callback with the chatInput message
@@ -777,22 +769,22 @@ class ChatInput extends Component {
         // Clear the input box
         this.setState({ chatInput: '' });
 
-        console.log('        onSubmit() in ChatInput ======>');
+        // console.log('        onSubmit() in ChatInput ======>');
     }
     // Every symbol typing changes the state
     textChangeHandler(event)  {
-        console.log('<========= ChatInput textChangeHandler()');
-        console.log('this.state.chatInput old = ' + this.state.chatInput);
+        // console.log('<========= ChatInput textChangeHandler()');
+        // console.log('this.state.chatInput old = ' + this.state.chatInput);
         this.setState({ chatInput: event.target.value });
-        console.log('this.state.chatInput new = ' + this.state.chatInput);
-        console.log('           ChatInput textChangeHandler() =========>');
+        // console.log('this.state.chatInput new = ' + this.state.chatInput);
+        // console.log('           ChatInput textChangeHandler() =========>');
     }
     render(props, state) {
         return (
             <form className={cn('msgr__input-form')} onSubmit={this.onSubmit}>
                 <input type="text"
                        className={cn('msgr__input')}
-                       // onChange works only on focus loosing in Preact
+                       // onChange works only on focus loosing in Preact so use onInput instead
                        onInput={this.textChangeHandler}
                        placeholder="Write a message..."
                        value={this.state.chatInput}
