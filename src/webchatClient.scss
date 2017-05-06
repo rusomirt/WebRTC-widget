@@ -246,7 +246,7 @@ $chat-video-out-right: 10px;
   position: relative;   /* for abs-positioned .chat__panel*/
   //height: 100%;
   padding: 1px;
-  
+
   .chat__info {
     margin-bottom: $chat-info-mb;
 
@@ -292,6 +292,9 @@ $chat-video-out-right: 10px;
       }
 
       .chat__phone-input-wrapper {
+        display: flex;
+        justify-content: center;
+
         .chat__phone-input {
           padding: $chat-phone-input-p;
           outline: none;
