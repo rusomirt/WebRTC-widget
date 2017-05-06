@@ -46,6 +46,7 @@ export function init(settings) {
     // Assign handlers
     voxAPI.addEventListener(VoxImplant.Events.SDKReady, () => {});
     voxAPI.addEventListener(VoxImplant.Events.ConnectionEstablished, () => {
+        console.log('<<<<<<<<<< onConnectionEstablished() >>>>>>>>>>');
         voxAPI.login(username + '@' + application_name + '.' + account_name + '.voximplant.com', password);
     });
     voxAPI.addEventListener(VoxImplant.Events.ConnectionFailed, () => {
@@ -55,6 +56,9 @@ export function init(settings) {
         }, 1000);
     });
     voxAPI.addEventListener(VoxImplant.Events.ConnectionClosed, () => {});
+    voxAPI.addEventListener(VoxImplant.Events.MicAccessResult, () => {
+        console.log('<<<<<<<<<< onMicAccessResult() >>>>>>>>>>');
+    });
 
     // Initialize SDK
     voxAPI.init({
