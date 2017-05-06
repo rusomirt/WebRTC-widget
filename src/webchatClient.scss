@@ -465,7 +465,7 @@ $msgr-bg-c: white;
 $msgr-mb: $chat-panel-low-b + $chat-panel-h + 14px;
 $msgr-list-w: 400px;
 $msgr-p: 0 15px 15px;
-$msgr-input-w: calc(100% - 30px);
+$msgr-input-w: calc(100% - 16px*2);
 $msgr-input-p: 10px 16px 12px;
 $msgr-input-border-radius: 8px;
 $msgr-input-shadow: 0 0 4px 0 rgba(0,0,0,0.1);
@@ -543,10 +543,10 @@ $msgr-input-font-color: #4a4a4a;
   }
 
   .msgr__input-form {
-    width: $msgr-input-w;
+    width: 100%;
 
     .msgr__input {
-      width: 100%;
+      width: $msgr-input-w;
       padding: $msgr-input-p;
       outline: none;
       border: none;
