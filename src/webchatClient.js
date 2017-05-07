@@ -33,7 +33,7 @@ class WebchatClient extends Component {
             // Allowed chatMode values:
             // 'idle', 'connectingVideo', 'video', 'connectingVoice',
             // 'voice', 'text', 'endCall', 'notAvailable'.
-            chatMode: 'idle',
+            chatMode: 'notAvailable',
             isModeChanged: false,   // checked in componentDidUpdated()
             messages: []
         };
@@ -576,6 +576,32 @@ const Chat = (props) => {
                 </div>;
                 break;
         case 'notAvailable':
+            const restaurants = [
+                {
+                    logo: mewLogo,
+                    name: 'MEW',
+                    desc: 'Sushi Bars, Izakaya Cocktail Bars',
+                    rating: 2.7,
+                    ratingMax: 5,
+                    callHandler: () => {alert('restaurant #1')}
+                },
+                {
+                    logo: oxidoLogo,
+                    name: 'Oxido',
+                    desc: 'Mexican, Cocktail Bars',
+                    rating: 4.4,
+                    ratingMax: 5,
+                    callHandler: () => {alert('restaurant #2')}
+                },
+                {
+                    logo: flexMusselsLogo,
+                    name: 'Flex Mussels',
+                    desc: 'Seafood, Bars',
+                    rating: 5,
+                    ratingMax: 5,
+                    callHandler: () => {alert('restaurant #3')}
+                },
+            ];
             chatInfo =
                 <div className={cn('chat__info', 'chat__info--short')}>
                     <div className={cn('chat__status', 'chat__status--fail')}>
@@ -593,61 +619,7 @@ const Chat = (props) => {
                             </button>
                         </div>
                     </div>
-                    <div className={cn('similar')}>
-                        <div className={cn('similar__hdr')}>Try similar restaurants in your area</div>
-                        <div className={cn('similar__item')}>
-                            <img className={cn('similar__logo')} src={mewLogo}/>
-                            <div className={cn('similar__info')}>
-                                <div className={cn('similar__name')}>
-                                    MEW <span className={cn('fa fa-info-circle')}></span>
-                                </div>
-                                <div className={cn('similar__desc')}>
-                                    Sushi Bars, Izakaya Cocktail Bars
-                                </div>
-                                <Rating clickable={false} starsNum={5} initValue={3.5} starSize={'14px'} inputName='name2'/>
-                            </div>
-                            <div className={cn('similar__call')}>
-                                <button className={cn('similar__call-btn')}>
-                                    <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--md')}></span>
-                                </button>
-                            </div>
-                        </div>
-                        <div className={cn('similar__item')}>
-                            <img className={cn('similar__logo')} src={oxidoLogo}/>
-                            <div className={cn('similar__info')}>
-                                <div className={cn('similar__name')}>
-                                    Oxido <span className={cn('fa fa-info-circle')}></span>
-                                </div>
-                                <div className={cn('similar__desc')}>
-                                    Mexican, Cocktail Bars
-                                </div>
-                                <Rating clickable={false} starsNum={5} initValue={4} starSize={'14px'} inputName='name3'/>
-                            </div>
-                            <div className={cn('similar__call')}>
-                                <button className={cn('similar__call-btn')}>
-                                    <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--md')}></span>
-                                </button>
-                            </div>
-                        </div>
-                        <div className={cn('similar__item')}>
-                            <img className={cn('similar__logo')} src={flexMusselsLogo}/>
-                            <div className={cn('similar__info')}>
-                                <div className={cn('similar__name')}>
-                                    Flex Mussels <span className={cn('fa fa-info-circle')}></span>
-                                </div>
-                                <div className={cn('similar__desc')}>
-                                    Seafood, Bars
-                                </div>
-                                <Rating clickable={false} starsNum={5} initValue={4.5} starSize={'14px'} inputName='name4'/>
-                            </div>
-                            <div className={cn('similar__call')}>
-                                <button className={cn('similar__call-btn')}>
-                                    <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--md')}></span>
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
+                    <RestaurantsList restaurants={restaurants} />
                 </div>;
             break;
     }
@@ -1033,6 +1005,49 @@ const Rating = (props) => {
         >
             {starsArray}
         </fieldset>
+    );
+};
+
+const RestaurantsList = (props) => {
+    const restaurants = props.restaurants.map( (restaurant, i) => {
+        return (
+            <Restaurant
+                key={i}
+                logo={restaurant.logo}
+                name={restaurant.name}
+                desc={restaurant.desc}
+                rating={restaurant.rating}
+                ratingMax={restaurant.ratingMax}
+                callHandler={restaurant.callHandler}
+            />
+        );
+    });
+    return (
+        <div className={cn('similar')}>
+            <div className={cn('similar__hdr')}>Try similar restaurants in your area</div>
+            {restaurants}
+        </div>
+    );
+};
+const Restaurant = (props) => {
+    return (
+        <div className={cn('similar__item')}>
+            <img className={cn('similar__logo')} src={props.logo}/>
+            <div className={cn('similar__info')}>
+                <div className={cn('similar__name')}>
+                    {props.name} <span className={cn('fa fa-info-circle')}></span>
+                </div>
+                <div className={cn('similar__desc')}>
+                    {props.desc}
+                </div>
+                <Rating clickable={false} starsNum={props.ratingMax} initValue={props.rating} starSize={'14px'} inputName=''/>
+            </div>
+            <div className={cn('similar__call')}>
+                <button className={cn('similar__call-btn')} onClick={props.callHandler}>
+                    <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--md')}></span>
+                </button>
+            </div>
+        </div>
     );
 };
 
