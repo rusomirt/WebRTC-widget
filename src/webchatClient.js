@@ -327,11 +327,25 @@ class WebchatClient extends Component {
             // If component rerender was caused by state change from connecting to calling
             // or by switching between call modes
             if (this.state.chatMode === 'voice' || this.state.chatMode === 'video') {
-                console.log('<========= componentDidUpdate() begin');
+                console.log(`<========= componentDidUpdate() with chatMode \'${this.state.chatMode}\'`);
                 console.log(document.getElementById('video-in'));
                 console.log(document.getElementById('video-out'));
                 vox.videoControl(this.state.chatMode);
-                console.log('           componentDidUpdate() end =========>');
+                console.log('           componentDidUpdate() =========>');
+            }
+            if (this.state.chatMode === 'text') {
+                console.log(`<========= componentDidUpdate() with chatMode \'${this.state.chatMode}\'`);
+                // Behavior of these elements is not clear: local video is suddenly placed
+                // in some elements of UI after switching from video call to text chat.
+                // So manual hiding of local video is needed.
+                console.log(document.getElementById('video-in'));
+                console.log(document.getElementById('video-out'));
+                const videoIn = document.getElementById('voximplantlocalvideo');
+                console.log(videoIn);
+                if (videoIn) {
+                    videoIn.style.display = 'none';
+                }
+                console.log('           componentDidUpdate() =========>');
             }
         }
     }
@@ -694,6 +708,8 @@ class Messages extends Component {
         // Hide the scrollbar:
         // create wrapper with overflow:hidden and expand element by the scrollbar width.
         const list = this.nodeList;
+        console.log('list:');
+        console.log(list);
         console.log('list.offsetWidth = ' + list.offsetWidth);
         console.log('list.clientWidth = ' + list.clientWidth);
         const scrollbarWidth = list.offsetWidth - list.clientWidth;
@@ -706,6 +722,9 @@ class Messages extends Component {
         const list = this.nodeList;
         // Scroll to bottom of list
         list.scrollTop = list.scrollHeight;
+    }
+    componentDidUnmount() {
+        console.log('<========= Messages componentDidUnmount()');
     }
     render(props, state) {
         // Loop through all the messages in the state and create a Message component for each
