@@ -33,7 +33,7 @@ class WebchatClient extends Component {
             // Allowed chatMode values:
             // 'idle', 'connectingVideo', 'video', 'connectingVoice',
             // 'voice', 'text', 'endCall', 'notAvailable'.
-            chatMode: 'notAvailable',
+            chatMode: 'idle',
             isModeChanged: false,   // checked in componentDidUpdated()
             messages: []
         };
@@ -581,7 +581,7 @@ const Chat = (props) => {
                     logo: mewLogo,
                     name: 'MEW',
                     desc: 'Sushi Bars, Izakaya Cocktail Bars',
-                    rating: 2.7,
+                    rating: 3.7,
                     ratingMax: 5,
                     callHandler: () => {alert('restaurant #1')}
                 },
@@ -589,7 +589,7 @@ const Chat = (props) => {
                     logo: oxidoLogo,
                     name: 'Oxido',
                     desc: 'Mexican, Cocktail Bars',
-                    rating: 4.4,
+                    rating: 4.1,
                     ratingMax: 5,
                     callHandler: () => {alert('restaurant #2')}
                 },
@@ -597,7 +597,7 @@ const Chat = (props) => {
                     logo: flexMusselsLogo,
                     name: 'Flex Mussels',
                     desc: 'Seafood, Bars',
-                    rating: 5,
+                    rating: 4.5,
                     ratingMax: 5,
                     callHandler: () => {alert('restaurant #3')}
                 },
@@ -968,16 +968,20 @@ class Timer extends Component {
 
 // Star rating
 const Rating = (props) => {
+    // Total number of stars: drop a fractional part
+    const starsNum = Math.floor(props.starsNum);
+    // Number of initially selected stars: round to nearest lower 0.5 gradation
+    const initValue = ( Math.floor((props.initValue * 10)/5) * 5)/10;
     let starsArray = [];
     // Each star is represented by full star input (hidden), full star label,
     // half star input (hidden) and half star label.
     // And the stars must follow in inverse order.
-    for (let i = props.starsNum; i > 0; i--) {
+    for (let i = starsNum; i > 0; i--) {
         // Full star
         const fullId = props.inputName + '_star_' + i + '_0';
         const fullValue = i;
-        const fullChecked = ((props.initValue - fullValue) >= 0) && ((props.initValue - fullValue) < 0.5);
-        const fullTitle = (props.clickable) ? (i + ' stars') : (props.initValue + ' stars');
+        const fullChecked = initValue === fullValue;
+        const fullTitle = (props.clickable) ? (fullValue + ' stars') : (initValue + ' stars');
         const inputFull = <input type='radio' id={fullId} name={props.inputName} value={fullValue}
                    defaultChecked={fullChecked} disabled={!props.clickable}/>;
         const labelFull = <label className={cn('rating__full-star')} htmlFor={fullId} title={fullTitle}></label>;
@@ -985,8 +989,8 @@ const Rating = (props) => {
         // Half star
         const halfId = props.inputName + '_star_' + (i - 1) + '_5';
         const halfValue = i - 0.5;
-        const halfChecked = ((props.initValue - halfValue) >= 0) && ((props.initValue - halfValue) < 0.5);
-        const halfTitle = (props.clickable) ? ((i - 0.5) + ' stars') : (props.initValue + ' stars');
+        const halfChecked = initValue === halfValue;
+        const halfTitle = (props.clickable) ? (halfValue + ' stars') : (initValue + ' stars');
         const inputHalf = <input type='radio' id={halfId} name={props.inputName} value={halfValue}
                    defaultChecked={halfChecked} disabled={!props.clickable}/>;
         const labelHalf = <label className={cn('rating__half-star')} htmlFor={halfId} title={halfTitle}></label>;
