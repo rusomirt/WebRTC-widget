@@ -683,6 +683,7 @@ $similar-call-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 
 .similar {
   width: $similar-w;
+  max-width: 100%;    // shrink to parent width on narrow screens
 
   .similar__hdr {
     padding: $similar-hdr-p;
