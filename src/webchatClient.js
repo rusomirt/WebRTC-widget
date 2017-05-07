@@ -703,30 +703,48 @@ class Messenger extends Component {
 }
 // Text messenger: messages
 class Messages extends Component {
+    constructor() {
+        super();
+        this.state = {scrollbarWidth: 0};
+    }
     componentDidMount() {
         console.log('<========= Messages componentDidMount()');
         // Hide the scrollbar:
-        // create wrapper with overflow:hidden and expand element by the scrollbar width.
-        const list = this.nodeList;
-        console.log('list:');
-        console.log(list);
-        console.log('list.offsetWidth = ' + list.offsetWidth);
-        console.log('list.clientWidth = ' + list.clientWidth);
-        const scrollbarWidth = list.offsetWidth - list.clientWidth;
+        // expand element by the scrollbar width and the scrollbar will be hidden
+        // due to overflow:hidden of parent wrapper.
+        const nodeList = this.nodeList;
+        // const nodeList = document.getElementById('msgrList');
+        console.log('nodeList:');
+        console.log(nodeList);
+        console.log('nodeList.offsetWidth = ' + nodeList.offsetWidth);
+        console.log('nodeList.clientWidth = ' + nodeList.clientWidth);
+        let scrollbarWidth = nodeList.offsetWidth - nodeList.clientWidth;
         console.log('scrollbarWidth = ' + scrollbarWidth);
-        list.setAttribute('style', `width: calc(100% + ${scrollbarWidth}px)`);
+        this.setState({scrollbarWidth: scrollbarWidth});
+        if (nodeList) {
+            // nodeList.setAttribute('style', 'width: calc(100% + ' + scrollbarWidth + 'px); background: red;');
+            // nodeList.setAttribute('style', '');
+            // nodeList.style.background = 'red';
+            console.log(nodeList);
+        }
         console.log('           Messages componentDidMount() =========>');
     }
-    // There is a new message in the list
+
+    // There is a new message in the nodeList
     componentDidUpdate() {
-        const list = this.nodeList;
-        // Scroll to bottom of list
-        list.scrollTop = list.scrollHeight;
+        const nodeList = this.nodeList;
+        // Scroll to bottom of nodeList
+        nodeList.scrollTop = nodeList.scrollHeight;
     }
     componentDidUnmount() {
         console.log('<========= Messages componentDidUnmount()');
     }
     render(props, state) {
+        let scrollbarWidth = this.state.scrollbarWidth;
+        // If the style is applied in componentDidMount(), there is a strange behavior:
+        // after mode switching from text to other some elements have `width: calc(100% + ${scrollbarWidth}px)`
+        const listStyle = {width: `calc(100% + ${scrollbarWidth}px)`};
+
         // Loop through all the messages in the state and create a Message component for each
         const messages = this.props.messages.map((message, i) => {
             return (
@@ -739,7 +757,7 @@ class Messages extends Component {
         });
         return (
             <div className={cn('msgr__list-wrapper')}>
-                <div className={cn('msgr__list')} ref={node => this.nodeList = node}>
+                <div className={cn('msgr__list')} style={listStyle} ref={node => this.nodeList = node} id='msgrList'>
                     { messages }
                 </div>
             </div>
