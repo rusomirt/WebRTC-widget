@@ -33,9 +33,10 @@ class WebchatClient extends Component {
             // Allowed chatMode values:
             // 'idle', 'connectingVideo', 'video', 'connectingVoice',
             // 'voice', 'text', 'endCall', 'notAvailable'.
-            chatMode: 'idle',
+            chatMode: 'notAvailable',
             isModeChanged: false,   // checked in componentDidUpdated()
-            messages: []
+            messages: [],
+            phoneSentDelay: false
         };
 
         // These bindings are necessary to make `this` work in the callbacks
@@ -46,6 +47,7 @@ class WebchatClient extends Component {
         this.switchMode = this.switchMode.bind(this);
         this.stopChat = this.stopChat.bind(this);
         this.backToInitial = this.backToInitial.bind(this);
+        this.phoneSentChangeMode = this.phoneSentChangeMode.bind(this);
 
         this.onAuthResult = this.onAuthResult.bind(this);
         this.onCallConnected = this.onCallConnected.bind(this);
@@ -164,6 +166,24 @@ class WebchatClient extends Component {
         });
         console.log('new chatMode = ' + this.state.chatMode);
         console.log('           backToInitial() end =========>');
+    }
+    phoneSentChangeMode(inputValue) {
+        console.log('<========= phoneSentChangeMode()');
+        console.log('inputValue = ' + inputValue);
+        if (inputValue !== '') {
+            this.setState({phoneSentDelay: true});
+            setTimeout(() => {
+                this.setState({
+                    phoneSentDelay: false,
+                    chatMode: 'endCall'
+                });
+            }, 3000);
+        } else {
+            this.setState({
+                chatMode: 'endCall'
+            });
+        }
+        console.log('           phoneSentChangeMode() =========>');
     }
 
     // When user has been logged in, begin chat and assign it's events handlers
@@ -373,6 +393,8 @@ class WebchatClient extends Component {
                             backToInitial={this.backToInitial}
                             onSend={this.onSend}
                             messages={this.state.messages}
+                            phoneSentDelay={this.state.phoneSentDelay}
+                            phoneSentChangeMode={this.phoneSentChangeMode}
                         />
                         <div className={cn('copyright')}>
                             <div className={cn('copyright__sign')}></div>
@@ -431,6 +453,8 @@ class SelectMode extends Component {
 }
 
 // Chat block
+// Props: chatMode, stopChat(), switchMode(), backToInitial(), onSend(), messages,
+//        phoneSentDelay, phoneSentChangeMode()
 const Chat = (props) => {
 
     let chatInfo = null;
@@ -568,11 +592,7 @@ const Chat = (props) => {
                         <Rating clickable={true} starsNum={5} initValue={0} starSize={'20px'} inputName='name0'/>
                         <input className={cn('feedback__review')} placeholder='Write a review'/>
                     </div>
-                    <div className={cn('subscribe')}>
-                        <span className={cn('fa fa-envelope', 'icon', 'icon--color', 'icon--xs')}></span><br/>
-                        Great!<br/>
-                        Check your mail
-                    </div>
+                    <Subscribe />
                 </div>;
                 break;
         case 'notAvailable':
@@ -602,23 +622,31 @@ const Chat = (props) => {
                     callHandler: () => {alert('restaurant #3')}
                 },
             ];
+            const chatStatus =
+                props.phoneSentDelay
+                ?
+                <div className={cn('chat__status', 'chat__status--fail')}>
+                    <div className={cn('chat__status-hdr')}>
+                        <span className={cn('fa fa-check', 'icon', 'icon--white', 'icon--xs', 'icon--shifted')}></span>
+                        We sent a message to Luke's
+                    </div>
+                </div>
+                :
+                <div className={cn('chat__status', 'chat__status--fail')}>
+                    <div className={cn('chat__status-hdr', 'chat__status-hdr--margined')}>
+                        <span className={cn('fa fa-times', 'icon', 'icon--white', 'icon--xs', 'icon--shifted')}></span>
+                        Luke's is not available
+                    </div>
+                    <div className={cn('chat__status-txt')}>
+                        Please fill your number and<br/>Luke's will call you back
+                    </div>
+                    <InlineForm action='index.php' method='post' placeholder='Phone' bordered={false}
+                                onSubmit={props.phoneSentChangeMode} />
+                </div>;
+
             chatInfo =
                 <div className={cn('chat__info', 'chat__info--short')}>
-                    <div className={cn('chat__status', 'chat__status--fail')}>
-                        <div className={cn('chat__status-hdr', 'chat__status-hdr--margined')}>
-                            <span className={cn('fa fa-times', 'icon', 'icon--white', 'icon--xs', 'icon--shifted')}></span>
-                            Luke's is not available
-                        </div>
-                        <div className={cn('chat__status-txt')}>
-                            Please fill your number and<br/>Luke's will call you back
-                        </div>
-                        <div className={cn('chat__phone-input-wrapper')}>
-                            <input className={cn('chat__phone-input')} placeholder='Phone'/>
-                            <button className={cn('chat__phone-input-btn')}>
-                                <span className={cn('fa fa-chevron-right')}></span>
-                            </button>
-                        </div>
-                    </div>
+                    {chatStatus}
                     <RestaurantsList restaurants={restaurants} />
                 </div>;
             break;
@@ -651,8 +679,71 @@ const Chat = (props) => {
     );
 };
 
+//  Props: none
+class Subscribe extends Component {
+    constructor() {
+        super();
+        this.state = {subscribed: false};
+        this.onSubmit = this.onSubmit.bind(this);
+    }
+    onSubmit() {
+        this.setState({subscribed: true});
+        alert('E-mail subscribed');
+    }
+    render(props, state) {
+        if (this.state.subscribed === false) {
+            return (
+                <div className={cn('subscribe-wrapper')}>
+                    <div>Join & get 5$ coupon</div>
+                    <InlineForm bordered={true} action='index.php' method='post'
+                                placeholder='E-mail' onSubmit={this.onSubmit} />
+                </div>
+            );
+        } else {
+            return (
+                <div className={cn('subscribe-wrapper')}>
+                    <div className={cn('subscribe')}>
+                        <span className={cn('fa fa-envelope', 'icon', 'icon--color', 'icon--xs')}></span><br/>
+                        Great!<br/>
+                        Check your mail
+                    </div>
+                </div>
+            );
+        }
+    }
+}
+
+//  Props: action, method, placeholder, onSubmit, bordered
+class InlineForm extends Component {
+    constructor() {
+        super();
+        this.state = {inputValue: ''};
+        this.onSubmit = this.onSubmit.bind(this);
+        this.onTextChange = this.onTextChange.bind(this);
+    }
+    onSubmit(e) {
+        e.preventDefault();
+        const trimmedText = this.state.inputValue.trim();
+        this.props.onSubmit(trimmedText);
+    }
+    onTextChange(e) {
+        this.setState({ inputValue: e.target.value });
+    }
+    render(props, state) {
+        return(
+            <form className={cn('inline-form', {'inline-form--bordered': this.props.bordered})} onSubmit={this.onSubmit}
+                  action={this.props.action} method={this.props.method}>
+                <input className={cn('inline-form__input')} onInput={this.onTextChange}
+                       placeholder={this.props.placeholder}/>
+                <button className={cn('inline-form__btn')}>
+                    <span className={cn('fa fa-chevron-right')}></span>
+                </button>
+            </form>
+        );
+    }
+}
+
 // Text messenger
-// https://www.coderfactoryacademy.edu.au/posts/how-you-can-build-facebook-messenger-chat-app-with-reactjs
 class Messenger extends Component {
     constructor(props) {
         super(props);
