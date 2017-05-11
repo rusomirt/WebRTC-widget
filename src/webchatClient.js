@@ -485,13 +485,7 @@ const Chat = (props) => {
                         </span>
                     </div>
                 </div>
-                <div className={cn('chat__circles')}>
-                    <div className={cn('chat__circle')}></div>
-                    <div className={cn('chat__circle')}></div>
-                    <div className={cn('chat__circle')}></div>
-                    <div className={cn('chat__circle')}></div>
-                    <div className={cn('chat__circle')}></div>
-                </div>
+                <ConnectingAnimation />
                 <img className={cn('chat__logo')} src={lukesLogo}/>
                 <div className={cn('chat__tips')}>
                     Don't forget!<br/>
@@ -510,13 +504,7 @@ const Chat = (props) => {
                         </span>
                     </div>
                 </div>
-                <div className={cn('chat__circles')}>
-                    <div className={cn('chat__circle')}></div>
-                    <div className={cn('chat__circle')}></div>
-                    <div className={cn('chat__circle')}></div>
-                    <div className={cn('chat__circle')}></div>
-                    <div className={cn('chat__circle')}></div>
-                </div>
+                <ConnectingAnimation />
                 <img className={cn('chat__logo')} src={lukesLogo}/>
                 <div className={cn('chat__tips')}>
                     Don't forget!<br/>
@@ -694,6 +682,20 @@ const Chat = (props) => {
     );
 };
 
+const ConnectingAnimation = () => {
+    return (
+        <div className={cn('ballsWaveG')}>
+            <div className={cn('ballsWaveG__ball', 'ballsWaveG__ball--1')}></div>
+            <div className={cn('ballsWaveG__ball', 'ballsWaveG__ball--2')}></div>
+            <div className={cn('ballsWaveG__ball', 'ballsWaveG__ball--3')}></div>
+            <div className={cn('ballsWaveG__ball', 'ballsWaveG__ball--4')}></div>
+            <div className={cn('ballsWaveG__ball', 'ballsWaveG__ball--5')}></div>
+            <div className={cn('ballsWaveG__ball', 'ballsWaveG__ball--6')}></div>
+            <div className={cn('ballsWaveG__ball', 'ballsWaveG__ball--7')}></div>
+            <div className={cn('ballsWaveG__ball', 'ballsWaveG__ball--8')}></div>
+        </div>
+    );
+};
 //  Props: none
 class Subscribe extends Component {
     constructor() {
