@@ -26,6 +26,7 @@ import flexMusselsLogo from './img/flex-mussels-logo.png';
 let cn = classNames.bind(styles);
 
 // Top-level webchat client component
+// Props: settings
 class WebchatClient extends Component {
     constructor() {
         super();
@@ -379,7 +380,6 @@ class WebchatClient extends Component {
             return (
                 <SelectMode
                     clientAppInstalled={this.props.settings.client_app_installed}
-                    toggleChatButtons={this.toggleChatButtons}
                     startChat={this.startChat}
                 />
             );
@@ -410,6 +410,7 @@ class WebchatClient extends Component {
 }
 
 // Shown in initial mode and allows to select chat mode (voice/video/text)
+// Props: clientAppInstalled, startChat()
 class SelectMode extends Component {
     constructor() {
         super();
@@ -682,6 +683,7 @@ const Chat = (props) => {
     );
 };
 
+// Props: none
 const ConnectingAnimation = () => {
     return (
         <div className={cn('ballsWaveG')}>
@@ -696,7 +698,8 @@ const ConnectingAnimation = () => {
         </div>
     );
 };
-//  Props: none
+
+// Props:
 class Subscribe extends Component {
     constructor() {
         super();
@@ -730,7 +733,7 @@ class Subscribe extends Component {
     }
 }
 
-//  Props: action, method, placeholder, onSubmit, bordered
+// Props: action, method, placeholder, onSubmit(), bordered
 class InlineForm extends Component {
     constructor() {
         super();
@@ -761,6 +764,7 @@ class InlineForm extends Component {
 }
 
 // Text messenger
+// Props: messages, onSend()
 class Messenger extends Component {
     constructor(props) {
         super(props);
@@ -782,6 +786,7 @@ class Messenger extends Component {
     }
 }
 // Text messenger: messages
+// Props: messages
 class Messages extends Component {
     constructor() {
         super();
@@ -845,6 +850,7 @@ class Messages extends Component {
     }
 }
 // Text messenger: message
+// Props: fromMe, timeStamp, text
 class Message extends Component {
     render(props, state) {
         // Was the message sent by the current user. If so, add a css class
@@ -867,6 +873,7 @@ class Message extends Component {
     }
 }
 // Text messenger: input
+// Props: onSend()
 class ChatInput extends Component {
     constructor(props) {
         super(props);
@@ -917,6 +924,7 @@ class ChatInput extends Component {
 }
 
 // Panel providing chat actions
+// Props: clientAppInstalled, chatMode, stopChat(), switchMode()
 class ChatPanel extends Component {
     constructor() {
         super();
@@ -1049,6 +1057,7 @@ class ChatPanel extends Component {
 }
 
 // Timer of call duration
+// Props: none
 class Timer extends Component {
     constructor() {
         super();
@@ -1087,6 +1096,7 @@ class Timer extends Component {
 }
 
 // Star rating
+// Props: starsNum, initValue, inputName, clickable
 const Rating = (props) => {
     // Total number of stars: drop a fractional part
     const starsNum = Math.floor(props.starsNum);
@@ -1132,6 +1142,8 @@ const Rating = (props) => {
     );
 };
 
+// List of similar restaurants
+// Props: restaurants
 const RestaurantsList = (props) => {
     const restaurants = props.restaurants.map( (restaurant, i) => {
         return (
@@ -1153,6 +1165,8 @@ const RestaurantsList = (props) => {
         </div>
     );
 };
+// One restaurant in a list
+// Props: key, logo, name, desc, rating, ratingMax, callHandler()
 const Restaurant = (props) => {
     return (
         <div className={cn('similar__item')}>
