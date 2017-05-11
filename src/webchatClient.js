@@ -33,7 +33,7 @@ class WebchatClient extends Component {
             // Allowed chatMode values:
             // 'idle', 'connectingVideo', 'video', 'connectingVoice',
             // 'voice', 'text', 'endCall', 'notAvailable'.
-            chatMode: 'notAvailable',
+            chatMode: 'idle',
             isModeChanged: false,   // checked in componentDidUpdated()
             messages: [],
             phoneSentDelay: false
@@ -378,6 +378,7 @@ class WebchatClient extends Component {
         if (this.state.chatMode === 'idle') {
             return (
                 <SelectMode
+                    clientAppInstalled={this.props.settings.client_app_installed}
                     toggleChatButtons={this.toggleChatButtons}
                     startChat={this.startChat}
                 />
@@ -387,6 +388,7 @@ class WebchatClient extends Component {
                 <div className={cn('modal')}>
                     <div className={cn('modal__inner')}>
                         <Chat
+                            clientAppInstalled={this.props.settings.client_app_installed}
                             chatMode={this.state.chatMode}
                             stopChat={this.stopChat}
                             switchMode={this.switchMode}
@@ -422,38 +424,50 @@ class SelectMode extends Component {
         );
     }
     render(props, state) {
-        return (
-            <div className={cn('webchat')}>
-                <button
-                    className={cn('webchat__launch-btn')}
-                    onClick={this.toggleChatButtons}>
-                    <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--md')}></span>
-                </button>
-                <button
-                    className={ cn('webchat__chat-btn', 'webchat__chat-btn--video',
-                        {'webchat__chat-btn--hidden': !this.state.isChatBtnsOpen})}
-                    onClick={() => props.startChat('video')}>
-                <span className={cn('fa fa-video-camera', 'icon', 'icon--white', 'icon--sm')}></span>
-                </button>
-                <button
-                    className={ cn('webchat__chat-btn', 'webchat__chat-btn--voice',
-                        {'webchat__chat-btn--hidden': !this.state.isChatBtnsOpen})}
-                    onClick={() => props.startChat('voice')}>
-                    <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--sm')}></span>
-                </button>
-                <button
-                    className={ cn('webchat__chat-btn', 'webchat__chat-btn--text',
-                        {'webchat__chat-btn--hidden': !this.state.isChatBtnsOpen})}
-                    onClick={() => props.startChat('text')}>
-                    <span className={cn('fa fa-comments', 'icon', 'icon--white', 'icon--sm')}></span>
-                </button>
-            </div>
-        );
+        if (this.props.clientAppInstalled) {
+            return (
+                <div className={cn('webchat')}>
+                    <button
+                        className={cn('webchat__launch-btn')}
+                        onClick={this.toggleChatButtons}>
+                        <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--md')}></span>
+                    </button>
+                    <button
+                        className={ cn('webchat__chat-btn', 'webchat__chat-btn--video',
+                            {'webchat__chat-btn--hidden': !this.state.isChatBtnsOpen})}
+                        onClick={() => props.startChat('video')}>
+                        <span className={cn('fa fa-video-camera', 'icon', 'icon--white', 'icon--sm')}></span>
+                    </button>
+                    <button
+                        className={ cn('webchat__chat-btn', 'webchat__chat-btn--voice',
+                            {'webchat__chat-btn--hidden': !this.state.isChatBtnsOpen})}
+                        onClick={() => props.startChat('voice')}>
+                        <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--sm')}></span>
+                    </button>
+                    <button
+                        className={ cn('webchat__chat-btn', 'webchat__chat-btn--text',
+                            {'webchat__chat-btn--hidden': !this.state.isChatBtnsOpen})}
+                        onClick={() => props.startChat('text')}>
+                        <span className={cn('fa fa-comments', 'icon', 'icon--white', 'icon--sm')}></span>
+                    </button>
+                </div>
+            );
+        } else {
+            return (
+                <div className={cn('webchat')}>
+                    <button
+                        className={cn('webchat__launch-btn')}
+                        onClick={() => props.startChat('voice')}>
+                        <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--md')}></span>
+                    </button>
+                </div>
+            );
+        }
     }
 }
 
 // Chat block
-// Props: chatMode, stopChat(), switchMode(), backToInitial(), onSend(), messages,
+// Props: clientAppInstalled, chatMode, stopChat(), switchMode(), backToInitial(), onSend(), messages,
 //        phoneSentDelay, phoneSentChangeMode()
 const Chat = (props) => {
 
@@ -654,6 +668,7 @@ const Chat = (props) => {
 
     let chatPanel =
         <ChatPanel
+            clientAppInstalled={props.clientAppInstalled}
             chatMode={props.chatMode}
             stopChat={props.stopChat}
             switchMode={props.switchMode}
@@ -975,16 +990,28 @@ class ChatPanel extends Component {
             case 'connectingVideo':
             case 'connectingVoice':
             case 'voice':
-                leftGroup =
-                    <div className={cn('chat__btns-group')}>
-                        {videoBtn}
-                        {textBtn}
-                    </div>;
-                rightGroup =
-                    <div className={cn('chat__btns-group')}>
-                        {soundBtn}
-                        {micBtn}
-                    </div>;
+                if(this.props.clientAppInstalled) {
+                    leftGroup =
+                        <div className={cn('chat__btns-group')}>
+                            {videoBtn}
+                            {textBtn}
+                        </div>;
+                    rightGroup =
+                        <div className={cn('chat__btns-group')}>
+                            {soundBtn}
+                            {micBtn}
+                        </div>;
+                } else {
+                    // If client has no ClientApp installed, video call and text chat are unavailable
+                    leftGroup =
+                        <div className={cn('chat__btns-group')}>
+                            {soundBtn}
+                        </div>;
+                    rightGroup =
+                        <div className={cn('chat__btns-group')}>
+                            {micBtn}
+                        </div>;
+                }
                 break;
             case 'video':
                 leftGroup =
