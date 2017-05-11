@@ -12,6 +12,9 @@ import * as VoxImplant from './lib/voximplant.min.js';  // onProgressToneStart e
 // VoxImplant API custom functions
 import * as vox from 'api/voxClient';
 
+// Working with AJAX
+import axios from 'axios';
+
 // Stylesheets for component
 import styles from './webchatClient.scss';
 
@@ -34,7 +37,7 @@ class WebchatClient extends Component {
             // Allowed chatMode values:
             // 'idle', 'connectingVideo', 'video', 'connectingVoice',
             // 'voice', 'text', 'endCall', 'notAvailable'.
-            chatMode: 'idle',
+            chatMode: 'endCall',
             isModeChanged: false,   // checked in componentDidUpdated()
             messages: [],
             phoneSentDelay: false
@@ -706,9 +709,16 @@ class Subscribe extends Component {
         this.state = {subscribed: false};
         this.onSubmit = this.onSubmit.bind(this);
     }
-    onSubmit() {
+    onSubmit(inputValue) {
+        console.log('<========= Subscribe onSubmit()');
+        console.log('inputValue = ' + inputValue);
+
         this.setState({subscribed: true});
-        alert('E-mail subscribed');
+        axios.post('/script',{userEmail: inputValue})
+            .then((response) => console.log(response))
+            .catch((error) => console.log(error));
+
+        console.log('           Subscribe onSubmit() =========>');
     }
     render(props, state) {
         if (this.state.subscribed === false) {
