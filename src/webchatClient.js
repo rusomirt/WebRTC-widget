@@ -35,9 +35,9 @@ class WebchatClient extends Component {
         super();
         this.state = {
             // Allowed chatMode values:
-            // 'idle', 'connectingVideo', 'video', 'connectingVoice',
+            // 'invisible', 'idle', 'connectingVideo', 'video', 'connectingVoice',
             // 'voice', 'text', 'endCall', 'notAvailable'.
-            chatMode: 'notAvailable',
+            chatMode: 'invisible',
             isModeChanged: false,   // checked in componentDidUpdated()
             messages: [],
             phoneSentDelay: false
@@ -53,6 +53,7 @@ class WebchatClient extends Component {
         this.backToInitial = this.backToInitial.bind(this);
         this.phoneSentChangeMode = this.phoneSentChangeMode.bind(this);
 
+        this.onSDKReady = this.onSDKReady.bind(this);
         this.onAuthResult = this.onAuthResult.bind(this);
         this.onCallConnected = this.onCallConnected.bind(this);
         this.onCallDisconnected = this.onCallDisconnected.bind(this);
@@ -197,6 +198,12 @@ class WebchatClient extends Component {
         console.log('           phoneSentChangeMode() =========>');
     }
 
+    // VoxImplant events handlers
+
+    // VoxImplant SDK is ready for commands
+    onSDKReady() {
+        this.setState({chatMode: 'idle'});  // Widget becomes available to user.
+    }
     // When user has been logged in, begin chat and assign it's events handlers
     onAuthResult(e) {
         console.log('<========= onAuthResult() begin');
@@ -347,6 +354,7 @@ class WebchatClient extends Component {
         vox.init(voxParams);
         // Assign event handler here because this event needs to be handled in the component
         vox.voxAPI.addEventListener(VoxImplant.Events.AuthResult, this.onAuthResult);
+        vox.voxAPI.addEventListener(VoxImplant.Events.SDKReady, this.onSDKReady);
     }
     componentDidUpdate() {
         if (this.state.isModeChanged) {
@@ -386,14 +394,16 @@ class WebchatClient extends Component {
 
     // Render to HTML
     render(props, state) {
-        if (this.state.chatMode === 'idle') {
+        if (this.state.chatMode === 'invisible') {      // Widget is invisible until VoxImplant init finished.
+            return (null);
+        } else if (this.state.chatMode === 'idle') {    // Init completed, user may choose needed chat mode.
             return (
                 <SelectMode
                     clientAppInstalled={this.props.settings.client_app_installed}
                     startChat={this.startChat}
                 />
             );
-        } else {
+        } else {                                        // User has chosen chat mode
             return (
                 <div className={cn('modal')}>
                     <div className={cn('modal__inner')}>

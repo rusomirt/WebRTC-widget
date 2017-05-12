@@ -44,7 +44,6 @@ export function init(settings) {
     dest_username = settings.op_username;
 
     // Assign handlers
-    voxAPI.addEventListener(VoxImplant.Events.SDKReady, () => {});
     voxAPI.addEventListener(VoxImplant.Events.ConnectionEstablished, () => {
         console.log('<<<<<<<<<< onConnectionEstablished() >>>>>>>>>>');
         voxAPI.login(username + '@' + application_name + '.' + account_name + '.voximplant.com', password);
