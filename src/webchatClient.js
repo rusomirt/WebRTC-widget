@@ -37,7 +37,7 @@ class WebchatClient extends Component {
             // Allowed chatMode values:
             // 'idle', 'connectingVideo', 'video', 'connectingVoice',
             // 'voice', 'text', 'endCall', 'notAvailable'.
-            chatMode: 'endCall',
+            chatMode: 'notAvailable',
             isModeChanged: false,   // checked in componentDidUpdated()
             messages: [],
             phoneSentDelay: false
@@ -174,8 +174,14 @@ class WebchatClient extends Component {
     phoneSentChangeMode(inputValue) {
         console.log('<========= phoneSentChangeMode()');
         console.log('inputValue = ' + inputValue);
+
         if (inputValue !== '') {
             this.setState({phoneSentDelay: true});
+            // AJAX request to server
+            axios.post('/script',{userPhone: inputValue})
+                .then((response) => console.log(response))
+                .catch((error) => console.log(error));
+            // Show 'Thank you' box for a few moments, then go to 'end call' screen
             setTimeout(() => {
                 this.setState({
                     phoneSentDelay: false,
@@ -187,6 +193,7 @@ class WebchatClient extends Component {
                 chatMode: 'endCall'
             });
         }
+
         console.log('           phoneSentChangeMode() =========>');
     }
 
@@ -714,6 +721,7 @@ class Subscribe extends Component {
         console.log('inputValue = ' + inputValue);
 
         this.setState({subscribed: true});
+        // AJAX request to server
         axios.post('/script',{userEmail: inputValue})
             .then((response) => console.log(response))
             .catch((error) => console.log(error));
