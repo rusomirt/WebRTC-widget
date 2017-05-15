@@ -39,6 +39,8 @@ class WebchatClient extends Component {
             // 'voice', 'text', 'endCall', 'notAvailable'.
             chatMode: 'invisible',
             isModeChanged: false,   // checked in componentDidUpdated()
+            isSoundOn: true,
+            isMicOn: true,
             messages: [],
             phoneSentDelay: false
         };
@@ -48,6 +50,8 @@ class WebchatClient extends Component {
         this.getHashParams = this.getHashParams.bind(this);
 
         this.startChat = this.startChat.bind(this);
+        this.turnSound = this.turnSound.bind(this);
+        this.turnMic = this.turnMic.bind(this);
         this.switchMode = this.switchMode.bind(this);
         this.stopChat = this.stopChat.bind(this);
         this.backToInitial = this.backToInitial.bind(this);
@@ -118,11 +122,19 @@ class WebchatClient extends Component {
             isModeChanged: true
         });
         // In text chat microphone & sound must be disabled
-        vox.turnMic(demandedMode !== 'text');
-        vox.turnSound(demandedMode !== 'text');
+        this.turnMic(demandedMode !== 'text');
+        this.turnSound(demandedMode !== 'text');
 
         console.log('new chatMode = ' + this.state.chatMode);
         console.log('           switchMode() =========>');
+    }
+    turnSound(onOff) {
+        vox.turnSound(onOff);
+        this.setState({isSoundOn: onOff});
+    }
+    turnMic(onOff) {
+        vox.turnMic(onOff);
+        this.setState({isMicOn: onOff});
     }
     stopChat() {
         console.log('<========= stopChat() begin');
@@ -206,8 +218,8 @@ class WebchatClient extends Component {
         this.setState({isModeChanged: true});
 
         // In text chat sound & microphone must be disabled
-        vox.turnMic(this.state.chatMode !== 'text');
-        vox.turnSound(this.state.chatMode !== 'text');
+        this.turnMic(this.state.chatMode !== 'text');
+        this.turnSound(this.state.chatMode !== 'text');
 
         console.log('new chatMode = ' + this.state.chatMode);
         console.log('             onCallConnected() end =========>');
@@ -370,7 +382,6 @@ class WebchatClient extends Component {
         vox.uninit();
     }
 
-    // Render to HTML
     render(props, state) {
         if (this.state.chatMode === 'invisible') {      // Widget is invisible until VoxImplant init finished.
             return (null);
@@ -395,6 +406,10 @@ class WebchatClient extends Component {
                             messages={this.state.messages}
                             phoneSentDelay={this.state.phoneSentDelay}
                             phoneSentChangeMode={this.phoneSentChangeMode}
+                            isSoundOn={this.state.isSoundOn}
+                            turnSound={this.turnSound}
+                            isMicOn={this.state.isMicOn}
+                            turnMic={this.turnMic}
                         />
                         <div className={cn('copyright')}>
                             <div className={cn('copyright__sign')}></div>
@@ -467,7 +482,7 @@ class SelectMode extends Component {
 
 // Chat block
 // Props: clientAppInstalled, chatMode, stopChat(), switchMode(), backToInitial(), onSend(), messages,
-//        phoneSentDelay, phoneSentChangeMode()
+//        phoneSentDelay, phoneSentChangeMode(), isSoundOn, turnSound(), isMicOn, turnMic().
 const Chat = (props) => {
 
     let chatInfo = null;
@@ -663,6 +678,10 @@ const Chat = (props) => {
             chatMode={props.chatMode}
             stopChat={props.stopChat}
             switchMode={props.switchMode}
+            isSoundOn={props.isSoundOn}
+            turnSound={props.turnSound}
+            isMicOn={props.isMicOn}
+            turnMic={props.turnMic}
         />;
     let toYelpBtn = null;
     if (props.chatMode === 'endCall' || props.chatMode === 'notAvailable') {
@@ -936,136 +955,116 @@ class ChatInput extends Component {
 }
 
 // Panel providing chat actions
-// Props: clientAppInstalled, chatMode, stopChat(), switchMode()
-class ChatPanel extends Component {
-    constructor() {
-        super();
-        this.state = {
-            isSoundOn: true,
-            isMicOn: true,
-        };
-        this.turnSound = this.turnSound.bind(this);
-        this.turnMic = this.turnMic.bind(this);
-    }
+// Props: clientAppInstalled, chatMode, stopChat(), switchMode(),
+//        isSoundOn, turnSound(), isMicOn, turnMic().
+const ChatPanel = (props) => {
+    const stopBtn =
+        <button
+            className={cn('chat__btn--stop')}
+            onClick={props.stopChat}>
+            <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--lg')}></span>
+        </button>;
 
-    turnSound() {
-        vox.turnSound(!this.state.isSoundOn);
-        this.setState({isSoundOn: !this.state.isSoundOn});
-    }
-    turnMic() {
-        vox.turnMic(!this.state.isMicOn);
-        this.setState({isMicOn: !this.state.isMicOn});
-    }
+    let switchVideoMode = () => {
+        if (props.chatMode === 'video') {
+            props.switchMode('voice');
+        } else {
+            props.switchMode('video');
+        }
+    };
 
-    render(props, state) {
-        const stopBtn =
-            <button
-                className={cn('chat__btn--stop')}
-                onClick={props.stopChat}>
-                <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--lg')}></span>
-            </button>;
+    const videoBtn =
+        <button className={cn('chat__btn--small')}
+                onClick={switchVideoMode}>
+            <span className={cn('fa fa-video-camera', {'icon--crossed': props.chatMode === 'video'},
+                'icon', 'icon--color', 'icon--xs')}></span>
+        </button>;
 
-        let switchVideoMode = () => {
-            if (props.chatMode === 'video') {
-                props.switchMode('voice');
-            } else {
-                props.switchMode('video');
-            }
-        };
+    const voiceBtn =
+        <button className={cn('chat__btn--small')}
+                onClick={() => props.switchMode('voice')}>
+            <span className={cn('fa fa-phone', 'icon--arrowed', 'icon', 'icon--color', 'icon--xs')}></span>
+        </button>;
 
-        const videoBtn =
-            <button className={cn('chat__btn--small')}
-                    onClick={switchVideoMode}>
-                <span className={cn('fa fa-video-camera', {'icon--crossed': props.chatMode === 'video'},
-                    'icon', 'icon--color', 'icon--xs')}></span>
-            </button>;
+    const textBtn =
+        <button className={cn('chat__btn--small')}
+                onClick={() => props.switchMode('text')}>
+            <span className={cn('fa fa-comments', 'icon', 'icon--color', 'icon--sm')}></span>
+        </button>;
 
-        const voiceBtn =
-            <button className={cn('chat__btn--small')}
-                    onClick={() => props.switchMode('voice')}>
-                <span className={cn('fa fa-phone', 'icon--arrowed', 'icon', 'icon--color', 'icon--xs')}></span>
-            </button>;
+    const soundBtn =
+        <button className={cn('chat__btn--small')}
+                onClick={() => props.turnSound(!props.isSoundOn)}>
+            <span className={cn('fa', {'fa-volume-off': props.isSoundOn}, {'fa-volume-up': !props.isSoundOn},
+                'icon', 'icon--color', 'icon--sm')}></span>
+        </button>;
 
-        const textBtn =
-            <button className={cn('chat__btn--small')}
-                    onClick={() => props.switchMode('text')}>
-                <span className={cn('fa fa-comments', 'icon', 'icon--color', 'icon--sm')}></span>
-            </button>;
+    const micBtn =
+        <button className={cn('chat__btn--small')}
+                onClick={() => props.turnMic(!props.isMicOn)}>
+            <span className={cn('fa', {'fa-microphone-slash': props.isMicOn}, {'fa-microphone': !props.isMicOn},
+                'icon', 'icon--color', 'icon--sm')}></span>
+        </button>;
 
-        const soundBtn =
-            <button className={cn('chat__btn--small')}
-                    onClick={this.turnSound}>
-                <span className={cn('fa', {'fa-volume-off': this.state.isSoundOn}, {'fa-volume-up': !this.state.isSoundOn},
-                    'icon', 'icon--color', 'icon--sm')}></span>
-            </button>;
-
-        const micBtn =
-            <button className={cn('chat__btn--small')}
-                    onClick={this.turnMic}>
-                <span className={cn('fa', {'fa-microphone-slash': this.state.isMicOn}, {'fa-microphone': !this.state.isMicOn},
-                    'icon', 'icon--color', 'icon--sm')}></span>
-            </button>;
-
-        let leftGroup = null;
-        let rightGroup = null;
-        switch (props.chatMode) {
-            case 'connectingVideo':
-            case 'connectingVoice':
-            case 'voice':
-                if(this.props.clientAppInstalled) {
-                    leftGroup =
-                        <div className={cn('chat__btns-group')}>
-                            {videoBtn}
-                            {textBtn}
-                        </div>;
-                    rightGroup =
-                        <div className={cn('chat__btns-group')}>
-                            {soundBtn}
-                            {micBtn}
-                        </div>;
-                } else {
-                    // If client has no ClientApp installed, video call and text chat are unavailable
-                    leftGroup =
-                        <div className={cn('chat__btns-group')}>
-                            {soundBtn}
-                        </div>;
-                    rightGroup =
-                        <div className={cn('chat__btns-group')}>
-                            {micBtn}
-                        </div>;
-                }
-                break;
-            case 'video':
+    let leftGroup = null;
+    let rightGroup = null;
+    switch (props.chatMode) {
+        case 'connectingVideo':
+        case 'connectingVoice':
+        case 'voice':
+            if(props.clientAppInstalled) {
                 leftGroup =
                     <div className={cn('chat__btns-group')}>
                         {videoBtn}
+                        {textBtn}
                     </div>;
                 rightGroup =
                     <div className={cn('chat__btns-group')}>
-                        {textBtn}
+                        {soundBtn}
                         {micBtn}
                     </div>;
-                break;
-            case 'text':
+            } else {
+                // If client has no ClientApp installed, video call and text chat are unavailable
                 leftGroup =
                     <div className={cn('chat__btns-group')}>
-                        {videoBtn}
+                        {soundBtn}
                     </div>;
                 rightGroup =
                     <div className={cn('chat__btns-group')}>
-                        {voiceBtn}
+                        {micBtn}
                     </div>;
-                break;
-        }
-
-        return (
-            <div className={cn('chat__panel', {'chat__panel--low': props.chatMode === 'text'})}>
-                {leftGroup}
-                {stopBtn}
-                {rightGroup}
-            </div>
-        );
+            }
+            break;
+        case 'video':
+            leftGroup =
+                <div className={cn('chat__btns-group')}>
+                    {videoBtn}
+                </div>;
+            rightGroup =
+                <div className={cn('chat__btns-group')}>
+                    {textBtn}
+                    {micBtn}
+                </div>;
+            break;
+        case 'text':
+            leftGroup =
+                <div className={cn('chat__btns-group')}>
+                    {videoBtn}
+                </div>;
+            rightGroup =
+                <div className={cn('chat__btns-group')}>
+                    {voiceBtn}
+                </div>;
+            break;
     }
+
+    return (
+        <div className={cn('chat__panel', {'chat__panel--low': props.chatMode === 'text'})}>
+            {leftGroup}
+            {stopBtn}
+            {rightGroup}
+        </div>
+    );
 }
 
 // Timer of call duration
