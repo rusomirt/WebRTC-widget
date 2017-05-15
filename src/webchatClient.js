@@ -121,7 +121,8 @@ class WebchatClient extends Component {
             chatMode: demandedMode,
             isModeChanged: true
         });
-        // In text chat microphone & sound must be disabled
+        // In text chat microphone & sound must be disabled,
+        // in voice/video chat they are initially enabled.
         this.turnMic(demandedMode !== 'text');
         this.turnSound(demandedMode !== 'text');
 
