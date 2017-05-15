@@ -65,7 +65,7 @@ export function init(settings) {
 
     // Initialize SDK
     voxAPI.init({
-        micRequired: true, // initially disable microphone/camera access request
+        micRequired: false, // initially disable microphone/camera access request
                             // (so it will not be asked if the first chat mode will be text)
         videoSupport: true, // enable video support
         progressTone: true  // play progress tone
@@ -151,6 +151,8 @@ export function beginCall(demandedMode) {
     console.log('<<<<<<<<<< beginCall() begin');
     console.log('callMode = ' + demandedMode);
 
+    voxAPI.attachRecordingDevice();
+    
     let useVideo = true;//(demandedMode === 'video');
     currentCall = voxAPI.call(dest_username, useVideo, 'TEST CUSTOM DATA', {'X-DirectCall': 'true'});
 
