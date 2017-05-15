@@ -44,6 +44,10 @@ export function init(settings) {
     dest_username = settings.op_username;
 
     // Assign handlers
+    voxAPI.addEventListener(VoxImplant.Events.SDKReady, () => {
+        console.log('<<<<<<<<<< onSDKReady() >>>>>>>>>>');
+        voxAPI.connect();
+    });
     voxAPI.addEventListener(VoxImplant.Events.ConnectionEstablished, () => {
         console.log('<<<<<<<<<< onConnectionEstablished() >>>>>>>>>>');
         voxAPI.login(username + '@' + application_name + '.' + account_name + '.voximplant.com', password);
@@ -64,7 +68,8 @@ export function init(settings) {
         // doesn't work, needed to be placed manually in showRemoteVideo()
         // remoteVideoContainerId: 'video-in',
         localVideoContainerId: 'video-out',
-        micRequired: true,  // force microphone/camera access request
+        micRequired: false, // initially disable microphone/camera access request
+                            // (so it will not be asked if the first chat mode will be text)
         videoSupport: true, // enable video support
         progressTone: true  // play progress tone
     });

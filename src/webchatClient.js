@@ -53,7 +53,6 @@ class WebchatClient extends Component {
         this.backToInitial = this.backToInitial.bind(this);
         this.phoneSentChangeMode = this.phoneSentChangeMode.bind(this);
 
-        this.onSDKReady = this.onSDKReady.bind(this);
         this.onAuthResult = this.onAuthResult.bind(this);
         this.onCallConnected = this.onCallConnected.bind(this);
         this.onCallDisconnected = this.onCallDisconnected.bind(this);
@@ -95,7 +94,6 @@ class WebchatClient extends Component {
         }
         
         this.setState({isModeChanged: true});
-        // vox.createChat(demandedMode);
 
         if (!vox.voxAPI.connected()) {      // 1st call
             console.log('connecting');
@@ -110,8 +108,8 @@ class WebchatClient extends Component {
             }
             else if (demandedMode === 'text') {
                 if (!vox.voxChatAPI) {
-                    vox.initMessenger();
-                    vox.voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, this.onReceiveMessage);
+                    // vox.initMessenger(); 
+                    // vox.voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, this.onReceiveMessage);
                 }
                 vox.beginChat();
             }
@@ -200,28 +198,26 @@ class WebchatClient extends Component {
 
     // VoxImplant events handlers
 
-    // VoxImplant SDK is ready for commands
-    onSDKReady() {
-        this.setState({chatMode: 'idle'});  // Widget becomes available to user.
-    }
     // When user has been logged in, begin chat and assign it's events handlers
     onAuthResult(e) {
         console.log('<========= onAuthResult() begin');
         console.log('this.state.chatMode = ' + this.state.chatMode);
         console.log('Auth result: ' + e.result);
 
-        if (this.state.chatMode === 'connectingVideo' || this.state.chatMode === 'connectingVoice') {
-            const nextMode = (this.state.chatMode === 'connectingVideo') ? 'video' : 'voice';
-            vox.beginCall(nextMode);
-            // Assign event handlers here because these events need to be handled in preact component
-            vox.currentCall.addEventListener(VoxImplant.CallEvents.Connected, this.onCallConnected);
-            vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnected);
-            vox.currentCall.addEventListener(VoxImplant.CallEvents.Failed, this.onCallFailed);
-        } else if (this.state.chatMode === 'text') {
-            vox.initMessenger();
-            vox.voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, this.onReceiveMessage);
-            vox.beginChat();
-        }
+        this.setState({chatMode: 'idle'});
+
+        // if (this.state.chatMode === 'connectingVideo' || this.state.chatMode === 'connectingVoice') {
+        //     const nextMode = (this.state.chatMode === 'connectingVideo') ? 'video' : 'voice';
+        //     vox.beginCall(nextMode);
+        //     // Assign event handlers here because these events need to be handled in preact component
+        //     vox.currentCall.addEventListener(VoxImplant.CallEvents.Connected, this.onCallConnected);
+        //     vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnected);
+        //     vox.currentCall.addEventListener(VoxImplant.CallEvents.Failed, this.onCallFailed);
+        // } else if (this.state.chatMode === 'text') {
+        //     vox.initMessenger();
+        //     vox.voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, this.onReceiveMessage);
+        //     vox.beginChat();
+        // }
         console.log('           onAuthResult() end =========>');
     }
     // When call has been connected, change state from connecting to calling
@@ -354,10 +350,12 @@ class WebchatClient extends Component {
         vox.init(voxParams);
         // Assign event handler here because this event needs to be handled in the component
         vox.voxAPI.addEventListener(VoxImplant.Events.AuthResult, this.onAuthResult);
-        vox.voxAPI.addEventListener(VoxImplant.Events.SDKReady, this.onSDKReady);
     }
     componentDidUpdate() {
         if (this.state.isModeChanged) {
+            console.log(`<========= componentDidUpdate()`);
+            console.log(`Mode has just been changed to  \'${this.state.chatMode}\'`);
+
             this.setState({
                 isModeChanged: false,
                 messages: []
@@ -366,14 +364,11 @@ class WebchatClient extends Component {
             // If component rerender was caused by state change from connecting to calling
             // or by switching between call modes
             if (this.state.chatMode === 'voice' || this.state.chatMode === 'video') {
-                console.log(`<========= componentDidUpdate() with chatMode \'${this.state.chatMode}\'`);
                 console.log(document.getElementById('video-in'));
                 console.log(document.getElementById('video-out'));
                 vox.videoControl(this.state.chatMode);
-                console.log('           componentDidUpdate() =========>');
             }
             if (this.state.chatMode === 'text') {
-                console.log(`<========= componentDidUpdate() with chatMode \'${this.state.chatMode}\'`);
                 // Behavior of these elements is not clear: local video is suddenly placed
                 // in some elements of UI after switching from video call to text chat.
                 // So manual hiding of local video is needed.
@@ -384,8 +379,9 @@ class WebchatClient extends Component {
                 if (videoIn) {
                     videoIn.style.display = 'none';
                 }
-                console.log('           componentDidUpdate() =========>');
             }
+            
+            console.log('           componentDidUpdate() =========>');
         }
     }
     componentWillUnmount() {
