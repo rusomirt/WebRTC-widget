@@ -154,7 +154,7 @@ export function beginCall(demandedMode) {
     voxAPI.attachRecordingDevice();
     
     let useVideo = true;//(demandedMode === 'video');
-    currentCall = voxAPI.call(dest_username, useVideo, 'TEST CUSTOM DATA', {'X-DirectCall': 'true'});
+    currentCall = voxAPI.call(dest_username, useVideo, 'TEST CUSTOM DATA');
 
     currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, (e) => {
         console.log('<<<<<<<<<< onMediaElementCreated() begin');
