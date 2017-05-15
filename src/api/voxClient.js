@@ -139,9 +139,11 @@ export function initMessenger() {
 }
 // Deinitialize all
 export function uninit() {
+    voxChatAPI.removeConversation(currentConv.uuid);
+    currentConv = null;
     // Clear all instances
-    voxAPI = null;
-    voxChatAPI = null;
+    // voxAPI = null;
+    // voxChatAPI = null;
 }
 
 // Begin video or voice call
@@ -211,12 +213,6 @@ export function stopChat(callMode) {
         }
         console.log('currentCall after hanging up: ');
         console.log(currentCall);
-    } else if (callMode === 'text') {
-        console.log('stopping text chat');
-        console.log('removing conversation with uuid ' + currentConv.uuid);
-        voxChatAPI.removeConversation(currentConv.uuid);
-        currentConv = null;
-        console.log('text chat has been stopped');
     }
     console.log('           stopChat() end >>>>>>>>>>');
 }
