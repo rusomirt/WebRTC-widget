@@ -59,9 +59,6 @@ export function init(settings) {
         }, 1000);
     });
     voxAPI.addEventListener(VoxImplant.Events.ConnectionClosed, () => {});
-    voxAPI.addEventListener(VoxImplant.Events.MicAccessResult, () => {
-        console.log('<+++++++++ onMicAccessResult() +++++++++>');
-    });
 
     // Initialize SDK
     voxAPI.init({
@@ -147,35 +144,11 @@ export function uninit() {
 }
 
 // Begin video or voice call
-export function beginCall(demandedMode) {
-    console.log('<<<<<<<<<< beginCall() begin');
-    console.log('callMode = ' + demandedMode);
-
-    voxAPI.attachRecordingDevice();
-    
-    let useVideo = true;//(demandedMode === 'video');
+export function beginCall() {
+    console.log('<<<<<<<<<< beginCall()');
+    let useVideo = true;
     currentCall = voxAPI.call(dest_username, useVideo, 'TEST CUSTOM DATA');
-
-    currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, (e) => {
-        console.log('<<<<<<<<<< onMediaElementCreated() begin');
-        console.log(e.element);
-        e.element.style.display = 'none';
-        console.log('           onMediaElementCreated() end >>>>>>>>>>');
-    });
-
-    console.log('currentCall.getVideoElementId(): ' + currentCall.getVideoElementId());
-    console.log('          beginCall() end >>>>>>>>>>');
-}
-// Enable/disable call progress tones
-export function turnProgressTones(onOff) {
-    if (onOff) {
-        currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
-            voxAPI.playProgressTone();
-        });
-        currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, () => {
-            voxAPI.stopProgressTone();
-        });
-    }
+    console.log('           beginCall() >>>>>>>>>>');
 }
 // Turn the sound on/off
 export function turnSound(onOff) {
@@ -194,6 +167,9 @@ export function turnSound(onOff) {
 export function turnMic(onOff) {
     console.log('<<<<<<<<<< turnMic() begin');
     console.log('onOff = ' + onOff);
+
+    console.log('currentCall:');
+    console.log(currentCall);
 
     if (onOff) {
         currentCall.unmuteMicrophone();
