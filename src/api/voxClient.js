@@ -145,19 +145,13 @@ export function uninit() {
 }
 
 // Begin video or voice call
-export function beginCall(callMode) {
+export function beginCall(demandedMode) {
     console.log('<<<<<<<<<< beginCall() begin');
-    console.log('callMode = ' + callMode);
+    console.log('callMode = ' + demandedMode);
 
-    let useVideo = true;//(callMode === 'video');
+    let useVideo = true;//(demandedMode === 'video');
     currentCall = voxAPI.call(dest_username, useVideo, 'TEST CUSTOM DATA', {'X-DirectCall': 'true'});
 
-    currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
-        voxAPI.playProgressTone();
-    });
-    currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, () => {
-        voxAPI.stopProgressTone();
-    });
     currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, (e) => {
         console.log('<<<<<<<<<< onMediaElementCreated() begin');
         console.log(e.element);
@@ -168,7 +162,44 @@ export function beginCall(callMode) {
     console.log('currentCall.getVideoElementId(): ' + currentCall.getVideoElementId());
     console.log('          beginCall() end >>>>>>>>>>');
 }
-// Begin text chat
+// Enable/disable call progress tones
+export function turnProgressTones(onOff) {
+    if (onOff) {
+        currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
+            voxAPI.playProgressTone();
+        });
+        currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, () => {
+            voxAPI.stopProgressTone();
+        });
+    }
+}
+// Turn the sound on/off
+export function turnSound(onOff) {
+    console.log('<<<<<<<<<< turnSound() begin');
+    console.log('onOff = ' + onOff);
+
+    if (onOff) {
+        currentCall.unmutePlayback();
+    } else {
+        currentCall.mutePlayback();
+    }
+
+    console.log('           turnSound() end >>>>>>>>>>');
+}
+// Turn the microphone on/off
+export function turnMic(onOff) {
+    console.log('<<<<<<<<<< turnMic() begin');
+    console.log('onOff = ' + onOff);
+
+    if (onOff) {
+        currentCall.unmuteMicrophone();
+    } else {
+        currentCall.muteMicrophone();
+    }
+
+    console.log('           turnMic() end >>>>>>>>>>');
+}
+
 // Hangup outbound chat
 export function stopChat(callMode) {
     console.log('<<<<<<<<<< stopChat() begin');
@@ -210,12 +241,12 @@ export function videoControl(callMode) {
     console.log('          videoControl() end >>>>>>>>>>');
 }
 // Show/hide local video
-function showLocalVideo(flag) {
+function showLocalVideo(onOff) {
     console.log('<<<<<<<<<< showLocalVideo() begin');
-    console.log('flag = ' + flag);
+    console.log('onOff = ' + onOff);
 
-    voxAPI.showLocalVideo(flag);
-    if (flag) {
+    voxAPI.showLocalVideo(onOff);
+    if (onOff) {
         // Move local video from camera to container
         const videoOut = document.getElementById('voximplantlocalvideo');
         console.log(videoOut);
@@ -228,15 +259,15 @@ function showLocalVideo(flag) {
     console.log('          showLocalVideo() end >>>>>>>>>>');
 }
 // Show/hide remote video
-function showRemoteVideo(flag) {
+function showRemoteVideo(onOff) {
     console.log('<<<<<<<<<< showRemoteVideo() begin');
-    console.log('flag = ' + flag);
+    console.log('onOff = ' + onOff);
 
-    currentCall.showRemoteVideo(flag);
+    currentCall.showRemoteVideo(onOff);
     console.log('currentCall.getVideoElementId():');
     console.log(currentCall.getVideoElementId());
     const videoIn = document.getElementById(currentCall.getVideoElementId());
-    if (flag) {
+    if (onOff) {
         console.log(videoIn);
         videoIn.style.height = '100%';      // fit in container with aspect ratio keeping
         videoIn.style.display = 'block';    // remove space under element (initially it is inline)
@@ -247,35 +278,8 @@ function showRemoteVideo(flag) {
     console.log('          showRemoteVideo() end >>>>>>>>>>');
 }
 // Start/stop sending video
-function sendVideo(flag) {
-    voxAPI.sendVideo(flag);
-}
-
-// Turn the sound on/off
-export function turnSound(flag) {
-    console.log('<<<<<<<<<< turnSound() begin');
-    console.log('flag = ' + flag);
-
-    if (flag) {
-        currentCall.unmutePlayback();
-    } else {
-        currentCall.mutePlayback();
-    }
-
-    console.log('           turnSound() end >>>>>>>>>>');
-}
-// Turn the microphone on/off
-export function turnMic(flag) {
-    console.log('<<<<<<<<<< turnMic() begin');
-    console.log('flag = ' + flag);
-
-    if (flag) {
-        currentCall.unmuteMicrophone();
-    } else {
-        currentCall.muteMicrophone();
-    }
-
-    console.log('           turnMic() end >>>>>>>>>>');
+function sendVideo(onOff) {
+    voxAPI.sendVideo(onOff);
 }
 
 //

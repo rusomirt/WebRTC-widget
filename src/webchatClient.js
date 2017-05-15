@@ -81,7 +81,7 @@ class WebchatClient extends Component {
 
     // Chat control functions
     startChat(demandedMode) {
-        console.log('<========= startChat() begin');
+        console.log('<========= startChat(): ' + demandedMode);
 
         if (demandedMode === 'voice') {
             this.setState({chatMode: 'connectingVoice'});
@@ -98,41 +98,31 @@ class WebchatClient extends Component {
         console.log('vox.currentCall:');
         console.log(vox.currentCall);
 
-        // 1st voice/video call
-        if ((demandedMode === 'video' || demandedMode === 'voice') && (vox.currentCall === null)) {
-            vox.beginCall(demandedMode);
-            // Assign event handlers here because these events need to be handled in preact component
-            vox.currentCall.addEventListener(VoxImplant.CallEvents.Connected, this.onCallConnected);
-            vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnected);
-            vox.currentCall.addEventListener(VoxImplant.CallEvents.Failed, this.onCallFailed);
-        }
+        vox.beginCall(demandedMode);
+        // Assign event handlers here because these events need to be handled in preact component
+        vox.currentCall.addEventListener(VoxImplant.CallEvents.Connected, this.onCallConnected);
+        vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnected);
+        vox.currentCall.addEventListener(VoxImplant.CallEvents.Failed, this.onCallFailed);
+
+        // In text chat progress tones must be disabled
+        vox.turnProgressTones(demandedMode !== 'text');
 
         console.log('new chatMode = ' + this.state.chatMode);
-        console.log('           startChat() end =========>');
+        console.log('           startChat() =========>');
     }
-    switchMode(nextMode) {
-        console.log('<========= switchMode() begin');
-        console.log('nextMode = ' + nextMode);
+    switchMode(demandedMode) {
+        console.log('<========= switchMode(): ' + demandedMode);
 
-        // If this is switching between voice & video - just change chatMode.
-        // Video displaying parameters will be set in componentDidUpdate() event handler.
-        if (this.state.chatMode !== 'text' && nextMode !== 'text') {
-            console.log('Just change chatMode');
-            this.setState({
-                chatMode: nextMode,
-                isModeChanged: true
-            });
-        } else {
-            // if this is switching between voice/video call & text chat -
-            // stop current chat and start a new one
-            console.log('stopping ' + this.state.chatMode);
-            vox.stopChat(this.state.chatMode);
-            console.log('starting ' + nextMode);
-            this.startChat(nextMode);
-        }
+        this.setState({
+            chatMode: demandedMode,
+            isModeChanged: true
+        });
+        // In text chat microphone & sound must be disabled
+        vox.turnMic(demandedMode !== 'text');
+        vox.turnSound(demandedMode !== 'text');
 
         console.log('new chatMode = ' + this.state.chatMode);
-        console.log('           switchMode() end =========>');
+        console.log('           switchMode() =========>');
     }
     stopChat() {
         console.log('<========= stopChat() begin');
@@ -202,18 +192,6 @@ class WebchatClient extends Component {
 
         this.setState({chatMode: 'idle'});
 
-        // if (this.state.chatMode === 'connectingVideo' || this.state.chatMode === 'connectingVoice') {
-        //     const nextMode = (this.state.chatMode === 'connectingVideo') ? 'video' : 'voice';
-        //     vox.beginCall(nextMode);
-        //     // Assign event handlers here because these events need to be handled in preact component
-        //     vox.currentCall.addEventListener(VoxImplant.CallEvents.Connected, this.onCallConnected);
-        //     vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnected);
-        //     vox.currentCall.addEventListener(VoxImplant.CallEvents.Failed, this.onCallFailed);
-        // } else if (this.state.chatMode === 'text') {
-        //     vox.initMessenger();
-        //     vox.voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, this.onReceiveMessage);
-        //     vox.beginChat();
-        // }
         console.log('           onAuthResult() end =========>');
     }
     // When call has been connected, change state from connecting to calling
@@ -226,6 +204,10 @@ class WebchatClient extends Component {
             this.setState({chatMode: 'video'});
         }
         this.setState({isModeChanged: true});
+
+        // In text chat sound & microphone must be disabled
+        vox.turnMic(this.state.chatMode !== 'text');
+        vox.turnSound(this.state.chatMode !== 'text');
 
         console.log('new chatMode = ' + this.state.chatMode);
         console.log('             onCallConnected() end =========>');
@@ -550,9 +532,7 @@ const Chat = (props) => {
                     <span className={cn('fa fa-tag', 'icon', 'icon--color-scnd', 'icon--xs')}></span>
                 </div>
             </div>;
-            // Hidden videoContainer is necessary for switching from voice call to video call
-            // (it's created on video call init and if it's removed in voice call,
-            // then video call has no remote video after switching from voice call)
+            // Hidden videoContainer is necessary for switching to video mode
             videoContainer =
                 <div className={cn('chat__video-container', 'chat__video-container--hidden')}>
                     <div id='video-in' className={cn('chat__video-in')}></div>
@@ -595,6 +575,12 @@ const Chat = (props) => {
                     </div>
                 </div>;
             messenger = <Messenger onSend={props.onSend} messages={props.messages} />;
+            // Hidden videoContainer is necessary for switching to video mode
+            videoContainer =
+                <div className={cn('chat__video-container', 'chat__video-container--hidden')}>
+                    <div id='video-in' className={cn('chat__video-in')}></div>
+                    <div id='video-out' className={cn('chat__video-out')}></div>
+                </div>;
             break;
         case 'endCall':
             chatInfo =
@@ -851,8 +837,6 @@ class Messages extends Component {
         console.log('<========= Messages componentDidUnmount()');
     }
     render(props, state) {
-        console.log('RENDER: this.props.messages:');
-        console.log(this.props.messages);
         let scrollbarWidth = this.state.scrollbarWidth;
         // If the style is applied in componentDidMount(), there is a strange behavior:
         // after mode switching from text to other some elements have `width: calc(100% + ${scrollbarWidth}px)`
