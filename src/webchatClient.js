@@ -587,6 +587,10 @@ const Chat = (props) => {
                                 Chat connected
                             </span>
                         </div>
+                        {/* Hidden timer is needed to continue time count in text mode */}
+                        <div className={cn('chat__timer-wrapper', 'chat__timer-wrapper--hidden')}>
+                            <Timer/>
+                        </div>
                     </div>
                 </div>;
             messenger = <Messenger onSend={props.onSend} messages={props.messages} />;

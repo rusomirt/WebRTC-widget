@@ -304,6 +304,10 @@ $chat-video-out-right: 10px;
       .chat__timer-wrapper {
         width: 100%;
         text-align: center;
+
+        &.chat__timer-wrapper--hidden {
+          display: none;
+        }
       }
     }
     .chat__logo {
