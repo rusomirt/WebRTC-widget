@@ -117,6 +117,15 @@ class WebchatClient extends Component {
     switchMode(demandedMode) {
         console.log('<========= switchMode(): ' + demandedMode);
 
+        // Switch to voice mode when not connected yet
+        if (demandedMode === 'voice' && !vox.voxAPI.connected()) {
+            this.setState({chatMode: 'connectingVoice'});
+        }
+        // Switch to video mode when not connected yet
+        if (demandedMode === 'video' && !vox.voxAPI.connected()) {
+            this.setState({chatMode: 'connectingVideo'});
+        }
+
         this.setState({
             chatMode: demandedMode,
             isModeChanged: true
