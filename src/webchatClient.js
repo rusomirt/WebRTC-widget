@@ -95,25 +95,14 @@ class WebchatClient extends Component {
         
         this.setState({isModeChanged: true});
 
-        if (!vox.voxAPI.connected()) {      // 1st call
-            console.log('connecting');
-            vox.voxAPI.connect();
-        } else {                            // 2nd and subsequent calls
-            if (demandedMode === 'video' || demandedMode === 'voice') {
-                vox.beginCall(demandedMode);
-                // Assign event handlers here because these events need to be handled in preact component
-                vox.currentCall.addEventListener(VoxImplant.CallEvents.Connected, this.onCallConnected);
-                vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnected);
-                vox.currentCall.addEventListener(VoxImplant.CallEvents.Failed, this.onCallFailed);
-            }
-            else if (demandedMode === 'text') {
-                if (!vox.voxChatAPI) {
-                    // vox.initMessenger(); 
-                    // vox.voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, this.onReceiveMessage);
-                }
-                vox.beginChat();
-            }
+        if (demandedMode === 'video' || demandedMode === 'voice') {
+            vox.beginCall(demandedMode);
+            // Assign event handlers here because these events need to be handled in preact component
+            vox.currentCall.addEventListener(VoxImplant.CallEvents.Connected, this.onCallConnected);
+            vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnected);
+            vox.currentCall.addEventListener(VoxImplant.CallEvents.Failed, this.onCallFailed);
         }
+
         console.log('new chatMode = ' + this.state.chatMode);
         console.log('           startChat() end =========>');
     }

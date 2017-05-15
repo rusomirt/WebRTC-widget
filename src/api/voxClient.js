@@ -65,9 +65,6 @@ export function init(settings) {
 
     // Initialize SDK
     voxAPI.init({
-        // doesn't work, needed to be placed manually in showRemoteVideo()
-        // remoteVideoContainerId: 'video-in',
-        localVideoContainerId: 'video-out',
         micRequired: false, // initially disable microphone/camera access request
                             // (so it will not be asked if the first chat mode will be text)
         videoSupport: true, // enable video support
@@ -156,11 +153,9 @@ export function beginCall(callMode) {
     currentCall = voxAPI.call(dest_username, useVideo, 'TEST CUSTOM DATA', {'X-DirectCall': 'true'});
 
     currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
-        console.log('<+++++++++ onProgressToneStart() +++++++++>');
         voxAPI.playProgressTone();
     });
     currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, () => {
-        console.log('<+++++++++ onProgressToneStop() +++++++++>');
         voxAPI.stopProgressTone();
     });
     currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, (e) => {
@@ -174,24 +169,6 @@ export function beginCall(callMode) {
     console.log('          beginCall() end >>>>>>>>>>');
 }
 // Begin text chat
-export function beginChat() {
-    console.log('<<<<<<<<<< beginChat() begin');
-
-    // console.log('voxAPI:');
-    // console.log(voxAPI);
-    //
-    // console.log('voxChatAPI:');
-    // console.log(voxChatAPI);
-    //
-    // console.log('currentCall:');
-    // console.log(currentCall);
-
-    // Get local user to check if there is unremoved conversation
-    // and to create a new conversation
-    voxChatAPI.getUser(voxChatAPI.getMe());
-
-    console.log('           beginChat() end >>>>>>>>>>');
-}
 // Hangup outbound chat
 export function stopChat(callMode) {
     console.log('<<<<<<<<<< stopChat() begin');
@@ -244,7 +221,7 @@ function showLocalVideo(flag) {
         console.log(videoOut);
         videoOut.style.width = '100%';    // fit in container with aspect ratio keeping
         videoOut.style.display = 'block'; // remove space under element (initially it is inline)
-        // document.getElementById('video-out').appendChild(videoOut);
+        document.getElementById('video-out').appendChild(videoOut);
         // videoOut.play();
     }
 
