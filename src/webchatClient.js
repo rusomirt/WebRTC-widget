@@ -92,10 +92,14 @@ class WebchatClient extends Component {
         } else {
             return;
         }
-        
+
         this.setState({isModeChanged: true});
 
-        if (demandedMode === 'video' || demandedMode === 'voice') {
+        console.log('vox.currentCall:');
+        console.log(vox.currentCall);
+
+        // 1st voice/video call
+        if ((demandedMode === 'video' || demandedMode === 'voice') && (vox.currentCall === null)) {
             vox.beginCall(demandedMode);
             // Assign event handlers here because these events need to be handled in preact component
             vox.currentCall.addEventListener(VoxImplant.CallEvents.Connected, this.onCallConnected);
@@ -194,6 +198,7 @@ class WebchatClient extends Component {
         console.log('Auth result: ' + e.result);
 
         vox.initMessenger();
+        vox.voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, this.onReceiveMessage);
 
         this.setState({chatMode: 'idle'});
 
@@ -319,6 +324,8 @@ class WebchatClient extends Component {
             this.addMessageToList(message);
         }
 
+        console.log('this.state.messages:');
+        console.log(this.state.messages);
         console.log('           onReceiveMessage =========>');
     }
 
@@ -371,7 +378,9 @@ class WebchatClient extends Component {
                     videoIn.style.display = 'none';
                 }
             }
-            
+
+            console.log('this.state.messages:');
+            console.log(this.state.messages);
             console.log('           componentDidUpdate() =========>');
         }
     }
@@ -809,6 +818,8 @@ class Messages extends Component {
     }
     componentDidMount() {
         console.log('<========= Messages componentDidMount()');
+        console.log('this.props.messages:');
+        console.log(this.props.messages);
         // Hide the scrollbar:
         // expand element by the scrollbar width and the scrollbar will be hidden
         // due to overflow:hidden of parent wrapper.
@@ -840,6 +851,8 @@ class Messages extends Component {
         console.log('<========= Messages componentDidUnmount()');
     }
     render(props, state) {
+        console.log('RENDER: this.props.messages:');
+        console.log(this.props.messages);
         let scrollbarWidth = this.state.scrollbarWidth;
         // If the style is applied in componentDidMount(), there is a strange behavior:
         // after mode switching from text to other some elements have `width: calc(100% + ${scrollbarWidth}px)`

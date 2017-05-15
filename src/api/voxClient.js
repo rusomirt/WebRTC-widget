@@ -60,12 +60,12 @@ export function init(settings) {
     });
     voxAPI.addEventListener(VoxImplant.Events.ConnectionClosed, () => {});
     voxAPI.addEventListener(VoxImplant.Events.MicAccessResult, () => {
-        console.log('<<<<<<<<<< onMicAccessResult() >>>>>>>>>>');
+        console.log('<+++++++++ onMicAccessResult() +++++++++>');
     });
 
     // Initialize SDK
     voxAPI.init({
-        micRequired: false, // initially disable microphone/camera access request
+        micRequired: true, // initially disable microphone/camera access request
                             // (so it will not be asked if the first chat mode will be text)
         videoSupport: true, // enable video support
         progressTone: true  // play progress tone
@@ -123,7 +123,7 @@ export function initMessenger() {
                 userId: dest_username + '@' + application_name + '.' + account_name,
                 canManageParticipants: false, canWrite: true
             }];
-            const title = 'Test text chat';
+            const title = 'Conversation';
             const isDistinct = false;
             const enablePublicJoin = true;
             voxChatAPI.createConversation(participants, title, isDistinct, enablePublicJoin);
