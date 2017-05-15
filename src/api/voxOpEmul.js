@@ -71,7 +71,7 @@ export function initMessenger() {
         console.log('<<<<<<<<<< onCreateConversation()');
         console.log(e.conversation);
         currentConv = e.conversation;
-        currentConv.sendMessage('Hello! How can I help you?');
+        // currentConv.sendMessage('Hello! How can I help you?');
         console.log('           onCreateConversation() >>>>>>>>>>');
     });
     voxChatAPI.on(VoxImplant.MessagingEvents.onError, (e) => {
