@@ -91,9 +91,6 @@ export function initMessenger() {
         console.log('currentConv:');
         console.log(currentConv);
 
-        // voxChatAPI.getUser('skalatskyalexey-2nd@videochat.xlucidity');
-        // voxChatAPI.getUser('blablabla');
-
         console.log('           onCreateConversation end >>>>>>>>>>');
     });
     voxChatAPI.on(VoxImplant.MessagingEvents.onRemoveConversation, (e) => {
@@ -138,6 +135,9 @@ export function initMessenger() {
         console.log('          onGetUser end >>>>>>>>>>');
     });
 
+    // Check for pending unremoved conversation and create a new one.
+    voxChatAPI.getUser(voxChatAPI.getMe());
+    
     console.log('           initMessenger() end >>>>>>>>>>');
 }
 // Deinitialize all
@@ -169,8 +169,6 @@ export function beginCall(callMode) {
         e.element.style.display = 'none';
         console.log('           onMediaElementCreated() end >>>>>>>>>>');
     });
-
-    // currentCall.setVideoSettings({width: 720});
 
     console.log('currentCall.getVideoElementId(): ' + currentCall.getVideoElementId());
     console.log('          beginCall() end >>>>>>>>>>');

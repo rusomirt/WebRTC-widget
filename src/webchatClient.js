@@ -204,6 +204,8 @@ class WebchatClient extends Component {
         console.log('this.state.chatMode = ' + this.state.chatMode);
         console.log('Auth result: ' + e.result);
 
+        vox.initMessenger();
+
         this.setState({chatMode: 'idle'});
 
         // if (this.state.chatMode === 'connectingVideo' || this.state.chatMode === 'connectingVoice') {
