@@ -54,67 +54,67 @@ video {
 }
 
 // Global colors
-$webchat-c-main: #00c48a;
-$webchat-c-stop: #c41200;
-$webchat-c-bluedark: #3b5d80;
-$webchat-c-bluelight: #75baff;
+$c-main: #00c48a;
+$c-stop: #c41200;
+$c-bluedark: #3b5d80;
+$c-bluelight: #75baff;
 
 
-$webchat-r: 20px;
-$webchat-b: 20px;
-$webchat-launch-btn-size: 64px;
-$webchat-chat-btn-size: 50px;
+$select-mode-r: 20px;
+$select-mode-b: 20px;
+$select-mode-launch-btn-size: 64px;
+$select-mode-chat-btn-size: 50px;
 // Distance between chat type buttons (video, voice or text) and chat launch button:
-$webchat-chat-btn-shift: 40px;
-$webchat-btns-c: $webchat-c-main;
-$webchat-btns-show-time: 1s;
+$select-mode-chat-btn-shift: 40px;
+$select-mode-btns-c: $c-main;
+$select-mode-btns-show-time: 1s;
 
-.webchat {
+.select-mode {
   position: fixed;
-  right: $webchat-r;
-  bottom: $webchat-b;
+  right: $select-mode-r;
+  bottom: $select-mode-b;
 
   display: inline-block;
   width: 0;
   height: 0;
 
-  .webchat__launch-btn {
+  .select-mode__launch-btn {
     @extend .btn--circle;
     position: absolute;
     right: 0;
     bottom: 0;
 
-    width: $webchat-launch-btn-size;
-    height: $webchat-launch-btn-size;
-    background-color: $webchat-btns-c;
+    width: $select-mode-launch-btn-size;
+    height: $select-mode-launch-btn-size;
+    background-color: $select-mode-btns-c;
   }
-  .webchat__chat-btn {
+  .select-mode__chat-btn {
     @extend .btn--circle;
     position: absolute;
     opacity: 1;
     visibility: visible;
-    transition: opacity $webchat-btns-show-time;
+    transition: opacity $select-mode-btns-show-time;
 
-    width: $webchat-chat-btn-size;
-    height: $webchat-chat-btn-size;
-    background-color: $webchat-btns-c;
+    width: $select-mode-chat-btn-size;
+    height: $select-mode-chat-btn-size;
+    background-color: $select-mode-btns-c;
   }
-  .webchat__chat-btn--hidden {
+  .select-mode__chat-btn--hidden {
     opacity: 0 !important;
     visibility: hidden !important;
   }
 
-  .webchat__chat-btn--video {
-    right: $webchat-chat-btn-shift + $webchat-launch-btn-size;
-    bottom: ($webchat-launch-btn-size - $webchat-chat-btn-size) * 0.5;
+  .select-mode__chat-btn--video {
+    right: $select-mode-chat-btn-shift + $select-mode-launch-btn-size;
+    bottom: ($select-mode-launch-btn-size - $select-mode-chat-btn-size) * 0.5;
   }
-  .webchat__chat-btn--voice {
-    right: ($webchat-chat-btn-shift + $webchat-launch-btn-size) * 0.707;
-    bottom: ($webchat-chat-btn-shift + $webchat-launch-btn-size) * 0.707;
+  .select-mode__chat-btn--voice {
+    right: ($select-mode-chat-btn-shift + $select-mode-launch-btn-size) * 0.707;
+    bottom: ($select-mode-chat-btn-shift + $select-mode-launch-btn-size) * 0.707;
   }
-  .webchat__chat-btn--text {
-    right: ($webchat-launch-btn-size - $webchat-chat-btn-size) * 0.5;
-    bottom: $webchat-chat-btn-shift + $webchat-launch-btn-size;
+  .select-mode__chat-btn--text {
+    right: ($select-mode-launch-btn-size - $select-mode-chat-btn-size) * 0.5;
+    bottom: $select-mode-chat-btn-shift + $select-mode-launch-btn-size;
   }
 }
 
@@ -190,23 +190,23 @@ $chat-btns-group-mx: $chat-panel-h * 0.25;
 $chat-stop-btn-size: 64px;
 
 $chat-info-border-w: 10px;
-$chat-info-border-c: $webchat-c-bluedark;
+$chat-info-border-c: $c-bluedark;
 $chat-info-bg-c: white;
 $chat-info-mb: $chat-panel-b + $chat-panel-h + 24px;
 
 $chat-status-p: 6px 0 12px;
 $chat-status-font: 'Roboto Medium', sans-serif;
 $chat-status-font-size: 17px;
-$chat-status-font-c: $webchat-c-main;
+$chat-status-font-c: $c-main;
 
 $chat-status-high-p: 40px 0 22px;
 
-$chat-status-success-bg-c: $webchat-c-main;
+$chat-status-success-bg-c: $c-main;
 $chat-status-success-font-c: white;
 $chat-status-success-p: 57px 0;
 
 $chat-status-fail-h: 184px;
-$chat-status-fail-bg-c: $webchat-c-stop;
+$chat-status-fail-bg-c: $c-stop;
 $chat-status-fail-font-c: white;
 $chat-status-fail-p: 21px 0 30px;
 
@@ -396,7 +396,7 @@ $temp1: 100% - $chat-btns-group-mx*4;
     @extend .btn--circle;
     width: $chat-stop-btn-size;
     height: $chat-stop-btn-size;
-    background-color: $webchat-c-stop;
+    background-color: $c-stop;
   }
 }
 
@@ -404,7 +404,7 @@ $inline-form-p: 2px;
 $inline-form-input-p: 2px 12px 3px;
 $inline-form-font: 'Roboto Regular', sans-serif;
 $inline-form-font-size: 12px;
-$inline-form-btn-bg-c: $webchat-c-bluedark;
+$inline-form-btn-bg-c: $c-bluedark;
 $inline-form-btn-size: 30px;
 $inline-form-btn-font-c: white;
 
@@ -496,12 +496,12 @@ $msgr-input-font-color: #4a4a4a;
           word-wrap: break-word;
 
           &.msgr__msg-body--in {
-            background-color: $webchat-c-bluedark;
+            background-color: $c-bluedark;
             border-bottom-right-radius: 0;
             text-align: right;
           }
           &.msgr__msg-body--out {
-            background-color: $webchat-c-bluelight;
+            background-color: $c-bluelight;
             border-bottom-left-radius: 0;
           }
         }
@@ -511,11 +511,11 @@ $msgr-input-font-color: #4a4a4a;
 
           &.msgr__msg-info--in {
             float: right;
-            color: $webchat-c-bluedark;
+            color: $c-bluedark;
           }
           &.msgr__msg-info--out {
             float: left;
-            color: $webchat-c-bluelight;
+            color: $c-bluelight;
           }
         }
       }
@@ -636,7 +636,7 @@ $subscribe-h: 196px;
 $subscribe-w: 100%;
 $subscribe-font: 'Roboto Regular', sans-serif;
 $subscribe-font-size: 16px;
-$subscribe-font-c: $webchat-c-main;
+$subscribe-font-c: $c-main;
 
 .subscribe-wrapper {
   height: $subscribe-h;
@@ -728,7 +728,7 @@ $similar-call-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
         width: $similar-call-btn-size;
         height: $similar-call-btn-size;
         box-shadow: $similar-call-shadow;
-        background: $webchat-c-main;
+        background: $c-main;
       }
     }
   }
@@ -738,7 +738,7 @@ $back-btn-m: 15px auto 5px;
 $back-btn-font-family: 'Roboto Medium', sans-serif;
 $back-btn-font-size: 14px;
 $back-btn-font-c: white;
-$back-btn-bg-c: $webchat-c-bluedark;
+$back-btn-bg-c: $c-bluedark;
 $back-btn-p: 7px 70px;
 $back-btn-border-radius: 100px;
 
@@ -763,7 +763,7 @@ $back-btn-border-radius: 100px;
     color: white;
   }
   &.icon--color {
-    color: $webchat-c-main;
+    color: $c-main;
   }
   &.icon--color-scnd {
     color: #f8e71c;
@@ -790,7 +790,7 @@ $back-btn-border-radius: 100px;
       right: -4px;
       width: 1.4em;
       height: 2px;
-      background: $webchat-c-main;
+      background: $c-main;
       border-top: 2px solid white;
       transform: rotate(-45deg);
     }
@@ -804,7 +804,7 @@ $back-btn-border-radius: 100px;
     display: inline-block;
     width: 1.2em;
     height: 1.2em;
-    background: $webchat-c-stop;
+    background: $c-stop;
     border-radius: 50%;
     font-size: 0.7em;
     padding: 2px;
@@ -816,7 +816,7 @@ $back-btn-border-radius: 100px;
 
 $timer-font: 'Roboto Medium', sans-serif;
 $timer-font-size: 10px;
-$timer-font-c: $webchat-c-main;
+$timer-font-c: $c-main;
 
 .timer {
   font-family: $timer-font;
