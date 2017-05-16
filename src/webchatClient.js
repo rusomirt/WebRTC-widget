@@ -211,12 +211,12 @@ class WebchatClient extends Component {
 
         console.log('           onAuthResult() end =========>');
     }
-    //
+    // Handling user's response to question about camera & microphone access
     onMicAccessResult(e) {
         console.log('<+++++++++ onMicAccessResult()');
-        console.log('e.result:');
-        console.log(e.result);
+        console.log('e.result: ' + e.result);
 
+        // If user has allowed access to camera & microphone: begin call
         if (e.result) {
             vox.beginCall();
 
