@@ -337,6 +337,7 @@ class WebchatClient extends Component {
         console.log(this.state.messages);
         console.log('           onReceiveMessage =========>');
     }
+    // Get current timestamp in format (h)h:mm + am/pm
     getCurrentTimeString() {
         const now = new Date();
         const nowHours = (now.getHours() <= 12) ? ((now.getHours() === 0) ? 12 : now.getHours()) : (now.getHours() - 12);
