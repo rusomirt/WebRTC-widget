@@ -65,8 +65,6 @@ export function initMessenger() {
     // Create messenger instance
     voxChatAPI = VoxImplant.getMessenger();
 
-    voxChatAPI.on(VoxImplant.MessagingEvents.isDelivered, (e) => {console.log('<<<<<<<<<< isDelivered() >>>>>>>>>>')});
-    voxChatAPI.on(VoxImplant.MessagingEvents.isRead, (e) => {console.log('<<<<<<<<<< isRead() >>>>>>>>>>')});
     voxChatAPI.on(VoxImplant.MessagingEvents.onCreateConversation, (e) => {
         console.log('<<<<<<<<<< onCreateConversation()');
         console.log(e.conversation);
@@ -79,27 +77,25 @@ export function initMessenger() {
         console.log(e);
         console.log('          onError end >>>>>>>>>>');
     });
-    voxChatAPI.on(VoxImplant.MessagingEvents.onGetConversation, (e) => { console.log('<<<<<<<<<< onGetConversation() >>>>>>>>>>'); });
     voxChatAPI.on(VoxImplant.MessagingEvents.onRemoveConversation, (e) => {console.log('<<<<<<<<<< onRemoveConversation() >>>>>>>>>>')});
-    voxChatAPI.on(VoxImplant.MessagingEvents.onGetUser, (e) => {console.log('<<<<<<<<<< onGetUser() >>>>>>>>>>')});
     voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, (e) => {
         console.log('<<<<<<<<<< onSendMessage()');
-        console.log(e);
+
+        console.log('e.message:');
         console.log(e.message);
-        console.log(e.message.sender);
-        console.log(e.message.text);
-        console.log(e.message.conversation);
+        console.log('sender: ' + e.message.sender);
+        console.log('text: ' + e.message.text);
+        console.log('conversation uuid: ' + e.message.conversation);
+        console.log('currentConv uuid: ' + currentConv.uuid);
+
         // If this message has been sent by other user
         if (e.message.sender !== username + '@' + application_name + '.' + account_name) {
             currentConv.sendMessage(e.message.text);
             console.log('message retranslated');
         }
+
         console.log('           onSendMessage() >>>>>>>>>>');
     });
-    voxChatAPI.on(VoxImplant.MessagingEvents.onSetStatus, (e) => {console.log('<<<<<<<<<< onSetStatus() >>>>>>>>>>')});
-    voxChatAPI.on(VoxImplant.MessagingEvents.onSubscribe, (e) => {console.log('<<<<<<<<<< onSubscribe() >>>>>>>>>>')});
-    voxChatAPI.on(VoxImplant.MessagingEvents.onTyping, (e) => {console.log('<<<<<<<<<< onTyping() >>>>>>>>>>')});
-    voxChatAPI.on(VoxImplant.MessagingEvents.onUnSubscribe, (e) => {console.log('<<<<<<<<<< onUnSubscribe() >>>>>>>>>>')});
 
     console.log('voxChatAPI:');
     console.log(voxChatAPI);
