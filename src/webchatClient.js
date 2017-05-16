@@ -646,7 +646,9 @@ const Chat = (props) => {
                     desc: 'Sushi Bars, Izakaya Cocktail Bars',
                     rating: 3.7,
                     ratingMax: 5,
-                    callHandler: () => {alert('restaurant #1')}
+                    videoChatStart: () => {alert('restaurant #1 video chat')},
+                    voiceChatStart: () => {alert('restaurant #1 voice chat')},
+                    textChatStart: () => {alert('restaurant #1 text chat')}
                 },
                 {
                     logo: oxidoLogo,
@@ -654,7 +656,9 @@ const Chat = (props) => {
                     desc: 'Mexican, Cocktail Bars',
                     rating: 4.1,
                     ratingMax: 5,
-                    callHandler: () => {alert('restaurant #2')}
+                    videoChatStart: () => {alert('restaurant #2 video chat')},
+                    voiceChatStart: () => {alert('restaurant #2 voice chat')},
+                    textChatStart: () => {alert('restaurant #2 text chat')}
                 },
                 {
                     logo: flexMusselsLogo,
@@ -662,7 +666,9 @@ const Chat = (props) => {
                     desc: 'Seafood, Bars',
                     rating: 4.5,
                     ratingMax: 5,
-                    callHandler: () => {alert('restaurant #3')}
+                    videoChatStart: () => {alert('restaurant #3 video chat')},
+                    voiceChatStart: () => {alert('restaurant #3 voice chat')},
+                    textChatStart: () => {alert('restaurant #3 text chat')}
                 },
             ];
             const chatStatus =
@@ -1188,7 +1194,9 @@ const RestaurantsList = (props) => {
                 desc={restaurant.desc}
                 rating={restaurant.rating}
                 ratingMax={restaurant.ratingMax}
-                callHandler={restaurant.callHandler}
+                videoChatStart={restaurant.videoChatStart}
+                voiceChatStart={restaurant.voiceChatStart}
+                textChatStart={restaurant.textChatStart}
             />
         );
     });
@@ -1200,28 +1208,68 @@ const RestaurantsList = (props) => {
     );
 };
 // One restaurant in a list
-// Props: key, logo, name, desc, rating, ratingMax, callHandler()
-const Restaurant = (props) => {
-    return (
-        <div className={cn('similar__item')}>
-            <img className={cn('similar__logo')} src={props.logo}/>
-            <div className={cn('similar__info')}>
-                <div className={cn('similar__name')}>
-                    {props.name} <span className={cn('fa fa-info-circle')}></span>
+// Props: key, logo, name, desc, rating, ratingMax, videoChatStart(), textChatStart(), voiceChatStart()
+class Restaurant extends Component {
+    constructor() {
+        super();
+        this.state = {callBtnsOpen: false};
+        this.openCallBtns = this.openCallBtns.bind(this);
+    }
+    openCallBtns() {
+        this.setState({callBtnsOpen: true});
+    }
+    componentDidMount() {
+        document.addEventListener('click', this.handleClickOutside.bind(this), true);
+    }
+    componentWillUnmount() {
+        document.removeEventListener('click', this.handleClickOutside.bind(this), true);
+    }
+    handleClickOutside(event) {
+        const callBtnsNode = this.callBtnsRef;
+
+        if ((!callBtnsNode || !callBtnsNode.contains(event.target))) {
+            this.setState({callBtnsOpen: false});
+        }
+    }
+    render(props, state) {
+        let callBtns = null;
+        if (this.state.callBtnsOpen) {
+            callBtns =
+                <div className={cn('similar__call-btns')} ref={node => this.callBtnsRef = node}>
+                    <button className={cn('similar__call-btn')} onClick={props.videoChatStart}>
+                        <span className={cn('fa fa-video-camera', 'icon', 'icon--white', 'icon--sm')}></span>
+                    </button>
+                    <button className={cn('similar__call-btn')} onClick={props.textChatStart}>
+                        <span className={cn('fa fa-comments', 'icon', 'icon--white', 'icon--sm')}></span>
+                    </button>
+                    <button className={cn('similar__call-btn')} onClick={props.voiceChatStart}>
+                        <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--sm')}></span>
+                    </button>
                 </div>
-                <div className={cn('similar__desc')}>
-                    {props.desc}
+        }
+        return (
+            <div className={cn('similar__item')}>
+                <img className={cn('similar__logo')} src={props.logo}/>
+                <div className={cn('similar__info')}>
+                    <div className={cn('similar__name')}>
+                        {props.name} <span className={cn('fa fa-info-circle')}></span>
+                    </div>
+                    <div className={cn('similar__desc')}>
+                        {props.desc}
+                    </div>
+                    <Rating clickable={false} starsNum={props.ratingMax} initValue={props.rating} starSize={'14px'}
+                            inputName=''/>
                 </div>
-                <Rating clickable={false} starsNum={props.ratingMax} initValue={props.rating} starSize={'14px'} inputName=''/>
+                <div className={cn('similar__call')}>
+                    <button className={cn('similar__call-btn')} onClick={this.openCallBtns}>
+                        <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--md')}></span>
+                    </button>
+                </div>
+                {callBtns}
             </div>
-            <div className={cn('similar__call')}>
-                <button className={cn('similar__call-btn')} onClick={props.callHandler}>
-                    <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--md')}></span>
-                </button>
-            </div>
-        </div>
-    );
-};
+        );
+    }
+}
 
 // Parameterized render to HTML
 module.exports = function createWidget(node, settings) {

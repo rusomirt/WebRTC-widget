@@ -685,6 +685,7 @@ $similar-call-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
   .similar__item {
     width: 100%;
     display: flex;
+    position: relative;
 
     &:not(:last-of-type) {  // space between consequent items
       margin-bottom: $similar-item-spacer;
@@ -721,16 +722,42 @@ $similar-call-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
       width: $similar-call-size;
       height: $similar-call-size;
       display: flex;
-      justify-content: center;
+      justify-content: flex-end;
       align-items: center;
+      //
+      //.similar__call-btn {
+      //  @extend .btn--circle;
+      //  width: $similar-call-btn-size;
+      //  height: $similar-call-btn-size;
+      //  box-shadow: $similar-call-shadow;
+      //  background: $c-main;
+      //}
+    }
 
-      .similar__call-btn {
-        @extend .btn--circle;
-        width: $similar-call-btn-size;
-        height: $similar-call-btn-size;
-        box-shadow: $similar-call-shadow;
-        background: $c-main;
+    .similar__call-btn {
+      @extend .btn--circle;
+      width: $similar-call-btn-size;
+      height: $similar-call-btn-size;
+      box-shadow: $similar-call-shadow;
+      background: $c-main;
+
+      margin-right: 15px;
+      &:first-of-type {
+        margin-left: 15px;
       }
+    }
+
+    .similar__call-btns {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: rgba(255, 255, 255, 0.7);
+
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
     }
   }
 }
