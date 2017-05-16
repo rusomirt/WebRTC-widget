@@ -106,6 +106,7 @@ class WebchatClient extends Component {
                 vox.beginCall(this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
             }
 
+            // Switch UI to connecting state
             if (demandedMode === 'voice') {
                 this.setState({chatMode: 'connectingVoice'});
             } else if (demandedMode === 'video') {
@@ -147,15 +148,8 @@ class WebchatClient extends Component {
     stopChat() {
         console.log('<========= stopChat() begin');
 
-        let mode = null;
-        if (this.state.chatMode === 'connectingVoice') {
-            mode = 'voice';
-        } else if (this.state.chatMode === 'connectingVideo') {
-            mode = 'video';
-        } else {
-            mode = this.state.chatMode;
-        }
-        vox.stopChat(mode);
+        // Hangup call
+        vox.stopCall();
 
         // If user stops chat while connecting a call, return to initial idle state.
         // In other cases go to 'end call' screen.

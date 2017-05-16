@@ -204,19 +204,19 @@ export function turnMic(onOff) {
     console.log('           turnMic() end >>>>>>>>>>');
 }
 
-// Hangup outbound chat
-export function stopChat(callMode) {
-    console.log('<<<<<<<<<< stopChat() begin');
-    if (callMode === 'video' || callMode === 'voice') {
-        console.log('currentCall before hanging up: ');
-        console.log(currentCall);
-        if (currentCall) {
-            currentCall.hangup();
-            // currentCall = null;
-        }
-        console.log('currentCall after hanging up: ');
-        console.log(currentCall);
+// Hangup call
+export function stopCall() {
+    console.log('<<<<<<<<<< stopCall()');
+    console.log('currentCall before hanging up: ');
+    console.log(currentCall);
+
+    if (currentCall) {
+        currentCall.hangup();
+        // currentCall = null;
     }
+
+    console.log('currentCall after hanging up: ');
+    console.log(currentCall);
     console.log('           stopChat() end >>>>>>>>>>');
 }
 
