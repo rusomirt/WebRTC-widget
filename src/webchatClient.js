@@ -362,10 +362,7 @@ class WebchatClient extends Component {
             op_username: hashParams.op_username ?
                 hashParams.op_username : this.props.settings.op_username
         };
-        vox.init(voxParams);
-        // Assign event handler here because this event needs to be handled in the component
-        vox.voxAPI.addEventListener(VoxImplant.Events.AuthResult, this.onAuthResult);
-        vox.voxAPI.addEventListener(VoxImplant.Events.MicAccessResult, this.onMicAccessResult);
+        vox.init(voxParams, this.onAuthResult, this.onMicAccessResult);
     }
     componentDidUpdate() {
         if (this.state.isModeChanged) {

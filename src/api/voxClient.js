@@ -32,7 +32,7 @@ export let voxChatAPI;              // object for messenger instance
 //=============================================================================
 
 // Initialize VoxImplant
-export function init(settings) {
+export function init(settings, onAuthResult, onMicAccessResult) {
     // Create VoxImplant instance
     voxAPI = VoxImplant.getInstance();
 
@@ -59,6 +59,9 @@ export function init(settings) {
         }, 1000);
     });
     voxAPI.addEventListener(VoxImplant.Events.ConnectionClosed, () => {});
+    // These event listeners get callbacks from Preact because they influence to UI
+    voxAPI.addEventListener(VoxImplant.Events.AuthResult, onAuthResult);
+    voxAPI.addEventListener(VoxImplant.Events.MicAccessResult, onMicAccessResult);
 
     // Initialize SDK
     voxAPI.init({
