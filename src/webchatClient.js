@@ -5,10 +5,6 @@ import classNames from 'classnames/bind';
 // NPM package for working with font-awesome icons classes
 import 'font-awesome-webpack';
 
-// VoxImplant library
-// import * as VoxImplant from 'voximplant-websdk';
-import * as VoxImplant from './lib/voximplant.min.js';  // onProgressToneStart event fixed
-
 // VoxImplant API custom functions
 import * as vox from 'api/voxClient';
 
@@ -461,27 +457,27 @@ class SelectMode extends Component {
     render(props, state) {
         if (this.props.clientAppInstalled) {
             return (
-                <div className={cn('webchat')}>
+                <div className={cn('select-mode')}>
                     <button
-                        className={cn('webchat__launch-btn')}
+                        className={cn('select-mode__launch-btn')}
                         onClick={this.toggleChatButtons}>
                         <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--md')}></span>
                     </button>
                     <button
-                        className={ cn('webchat__chat-btn', 'webchat__chat-btn--video',
-                            {'webchat__chat-btn--hidden': !this.state.isChatBtnsOpen})}
+                        className={ cn('select-mode__chat-btn', 'select-mode__chat-btn--video',
+                            {'select-mode__chat-btn--hidden': !this.state.isChatBtnsOpen})}
                         onClick={() => props.startChat('video')}>
                         <span className={cn('fa fa-video-camera', 'icon', 'icon--white', 'icon--sm')}></span>
                     </button>
                     <button
-                        className={ cn('webchat__chat-btn', 'webchat__chat-btn--voice',
-                            {'webchat__chat-btn--hidden': !this.state.isChatBtnsOpen})}
+                        className={ cn('select-mode__chat-btn', 'select-mode__chat-btn--voice',
+                            {'select-mode__chat-btn--hidden': !this.state.isChatBtnsOpen})}
                         onClick={() => props.startChat('voice')}>
                         <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--sm')}></span>
                     </button>
                     <button
-                        className={ cn('webchat__chat-btn', 'webchat__chat-btn--text',
-                            {'webchat__chat-btn--hidden': !this.state.isChatBtnsOpen})}
+                        className={ cn('select-mode__chat-btn', 'select-mode__chat-btn--text',
+                            {'select-mode__chat-btn--hidden': !this.state.isChatBtnsOpen})}
                         onClick={() => props.startChat('text')}>
                         <span className={cn('fa fa-comments', 'icon', 'icon--white', 'icon--sm')}></span>
                     </button>
@@ -489,9 +485,9 @@ class SelectMode extends Component {
             );
         } else {
             return (
-                <div className={cn('webchat')}>
+                <div className={cn('select-mode')}>
                     <button
-                        className={cn('webchat__launch-btn')}
+                        className={cn('select-mode__launch-btn')}
                         onClick={() => props.startChat('voice')}>
                         <span className={cn('fa fa-phone', 'icon', 'icon--white', 'icon--md')}></span>
                     </button>
