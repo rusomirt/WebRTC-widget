@@ -103,26 +103,7 @@ class WebchatClient extends Component {
                 // Ask about allowing camera & microphone access
                 vox.askCamAndMic();
             } else {
-                vox.beginCall();
-
-                vox.currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, (e) => {
-                    console.log('<<<<<<<<<< onMediaElementCreated() begin');
-                    console.log(e.element);
-                    e.element.style.display = 'none';
-                    console.log('           onMediaElementCreated() end >>>>>>>>>>');
-                });
-                vox.currentCall.addEventListener(VoxImplant.CallEvents.Connected, this.onCallConnected);
-                vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnected);
-                vox.currentCall.addEventListener(VoxImplant.CallEvents.Failed, this.onCallFailed);
-                vox.currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
-                    vox.voxAPI.playProgressTone();
-                });
-                vox.currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, () => {
-                    vox.voxAPI.stopProgressTone();
-                });
-
-                console.log('vox.currentCall:');
-                console.log(vox.currentCall);
+                vox.beginCall(this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
             }
 
             if (demandedMode === 'voice') {
@@ -248,26 +229,7 @@ class WebchatClient extends Component {
 
         // If user has allowed access to camera & microphone: begin call
         if (e.result) {
-            vox.beginCall();
-
-            vox.currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, (e) => {
-                console.log('<<<<<<<<<< onMediaElementCreated() begin');
-                console.log(e.element);
-                e.element.style.display = 'none';
-                console.log('           onMediaElementCreated() end >>>>>>>>>>');
-            });
-            vox.currentCall.addEventListener(VoxImplant.CallEvents.Connected, this.onCallConnected);
-            vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnected);
-            vox.currentCall.addEventListener(VoxImplant.CallEvents.Failed, this.onCallFailed);
-            vox.currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
-                vox.voxAPI.playProgressTone();
-            });
-            vox.currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, () => {
-                vox.voxAPI.stopProgressTone();
-            });
-
-            console.log('vox.currentCall:');
-            console.log(vox.currentCall);
+            vox.beginCall(this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
         }
         
         console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());

@@ -148,10 +148,30 @@ export function askCamAndMic() {
     voxAPI.attachRecordingDevice().then();
 }
 // Begin video or voice call
-export function beginCall() {
+export function beginCall(onCallConnected, onCallDisconnected, onCallFailed) {
     console.log('<<<<<<<<<< beginCall()');
     let useVideo = true;
     currentCall = voxAPI.call(dest_username, useVideo, 'TEST CUSTOM DATA');
+
+    currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, (e) => {
+        console.log('<<<<<<<<<< onMediaElementCreated() begin');
+        console.log(e.element);
+        e.element.style.display = 'none';
+        console.log('           onMediaElementCreated() end >>>>>>>>>>');
+    });
+    currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
+        voxAPI.playProgressTone();
+    });
+    currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, () => {
+        voxAPI.stopProgressTone();
+    });
+    // These event listeners get callbacks from Preact because they influence to UI
+    currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
+    currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
+    currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
+
+    console.log('currentCall:');
+    console.log(currentCall);
     console.log('           beginCall() >>>>>>>>>>');
 }
 // Turn the sound on/off
