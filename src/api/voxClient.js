@@ -42,6 +42,7 @@ export function init(settings, onAuthResult, onMicAccessResult) {
     username = settings.client_username;
     password = settings.client_password;
     dest_username = settings.op_username;
+    const videoSupport = settings.client_app_installed;
 
     // Assign handlers
     voxAPI.addEventListener(VoxImplant.Events.SDKReady, () => {
@@ -67,8 +68,8 @@ export function init(settings, onAuthResult, onMicAccessResult) {
     voxAPI.init({
         micRequired: false, // initially disable microphone/camera access request
                             // (so it will not be asked if the first chat mode will be text)
-        videoSupport: true, // enable video support
-        progressTone: true  // play progress tone
+        videoSupport: videoSupport,
+        progressTone: true
     });
 }
 // Initialize messenger
@@ -153,9 +154,9 @@ export function askCamAndMic() {
     voxAPI.attachRecordingDevice().then();
 }
 // Begin video or voice call
-export function startCall(onCallConnected, onCallDisconnected, onCallFailed) {
+export function startCall(useVideo, onCallConnected, onCallDisconnected, onCallFailed) {
     console.log('<<<<<<<<<< startCall()');
-    let useVideo = true;
+    console.log('useVideo = ' + useVideo);
     currentCall = voxAPI.call(dest_username, useVideo, 'TEST CUSTOM DATA');
 
     currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, (e) => {
