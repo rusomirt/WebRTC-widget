@@ -19,10 +19,10 @@ let username,             // VoxImplant connection parameters
 
 let currentCall = null;   // call global instances
 
-let currentConv = null;
-
 let voxAPI;               // object for VoxImplant instance
 let voxChatAPI;
+
+let receivedMessage = null;
 
 //=============================================================================
 // VoxImplant functions
@@ -65,19 +65,24 @@ export function initMessenger() {
     // Create messenger instance
     voxChatAPI = VoxImplant.getMessenger();
 
-    voxChatAPI.on(VoxImplant.MessagingEvents.onCreateConversation, (e) => {
-        console.log('<<<<<<<<<< onCreateConversation()');
+    voxChatAPI.on(VoxImplant.MessagingEvents.onCreateConversation, () => { console.log('<<<<<<<<<< onCreateConversation() >>>>>>>>>>'); });
+    voxChatAPI.on(VoxImplant.MessagingEvents.onGetConversation, (e) => {
+        console.log('<<<<<<<<<< onGetConversation()');
         console.log(e.conversation);
-        currentConv = e.conversation;
-        // currentConv.sendMessage('Hello! How can I help you?');
-        console.log('           onCreateConversation() >>>>>>>>>>');
+
+        // Send received message text back
+        e.conversation.sendMessage(receivedMessage);
+        receivedMessage = null;
+        console.log('message retranslated');
+
+        console.log('           onGetConversation() >>>>>>>>>>');
     });
     voxChatAPI.on(VoxImplant.MessagingEvents.onError, (e) => {
         console.log('<<<<<<<<<< onError begin');
         console.log(e);
         console.log('          onError end >>>>>>>>>>');
     });
-    voxChatAPI.on(VoxImplant.MessagingEvents.onRemoveConversation, (e) => {console.log('<<<<<<<<<< onRemoveConversation() >>>>>>>>>>')});
+    voxChatAPI.on(VoxImplant.MessagingEvents.onRemoveConversation, () => {console.log('<<<<<<<<<< onRemoveConversation() >>>>>>>>>>')});
     voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, (e) => {
         console.log('<<<<<<<<<< onSendMessage()');
 
@@ -86,12 +91,13 @@ export function initMessenger() {
         console.log('sender: ' + e.message.sender);
         console.log('text: ' + e.message.text);
         console.log('conversation uuid: ' + e.message.conversation);
-        console.log('currentConv uuid: ' + currentConv.uuid);
 
         // If this message has been sent by other user
         if (e.message.sender !== username + '@' + application_name + '.' + account_name) {
-            currentConv.sendMessage(e.message.text);
-            console.log('message retranslated');
+            // Save message text
+            receivedMessage = e.message.text;
+            // Get the conversation holding received message
+            voxChatAPI.getConversation(e.message.conversation);
         }
 
         console.log('           onSendMessage() >>>>>>>>>>');
