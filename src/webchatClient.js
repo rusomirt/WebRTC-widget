@@ -103,7 +103,7 @@ class WebchatClient extends Component {
                 // Ask about allowing camera & microphone access
                 vox.askCamAndMic();
             } else {
-                vox.beginCall(this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
+                vox.startCall(this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
             }
 
             // Switch UI to connecting state
@@ -223,7 +223,7 @@ class WebchatClient extends Component {
 
         // If user has allowed access to camera & microphone: begin call
         if (e.result) {
-            vox.beginCall(this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
+            vox.startCall(this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
         }
         
         console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());

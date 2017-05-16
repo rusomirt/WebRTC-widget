@@ -148,8 +148,8 @@ export function askCamAndMic() {
     voxAPI.attachRecordingDevice().then();
 }
 // Begin video or voice call
-export function beginCall(onCallConnected, onCallDisconnected, onCallFailed) {
-    console.log('<<<<<<<<<< beginCall()');
+export function startCall(onCallConnected, onCallDisconnected, onCallFailed) {
+    console.log('<<<<<<<<<< startCall()');
     let useVideo = true;
     currentCall = voxAPI.call(dest_username, useVideo, 'TEST CUSTOM DATA');
 
@@ -172,7 +172,7 @@ export function beginCall(onCallConnected, onCallDisconnected, onCallFailed) {
 
     console.log('currentCall:');
     console.log(currentCall);
-    console.log('           beginCall() >>>>>>>>>>');
+    console.log('           startCall() >>>>>>>>>>');
 }
 // Turn the sound on/off
 export function turnSound(onOff) {
