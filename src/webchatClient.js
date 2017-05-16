@@ -381,18 +381,18 @@ class WebchatClient extends Component {
                 console.log(document.getElementById('video-out'));
                 vox.videoControl(this.state.chatMode);
             }
-            if (this.state.chatMode === 'text') {
-                // Behavior of these elements is not clear: local video is suddenly placed
-                // in some elements of UI after switching from video call to text chat.
-                // So manual hiding of local video is needed.
-                console.log(document.getElementById('video-in'));
-                console.log(document.getElementById('video-out'));
-                const videoIn = document.getElementById('voximplantlocalvideo');
-                console.log(videoIn);
-                if (videoIn) {
-                    videoIn.style.display = 'none';
-                }
-            }
+            // if (this.state.chatMode === 'text') {
+            //     // Behavior of these elements is not clear: local video is suddenly placed
+            //     // in some elements of UI after switching from video call to text chat.
+            //     // So manual hiding of local video is needed.
+            //     console.log(document.getElementById('video-in'));
+            //     console.log(document.getElementById('video-out'));
+            //     const videoIn = document.getElementById('voximplantlocalvideo');
+            //     console.log(videoIn);
+            //     if (videoIn) {
+            //         videoIn.style.display = 'none';
+            //     }
+            // }
 
             console.log('this.state.messages:');
             console.log(this.state.messages);
