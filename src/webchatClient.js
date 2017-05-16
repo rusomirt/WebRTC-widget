@@ -177,7 +177,7 @@ class WebchatClient extends Component {
         console.log('<========= phoneSentChangeMode()');
         console.log('inputValue = ' + inputValue);
 
-        if (inputValue !== '') {    // User hasn't entered the phone number but clicked 'submit' button
+        if (inputValue !== '') {    // User entered the phone number and clicked 'submit' button
             this.setState({phoneSentDelay: true});
             // AJAX request to server
             axios.post('/script',{userPhone: inputValue})
@@ -190,7 +190,7 @@ class WebchatClient extends Component {
                     chatMode: 'endCall'
                 });
             }, 3000);
-        } else {                    // User entered the phone number and clicked 'submit' button
+        } else {                    // User hasn't entered the phone number but clicked 'submit' button
             this.setState({
                 chatMode: 'endCall' // Go to 'end call screen'
             });
