@@ -67,6 +67,7 @@ class WebchatClient extends Component {
         this.addMessageToList = this.addMessageToList.bind(this);
         this.onSend = this.onSend.bind(this);
         this.onReceiveMessage = this.onReceiveMessage.bind(this);
+        this.getCurrentTimeString = this.getCurrentTimeString.bind(this);
     }
 
     // Get values from URL hash
@@ -285,16 +286,7 @@ class WebchatClient extends Component {
         // console.log('<========= onSend() in Messenger');
         // console.log('messageText = ' + messageText);
 
-        const now = new Date();
-        const nowHours = (now.getHours() <= 12) ? ((now.getHours() === 0) ? 12 : now.getHours()) : (now.getHours() - 12);
-        const dayTime = (now.getHours() < 12) ? 'am' : 'pm';
-        const nowMinutes = ((now.getMinutes() < 10) ? '0' : '') + now.getMinutes();
-        const messageTime = nowHours + ':' + nowMinutes + dayTime;
-        // console.log(now);
-        // console.log(nowHours);
-        // console.log(dayTime);
-        // console.log(nowMinutes);
-        // console.log('messageTime = ' + messageTime);
+        const messageTime = this.getCurrentTimeString();
 
         const message = {
             fromMe: true,
@@ -328,11 +320,7 @@ class WebchatClient extends Component {
 
         // If this message has been sent by other user
         if (e.message.sender !== vox.username + '@' + vox.application_name + '.' + vox.account_name) {
-            const now = new Date();
-            const nowHours = (now.getHours() <= 12) ? ((now.getHours() === 0) ? 12 : now.getHours()) : (now.getHours() - 12);
-            const dayTime = (now.getHours() < 12) ? 'am' : 'pm';
-            const nowMinutes = ((now.getMinutes() < 10) ? '0' : '') + now.getMinutes();
-            const messageTime = nowHours + ':' + nowMinutes + dayTime;
+            const messageTime = this.getCurrentTimeString();
 
             const message = {
                 fromMe: false,
@@ -348,6 +336,13 @@ class WebchatClient extends Component {
         console.log('this.state.messages:');
         console.log(this.state.messages);
         console.log('           onReceiveMessage =========>');
+    }
+    getCurrentTimeString() {
+        const now = new Date();
+        const nowHours = (now.getHours() <= 12) ? ((now.getHours() === 0) ? 12 : now.getHours()) : (now.getHours() - 12);
+        const dayTime = (now.getHours() < 12) ? 'am' : 'pm';
+        const nowMinutes = ((now.getMinutes() < 10) ? '0' : '') + now.getMinutes();
+        return nowHours + ':' + nowMinutes + dayTime;
     }
 
     // Component events
