@@ -69,7 +69,7 @@ export function init(settings) {
     });
 }
 // Initialize messenger
-export function initMessenger() {
+export function initMessenger(onReceiveMessage) {
     console.log('<<<<<<<<<< initMessenger() begin');
 
     console.log('currentCall:');
@@ -128,6 +128,8 @@ export function initMessenger() {
 
         console.log('          onGetUser end >>>>>>>>>>');
     });
+    // This event handler gets callback from Preact because it influences the UI
+    voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, onReceiveMessage);
 
     // Check for pending unremoved conversation and create a new one.
     voxChatAPI.getUser(voxChatAPI.getMe());

@@ -208,8 +208,7 @@ class WebchatClient extends Component {
         console.log('Auth result: ' + e.result);
 
         // Initialize text messenger
-        vox.initMessenger();
-        vox.voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, this.onReceiveMessage);
+        vox.initMessenger(this.onReceiveMessage);
 
         // Make widget available for user
         this.setState({chatMode: 'idle'});
