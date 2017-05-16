@@ -68,6 +68,7 @@ class WebchatClient extends Component {
         this.onSend = this.onSend.bind(this);
         this.onReceiveMessage = this.onReceiveMessage.bind(this);
     }
+
     // Get values from URL hash
     getHashParams() {
         let hashParams = {};
@@ -100,7 +101,7 @@ class WebchatClient extends Component {
             if (this.state.isFirstCall) {
                 this.setState({isFirstCall: false});
                 // Ask about allowing camera & microphone access
-                vox.voxAPI.attachRecordingDevice().then();
+                vox.askCamAndMic();
             } else {
                 vox.beginCall();
 

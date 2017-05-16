@@ -143,6 +143,10 @@ export function uninit() {
     // voxChatAPI = null;
 }
 
+// Ask about allowing camera & microphone access
+export function askCamAndMic() {
+    voxAPI.attachRecordingDevice().then();
+}
 // Begin video or voice call
 export function beginCall() {
     console.log('<<<<<<<<<< beginCall()');
