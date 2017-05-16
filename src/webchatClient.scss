@@ -669,7 +669,9 @@ $similar-name-font-size: 16px;
 $similar-desc-font: 'Lucida Grande', sans-serif;
 $similar-desc-font-size: 10px;
 $similar-call-size: $similar-logo-size - 1px;
+$similar-call-btn-bg-c: $c-main;
 $similar-call-btn-size: 45px;
+$similar-call-btn-mx: 15px;
 $similar-call-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 
 .similar {
@@ -724,14 +726,6 @@ $similar-call-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      //
-      //.similar__call-btn {
-      //  @extend .btn--circle;
-      //  width: $similar-call-btn-size;
-      //  height: $similar-call-btn-size;
-      //  box-shadow: $similar-call-shadow;
-      //  background: $c-main;
-      //}
     }
 
     .similar__call-btn {
@@ -739,11 +733,11 @@ $similar-call-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
       width: $similar-call-btn-size;
       height: $similar-call-btn-size;
       box-shadow: $similar-call-shadow;
-      background: $c-main;
+      background: $similar-call-btn-bg-c;
 
-      margin-right: 15px;
+      margin-right: $similar-call-btn-mx;
       &:first-of-type {
-        margin-left: 15px;
+        margin-left: $similar-call-btn-mx;
       }
     }
 
