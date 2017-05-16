@@ -39,6 +39,7 @@ class WebchatClient extends Component {
             // 'voice', 'text', 'endCall', 'notAvailable'.
             chatMode: 'invisible',
             isModeChanged: false,   // checked in componentDidUpdated()
+            isFirstCall: true,      // indicates that call is the first from widget init
             isSoundOn: true,
             isMicOn: true,
             messages: [],
@@ -88,12 +89,40 @@ class WebchatClient extends Component {
 
     startChat(demandedMode) {
         console.log('<========= startChat(): ' + demandedMode);
+        console.log('vox.currentCall:');
+        console.log(vox.currentCall);
 
         // Voice/video chat which has not been connected yet
         if (demandedMode !== 'text' && !vox.currentCall) {
+            console.log('Voice/video chat which has not been connected yet');
 
-            // Ask about allowing camera & microphone access
-            vox.voxAPI.attachRecordingDevice().then();
+            // If this call is the first from widget init
+            if (this.state.isFirstCall) {
+                this.setState({isFirstCall: false});
+                // Ask about allowing camera & microphone access
+                vox.voxAPI.attachRecordingDevice().then();
+            } else {
+                vox.beginCall();
+
+                vox.currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, (e) => {
+                    console.log('<<<<<<<<<< onMediaElementCreated() begin');
+                    console.log(e.element);
+                    e.element.style.display = 'none';
+                    console.log('           onMediaElementCreated() end >>>>>>>>>>');
+                });
+                vox.currentCall.addEventListener(VoxImplant.CallEvents.Connected, this.onCallConnected);
+                vox.currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, this.onCallDisconnected);
+                vox.currentCall.addEventListener(VoxImplant.CallEvents.Failed, this.onCallFailed);
+                vox.currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
+                    vox.voxAPI.playProgressTone();
+                });
+                vox.currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, () => {
+                    vox.voxAPI.stopProgressTone();
+                });
+
+                console.log('vox.currentCall:');
+                console.log(vox.currentCall);
+            }
 
             if (demandedMode === 'voice') {
                 this.setState({chatMode: 'connectingVoice'});
@@ -249,6 +278,7 @@ class WebchatClient extends Component {
         console.log('<========= onCallConnected() begin');
         console.log('vox.currentCall:');
         console.log(vox.currentCall);
+        console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());
 
         // Change state from connecting to calling
         if (this.state.chatMode === 'connectingVoice') {
@@ -268,7 +298,7 @@ class WebchatClient extends Component {
     // When call has been disconnected, change state to endCall or to idle
     // (if call was not connected by the moment of 'stop' button click)
     onCallDisconnected() {
-        console.log('<========= onCallDisconnected() begin');
+        console.log('<+++++++++ onCallDisconnected()');
         vox.currentCall = null; // clear call instance
         this.setState({
             // If chat has been stopped while call connecting, keep 'idle' state,
@@ -277,7 +307,7 @@ class WebchatClient extends Component {
             isModeChanged: true,
         });
         console.log('new chatMode = ' + this.state.chatMode);
-        console.log('           onCallDisconnected() end =========>');
+        console.log('           onCallDisconnected() end +++++++++>');
     }
     // When call fails - fo to 'not available' screen
     onCallFailed(e) {

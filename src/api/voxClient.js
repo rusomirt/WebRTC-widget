@@ -188,6 +188,7 @@ export function stopChat(callMode) {
         console.log(currentCall);
         if (currentCall) {
             currentCall.hangup();
+            // currentCall = null;
         }
         console.log('currentCall after hanging up: ');
         console.log(currentCall);
