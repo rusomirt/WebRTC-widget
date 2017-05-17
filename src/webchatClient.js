@@ -32,7 +32,7 @@ class WebchatClient extends Component {
         this.state = {
             // Allowed chatMode values:
             // 'invisible', 'idle', 'connectingVideo', 'video', 'connectingVoice',
-            // 'voice', 'text', 'endCall', 'notAvailable'.
+            // 'voice', 'connectingText', 'text', 'endCall', 'notAvailable'.
             chatMode: 'invisible',
             isModeChanged: false,   // checked in componentDidUpdated()
             isFirstCall: true,      // indicates that call is the first from widget init
@@ -91,6 +91,7 @@ class WebchatClient extends Component {
         console.log(vox.currentCall);
 
         // Voice/video chat which has not been connected yet
+        // (started from idle or switched from text chat which was started from idle)
         if (demandedMode !== 'text' && !vox.currentCall) {
             console.log('Voice/video chat which has not been connected yet');
 
@@ -109,7 +110,13 @@ class WebchatClient extends Component {
             } else if (demandedMode === 'video') {
                 this.setState({chatMode: 'connectingVideo'});
             }
-        } else {    // Text chat or voice/video chat which has already been connected
+            
+        //
+        } else if (demandedMode === 'text' && !vox.currentCall) {
+            this.setState({chatMode: 'connectingText'});
+
+        // Chat has already been connected
+        } else {
             this.setState({chatMode: demandedMode});
         }
 
@@ -534,6 +541,25 @@ const Chat = (props) => {
                         <span className={cn('chat__status-hdr')}>
                             <span className={cn('fa fa-video-camera', 'icon', 'icon--color', 'icon--xs', 'icon--shifted')}></span>
                             Connecting to video call
+                        </span>
+                    </div>
+                </div>
+                <ConnectingAnimation />
+                <img className={cn('chat__logo')} src={lukesLogo}/>
+                <div className={cn('chat__tips')}>
+                    Don't forget!<br/>
+                    15% off for new customers<br/>
+                    <span className={cn('fa fa-tag', 'icon', 'icon--color-scnd', 'icon--xs')}></span>
+                </div>
+            </div>;
+            break;
+        case 'connectingText': chatInfo =
+            <div className={cn('chat__info', 'chat__info--bordered')}>
+                <div className={cn('chat__status', 'chat__status--high')}>
+                    <div className={cn('chat__status-txt-wrapper')}>
+                        <span className={cn('chat__status-hdr')}>
+                            <span className={cn('fa fa-comments', 'icon', 'icon--color', 'icon--xs', 'icon--shifted')}></span>
+                            Connecting to text chat
                         </span>
                     </div>
                 </div>
@@ -1038,6 +1064,16 @@ const ChatPanel = (props) => {
     let leftGroup = null;
     let rightGroup = null;
     switch (props.chatMode) {
+        case 'connectingText':
+            leftGroup =
+                <div className={cn('chat__btns-group')}>
+                    {videoBtn}
+                </div>;
+            rightGroup =
+                <div className={cn('chat__btns-group')}>
+                    {voiceBtn}
+                </div>;
+            break;
         case 'connectingVideo':
         case 'connectingVoice':
         case 'voice':
@@ -1094,7 +1130,7 @@ const ChatPanel = (props) => {
             {rightGroup}
         </div>
     );
-}
+};
 
 // Timer of call duration
 // Props: none
