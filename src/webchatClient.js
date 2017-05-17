@@ -111,9 +111,19 @@ class WebchatClient extends Component {
                 this.setState({chatMode: 'connectingVideo'});
             }
             
-        //
+        // Text chat which is not switched from voice/video call
         } else if (demandedMode === 'text' && !vox.currentCall) {
             this.setState({chatMode: 'connectingText'});
+            // Send checking message
+            vox.sendMessage('check');
+            // Begin waiting for return of checking message
+            const availabilityWait = setTimeout(() => {
+                // If chatMode is still 'connectingText' (checking message
+                // didn't return from other party), go to 'not available' screen
+                if (this.state.chatMode === 'connectingText') {
+                    this.setState({chatMode: 'notAvailable'});
+                }
+            }, 5000);
 
         // Chat has already been connected
         } else {
@@ -134,8 +144,8 @@ class WebchatClient extends Component {
         if (vox.currentCall) {
             // In text chat microphone & sound must be disabled,
             // in voice/video chat they are initially enabled.
-            this.turnMic(demandedMode !== 'text');
-            this.turnSound(demandedMode !== 'text');
+            this.turnMic(demandedMode !== 'connectingText' || demandedMode !== 'text');
+            this.turnSound(demandedMode !== 'connectingText' || demandedMode !== 'text');
         }
 
         console.log('new chatMode = ' + this.state.chatMode);
@@ -320,22 +330,29 @@ class WebchatClient extends Component {
         console.log('<========= onReceiveMessage');
         console.log('e.message:');
         console.log(e.message);
-        console.log(e.message.sender);
-        console.log(e.message.text);
+        console.log('e.message.sender: ' + e.message.sender);
+        console.log('e.message.text: ' + e.message.text);
 
         // If this message has been sent by other user
         if (e.message.sender !== vox.username + '@' + vox.application_name + '.' + vox.account_name) {
-            const messageTime = this.getCurrentTimeString();
 
-            const message = {
-                fromMe: false,
-                text: e.message.text,
-                timeStamp: messageTime
-            };
-            // console.log('message:');
-            // console.log(message);
+            if (this.state.chatMode === 'connectingText' &&
+                e.message.text === 'check') {   // if it is availability checking message
 
-            this.addMessageToList(message);
+                this.setState({chatMode: 'text'});
+            } else {                            // if it is regular message
+                const messageTime = this.getCurrentTimeString();
+
+                const message = {
+                    fromMe: false,
+                    text: e.message.text,
+                    timeStamp: messageTime
+                };
+                // console.log('message:');
+                // console.log(message);
+
+                this.addMessageToList(message);
+            }
         }
 
         console.log('this.state.messages:');
