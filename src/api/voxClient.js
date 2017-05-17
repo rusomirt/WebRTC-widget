@@ -213,16 +213,20 @@ export function turnMic(onOff) {
 // Hangup call
 export function stopCall() {
     console.log('<<<<<<<<<< stopCall()');
-    console.log('currentCall before hanging up: ');
-    console.log(currentCall);
 
     if (currentCall) {
-        currentCall.hangup();
-        // currentCall = null;
+        console.log('currentCall.stateValue: ');
+        console.log(currentCall.stateValue);
+
+        if (currentCall.stateValue === 'CONNECTED') {
+            currentCall.hangup();
+            // currentCall = null;
+
+            console.log('currentCall.stateValue after hanging up: ');
+            console.log(currentCall.stateValue);
+        }
     }
 
-    console.log('currentCall after hanging up: ');
-    console.log(currentCall);
     console.log('           stopChat() end >>>>>>>>>>');
 }
 
