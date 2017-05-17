@@ -25,7 +25,9 @@ import flexMusselsLogo from './img/flex-mussels-logo.png';
 let cn = classNames.bind(styles);
 
 // Top-level webchat client component
-// Props: settings
+// Props: settings{ account_name ,application_name, client_username,
+//                  client_password, op_username, client_app_installed,
+//                  textAvailCheckMsg, textAvailCheckDelay }
 class WebchatClient extends Component {
     constructor() {
         super();
@@ -115,7 +117,7 @@ class WebchatClient extends Component {
         } else if (demandedMode === 'text' && !vox.currentCall) {
             this.setState({chatMode: 'connectingText'});
             // Send checking message
-            vox.sendMessage('check');
+            vox.sendMessage(this.props.settings.textAvailCheckMsg);
             // Begin waiting for return of checking message
             const availabilityWait = setTimeout(() => {
                 // If chatMode is still 'connectingText' (checking message
@@ -123,7 +125,7 @@ class WebchatClient extends Component {
                 if (this.state.chatMode === 'connectingText') {
                     this.setState({chatMode: 'notAvailable'});
                 }
-            }, 5000);
+            }, this.props.settings.textAvailCheckDelay);
 
         // Chat has already been connected
         } else {
@@ -337,20 +339,16 @@ class WebchatClient extends Component {
         if (e.message.sender !== vox.username + '@' + vox.application_name + '.' + vox.account_name) {
 
             if (this.state.chatMode === 'connectingText' &&
-                e.message.text === 'check') {   // if it is availability checking message
-
+                e.message.text === this.props.settings.textAvailCheckMsg) { // availability checking message
                 this.setState({chatMode: 'text'});
-            } else {                            // if it is regular message
-                const messageTime = this.getCurrentTimeString();
 
+            } else {                                                        // regular message
+                const messageTime = this.getCurrentTimeString();
                 const message = {
                     fromMe: false,
                     text: e.message.text,
                     timeStamp: messageTime
                 };
-                // console.log('message:');
-                // console.log(message);
-
                 this.addMessageToList(message);
             }
         }
