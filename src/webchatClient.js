@@ -101,6 +101,7 @@ class WebchatClient extends Component {
             if (this.state.isFirstCall) {
                 this.setState({isFirstCall: false});
                 // Ask about allowing camera & microphone access
+                // and call vox.startCall() from onMicAccessResult if user allows access.
                 vox.askCamAndMic();
             } else {
                 vox.startCall(this.props.settings.client_app_installed, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
@@ -113,7 +114,7 @@ class WebchatClient extends Component {
                 this.setState({chatMode: 'connectingVideo'});
             }
             
-        // Text chat which is not switched from voice/video call
+        // Text chat which is started from idle (not switched from voice/video call)
         } else if (demandedMode === 'text' && !vox.currentCall) {
             this.setState({chatMode: 'connectingText'});
             // Send checking message
