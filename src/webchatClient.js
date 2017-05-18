@@ -70,18 +70,25 @@ class WebchatClient extends Component {
 
     // Get values from URL hash
     getHashParams() {
+        // console.log('<========= getHashParams()');
         let hashParams = {};
         let e,
-            a = /\+/g,  // Regex for replacing addition symbol with a space
+            // a = /\+/g,  // Regex for replacing addition symbol with a space
             r = /([^&;=]+)=?([^&;]*)/g,
             d = function (s) {
-                return decodeURIComponent(s.replace(a, ' '));
+                // console.log('<<< inner func');
+                // console.log(s);
+                let temp = decodeURIComponent(s);//decodeURIComponent(s.replace(a, ' '));
+                // console.log(temp);
+                // console.log('inner func >>>');
+                return temp;
             },
             q = window.location.hash.substring(1);
 
         while (e = r.exec(q))
             hashParams[d(e[1])] = d(e[2]);
 
+        // console.log('           getHashParams() =========>');
         return hashParams;
     }
 
