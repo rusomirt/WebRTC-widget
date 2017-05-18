@@ -160,10 +160,10 @@ export function startCall(useVideo, onCallConnected, onCallDisconnected, onCallF
     currentCall = voxAPI.call(dest_username, useVideo, 'TEST CUSTOM DATA');
 
     currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, (e) => {
-        console.log('<<<<<<<<<< onMediaElementCreated() begin');
-        console.log(e.element);
+        // console.log('<<<<<<<<<< onMediaElementCreated() begin');
+        // console.log(e.element);
         e.element.style.display = 'none';
-        console.log('           onMediaElementCreated() end >>>>>>>>>>');
+        // console.log('           onMediaElementCreated() end >>>>>>>>>>');
     });
     currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
         voxAPI.playProgressTone();
@@ -176,38 +176,25 @@ export function startCall(useVideo, onCallConnected, onCallDisconnected, onCallF
     currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
     currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
 
-    console.log('currentCall:');
-    console.log(currentCall);
+    // console.log('currentCall:');
+    // console.log(currentCall);
     console.log('           startCall() >>>>>>>>>>');
 }
 // Turn the sound on/off
 export function turnSound(onOff) {
-    console.log('<<<<<<<<<< turnSound() begin');
-    console.log('onOff = ' + onOff);
-
     if (onOff) {
         currentCall.unmutePlayback();
     } else {
         currentCall.mutePlayback();
     }
-
-    console.log('           turnSound() end >>>>>>>>>>');
 }
 // Turn the microphone on/off
 export function turnMic(onOff) {
-    console.log('<<<<<<<<<< turnMic() begin');
-    console.log('onOff = ' + onOff);
-
-    console.log('currentCall:');
-    console.log(currentCall);
-
     if (onOff) {
         currentCall.unmuteMicrophone();
     } else {
         currentCall.muteMicrophone();
     }
-
-    console.log('           turnMic() end >>>>>>>>>>');
 }
 
 // Hangup call
@@ -221,6 +208,7 @@ export function stopCall() {
         if (currentCall.stateValue !== 'ENDED') {
             currentCall.hangup();
             // currentCall = null;
+            console.log('Hang up the call');
 
             console.log('currentCall.stateValue after hanging up: ');
             console.log(currentCall.stateValue);

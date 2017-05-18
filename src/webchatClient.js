@@ -235,24 +235,21 @@ class WebchatClient extends Component {
     // Handling user's response to question about camera & microphone access
     onMicAccessResult(e) {
         console.log('<+++++++++ onMicAccessResult()');
-        console.log('e.result: ' + e.result);
 
         // If user has allowed access to camera & microphone: begin call
         if (e.result) {
-            console.log('this.props:');
-            console.log(this.props);
             vox.startCall(this.props.settings.client_app_installed, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
         }
-        
-        console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());
 
         console.log('           onMicAccessResult() +++++++++>');
     }
     // When call has been connected
-    onCallConnected() {
+    onCallConnected(e) {
         console.log('<========= onCallConnected() begin');
         console.log('vox.currentCall:');
         console.log(vox.currentCall);
+        console.log('e.call._peerConnection.videoEnabled: ' + e.call._peerConnection.videoEnabled);
+
         console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());
 
         // Change state from connecting to calling
@@ -387,8 +384,8 @@ class WebchatClient extends Component {
     }
     componentDidUpdate() {
         if (this.state.isModeChanged) {
-            console.log(`<========= componentDidUpdate()`);
-            console.log(`Mode has just been changed to  \'${this.state.chatMode}\'`);
+            // console.log(`<========= componentDidUpdate()`);
+            // console.log(`Mode has just been changed to  \'${this.state.chatMode}\'`);
 
             this.setState({
                 isModeChanged: false,
@@ -415,9 +412,9 @@ class WebchatClient extends Component {
             //     }
             // }
 
-            console.log('this.state.messages:');
-            console.log(this.state.messages);
-            console.log('           componentDidUpdate() =========>');
+            // console.log('this.state.messages:');
+            // console.log(this.state.messages);
+            // console.log('           componentDidUpdate() =========>');
         }
     }
     componentWillUnmount() {

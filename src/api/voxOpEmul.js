@@ -172,6 +172,9 @@ function onAuthResult(e) {
 function onIncomingCall(e) {
     console.log('<<<<<<<<<< onIncomingCall()');
     console.log(e);
+
+    console.log('e.call._peerConnection.videoEnabled: ' + e.call._peerConnection.videoEnabled);
+
     currentCall = e.call;
     // Add handlers
     currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
