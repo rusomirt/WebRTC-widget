@@ -218,7 +218,7 @@ export function stopCall() {
         console.log('currentCall.stateValue: ');
         console.log(currentCall.stateValue);
 
-        if (currentCall.stateValue === 'CONNECTED') {
+        if (currentCall.stateValue !== 'ENDED') {
             currentCall.hangup();
             // currentCall = null;
 
