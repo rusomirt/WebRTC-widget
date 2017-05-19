@@ -20,7 +20,6 @@ let username,             // VoxImplant connection parameters
 let currentCall = null;   // call global instances
 
 let voxAPI;               // object for VoxImplant instance
-let voxChatAPI;
 
 let receivedMessage = null;
 
@@ -58,54 +57,6 @@ export function init(settings) {
         progressTone: true  // play progress tone
     });
     // console.log('           init() end >>>>>>>>>>');
-}
-// Initialize messenger
-export function initMessenger() {
-    console.log('<<<<<<<<<< initMessenger() begin');
-    // Create messenger instance
-    voxChatAPI = VoxImplant.getMessenger();
-
-    voxChatAPI.on(VoxImplant.MessagingEvents.onCreateConversation, () => { console.log('<<<<<<<<<< onCreateConversation() >>>>>>>>>>'); });
-    voxChatAPI.on(VoxImplant.MessagingEvents.onGetConversation, (e) => {
-        console.log('<<<<<<<<<< onGetConversation()');
-        console.log(e.conversation);
-
-        // Send received message text back
-        e.conversation.sendMessage(receivedMessage);
-        receivedMessage = null;
-        console.log('message retranslated');
-
-        console.log('           onGetConversation() >>>>>>>>>>');
-    });
-    voxChatAPI.on(VoxImplant.MessagingEvents.onError, (e) => {
-        console.log('<<<<<<<<<< onError begin');
-        console.log(e);
-        console.log('          onError end >>>>>>>>>>');
-    });
-    voxChatAPI.on(VoxImplant.MessagingEvents.onRemoveConversation, () => {console.log('<<<<<<<<<< onRemoveConversation() >>>>>>>>>>')});
-    voxChatAPI.on(VoxImplant.MessagingEvents.onSendMessage, (e) => {
-        console.log('<<<<<<<<<< onSendMessage()');
-
-        console.log('e.message:');
-        console.log(e.message);
-        console.log('sender: ' + e.message.sender);
-        console.log('text: ' + e.message.text);
-        console.log('conversation uuid: ' + e.message.conversation);
-
-        // If this message has been sent by other user
-        if (e.message.sender !== username + '@' + application_name + '.' + account_name) {
-            // Save message text
-            receivedMessage = e.message.text;
-            // Get the conversation holding received message
-            voxChatAPI.getConversation(e.message.conversation);
-        }
-
-        console.log('           onSendMessage() >>>>>>>>>>');
-    });
-
-    console.log('voxChatAPI:');
-    console.log(voxChatAPI);
-    console.log('           initMessenger() end >>>>>>>>>>');
 }
 // Deinitialize all
 export function uninit() {
@@ -164,7 +115,6 @@ function onConnectionClosed() {
 function onAuthResult(e) {
     console.log('<<<<<<<<<< onAuthResult()');
     console.log('AuthResult: ' + e.result);
-    initMessenger();
     console.log('          onAuthResult() >>>>>>>>>>');
 }
 
@@ -193,14 +143,17 @@ function onIncomingCall(e) {
 //=============================================================================
 
 // Call connected
-function onCallConnected(e) {
+function onCallConnected() {
     console.log('<<<<<<<<<< onCallConnected()');
+
+    // TODO: Check if it's a video or voice call
+
     voxAPI.sendVideo(true);
     console.log('          onCallConnected() >>>>>>>>>>');
 }
 
 // Call disconnected
-function onCallDisconnected(e) {
+function onCallDisconnected() {
     console.log('<<<<<<<<<< onCallDisconnected()');
     console.log('Call id: ' + currentCall.id() + ' Call state: ' + currentCall.state());
 
