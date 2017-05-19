@@ -90,8 +90,16 @@ export function startCall(demandedMode, onCallConnected, onCallDisconnected, onC
     console.log('demandedMode = ' + demandedMode);
     const useVideo = (demandedMode === 'video');
     console.log('useVideo = ' + useVideo);
-    currentCall = voxAPI.call(dest_username, useVideo, 'customData', {'VI-CallMode': demandedMode});
+    currentCall = voxAPI.call(dest_username, useVideo, 'customData', {'X-CallMode': demandedMode});
 
+    if (demandedMode !== 'text') {
+        currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
+            voxAPI.playProgressTone();
+        });
+        currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, () => {
+            voxAPI.stopProgressTone();
+        });
+    }
     currentCall.addEventListener(VoxImplant.CallEvents.Updated, (e) => {
         console.log('<<<<<<<<<< call.onUpdated()');
         console.log(e);
@@ -102,12 +110,6 @@ export function startCall(demandedMode, onCallConnected, onCallDisconnected, onC
         // console.log(e.element);
         e.element.style.display = 'none';
         // console.log('           onMediaElementCreated() end >>>>>>>>>>');
-    });
-    currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
-        voxAPI.playProgressTone();
-    });
-    currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStop, () => {
-        voxAPI.stopProgressTone();
     });
     // These event listeners get callbacks from Preact because they influence to UI
     currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
@@ -129,9 +131,7 @@ export function turnSound(onOff) {
 // Turn the microphone on/off
 export function turnMic(onOff) {
     console.log('<<<<<<<<<< turnMic()');
-    console.log('currentCall: ');
-
-    console.log(currentCall);
+    console.log('currentCall.stateValue: ' + currentCall.stateValue);
 
     if (onOff) {
         currentCall.unmuteMicrophone();

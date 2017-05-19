@@ -121,7 +121,7 @@ function onAuthResult(e) {
 function onIncomingCall(e) {
     console.clear();
     console.log('<<<<<<<<<< onIncomingCall()');
-    console.log("e.headers['VI-CallMode']: " + e.headers['VI-CallMode']);
+    console.log("e.headers['X-CallMode']: " + e.headers['X-CallMode']);
 
     currentCall = e.call;
     // Add handlers
@@ -134,7 +134,7 @@ function onIncomingCall(e) {
         currentCall.answer();
     }, 1000);
 
-    switch (e.headers['VI-CallMode']) {
+    switch (e.headers['X-CallMode']) {
         case 'voice':
 
             break;
