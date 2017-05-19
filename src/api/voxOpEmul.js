@@ -52,7 +52,7 @@ export function init(settings) {
 
     // Initialize SDK
     voxAPI.init({
-        micRequired: false, // initially disable microphone/camera access request
+        micRequired: true, // initially disable microphone/camera access request
         videoSupport: true  // enable video support
     });
 
@@ -121,9 +121,7 @@ function onAuthResult(e) {
 function onIncomingCall(e) {
     console.clear();
     console.log('<<<<<<<<<< onIncomingCall()');
-    console.log(e);
-
-    console.log('e.call._peerConnection.videoEnabled: ' + e.call._peerConnection.videoEnabled);
+    console.log("e.headers['VI-CallMode']: " + e.headers['VI-CallMode']);
 
     currentCall = e.call;
     // Add handlers
@@ -135,6 +133,19 @@ function onIncomingCall(e) {
     setTimeout(function () {
         currentCall.answer();
     }, 1000);
+
+    switch (e.headers['VI-CallMode']) {
+        case 'voice':
+
+            break;
+        case 'video':
+
+            break;
+        case 'text':
+
+            break;
+    }
+
     console.log('          onIncomingCall() >>>>>>>>>>');
 }
 
