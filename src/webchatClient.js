@@ -26,8 +26,7 @@ let cn = classNames.bind(styles);
 
 // Top-level webchat client component
 // Props: settings{ account_name ,application_name, client_username,
-//                  client_password, op_username, client_app_installed,
-//                  textAvailCheckMsg, textAvailCheckDelay }
+//                  client_password, op_username, client_app_installed }
 class WebchatClient extends Component {
     constructor() {
         super();
@@ -36,8 +35,8 @@ class WebchatClient extends Component {
             // 'invisible', 'idle', 'connectingVideo', 'video', 'connectingVoice',
             // 'voice', 'connectingText', 'text', 'endCall', 'notAvailable'.
             chatMode: 'invisible',
-            isModeChanged: false,   // checked in componentDidUpdated()
-            isFirstCall: true,      // indicates that call is the first from widget init
+            isModeChanged: false,       // checked in componentDidUpdated()
+            isCamAndMicAllowed: false,  // indicates that camera/microphone use was allowed by user
             isSoundOn: true,
             isMicOn: true,
             messages: [],
@@ -51,7 +50,6 @@ class WebchatClient extends Component {
         this.startChat = this.startChat.bind(this);
         this.turnSound = this.turnSound.bind(this);
         this.turnMic = this.turnMic.bind(this);
-        this.switchMode = this.switchMode.bind(this);
         this.stopChat = this.stopChat.bind(this);
         this.backToInitial = this.backToInitial.bind(this);
         this.phoneSentChangeMode = this.phoneSentChangeMode.bind(this);
@@ -94,72 +92,68 @@ class WebchatClient extends Component {
 
     // Chat control functions
 
+    // demandedMode allowed values: 'voice', 'video', 'text'.
     startChat(demandedMode) {
-        console.log('<========= startChat(): ' + demandedMode);
+        console.log('<========= startChat(' + demandedMode + ')');
         console.log('vox.currentCall:');
         console.log(vox.currentCall);
 
-        // Voice/video chat which has not been connected yet
-        // (started from idle or switched from text chat which was started from idle)
-        if (demandedMode !== 'text' && !vox.currentCall) {
-            console.log('Voice/video chat which has not been connected yet');
+        // Protect from requesting of wrong mode or the same mode as already is.
+        const isDemandedModeAllowable = (demandedMode === 'voice' || demandedMode === 'video' || demandedMode === 'text');
+        const isDemandedModeChange = (demandedMode !== this.state.chatMode);
+        if (isDemandedModeAllowable && isDemandedModeChange) {
 
-            // If this call is the first from widget init
-            if (this.state.isFirstCall) {
-                this.setState({isFirstCall: false});
-                // Ask about allowing camera & microphone access
-                // and call vox.startCall() from onMicAccessResult if user allows access.
-                vox.askCamAndMic();
-            } else {
-                vox.startCall(this.props.settings.client_app_installed, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
-            }
-
-            // Switch UI to connecting state
-            if (demandedMode === 'voice') {
-                this.setState({chatMode: 'connectingVoice'});
-            } else if (demandedMode === 'video') {
-                this.setState({chatMode: 'connectingVideo'});
-            }
-            
-        // Text chat which is started from idle (not switched from voice/video call)
-        } else if (demandedMode === 'text' && !vox.currentCall) {
-            this.setState({chatMode: 'connectingText'});
-            // Send checking message
-            vox.sendMessage(this.props.settings.textAvailCheckMsg);
-            // Begin waiting for return of checking message
-            const availabilityWait = setTimeout(() => {
-                // If chatMode is still 'connectingText' (checking message
-                // didn't return from other party), go to 'not available' screen
-                if (this.state.chatMode === 'connectingText') {
-                    this.setState({chatMode: 'notAvailable'});
+            if (demandedMode !== 'text') {              // If this is voice/video call
+                if (!this.state.isCamAndMicAllowed) {   // If cam/mic using was not allowed yet
+                    // Ask about allowing camera & microphone access
+                    vox.askCamAndMic();
+                } else {                                // If cam/mic using was allowed already
+                    // Start call
+                    const useVideo = (demandedMode === 'video');
+                    vox.startCall(useVideo, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
                 }
-            }, this.props.settings.textAvailCheckDelay);
+            }
 
-        // Chat has already been connected
-        } else {
-            this.setState({chatMode: demandedMode});
+            if (!vox.currentCall) {                     // If chat has been started from idle
+                // Switch UI to connecting state
+                switch (demandedMode) {
+                    case 'voice':
+                        this.setState({chatMode: 'connectingVoice'});
+                        break;
+                    case 'video':
+                        this.setState({chatMode: 'connectingVideo'});
+                        break;
+                    case 'text':
+                        this.setState({chatMode: 'connectingText'});
+                        break;
+                }
+            } else {                                    // If chat has been switched from other mode
+                this.setState({chatMode: demandedMode});
+
+                // In text chat microphone & sound must be disabled,
+                // in voice/video chat they are initially enabled.
+                this.turnMic(demandedMode !== 'text');
+                this.turnSound(demandedMode !== 'text');
+
+                // Switching logic
+                switch (demandedMode) {
+                    case 'voice':
+
+                        break;
+                    case 'video':
+
+                        break;
+                    case 'text':
+
+                        break;
+                }
+            }
+
+            this.setState({isModeChanged: true});
         }
 
-        this.setState({isModeChanged: true});
-
         console.log('new chatMode = ' + this.state.chatMode);
-        console.log('           startChat() =========>');
-    }
-    switchMode(demandedMode) {
-        console.log('<========= switchMode(): ' + demandedMode);
-
-        this.startChat(demandedMode);
-
-        // If call is connected
-        if (vox.currentCall) {
-            // In text chat microphone & sound must be disabled,
-            // in voice/video chat they are initially enabled.
-            this.turnMic(demandedMode !== 'connectingText' || demandedMode !== 'text');
-            this.turnSound(demandedMode !== 'connectingText' || demandedMode !== 'text');
-        }
-
-        console.log('new chatMode = ' + this.state.chatMode);
-        console.log('           switchMode() =========>');
+        console.log('           startChat(' + demandedMode + ') =========>');
     }
     turnSound(onOff) {
         vox.turnSound(onOff);
@@ -177,8 +171,9 @@ class WebchatClient extends Component {
 
         // If user stops chat while connecting a call, return to initial idle state.
         // In other cases go to 'end call' screen.
-        const isConnectingMode = (this.state.chatMode === 'connectingVoice') ||
-            (this.state.chatMode === 'connectingVideo');
+        const isConnectingMode = (this.state.chatMode === 'connectingVoice' ||
+                                  this.state.chatMode === 'connectingVideo' ||
+                                  this.state.chatMode === 'connectingText');
         this.setState({
             chatMode: (isConnectingMode) ? 'idle' : 'endCall',
             isModeChanged: true,
@@ -227,32 +222,33 @@ class WebchatClient extends Component {
 
     // When user has been logged in
     onAuthResult(e) {
-        console.log('<========= onAuthResult() begin');
-        console.log('this.state.chatMode = ' + this.state.chatMode);
-        console.log('Auth result: ' + e.result);
+        // console.log('<========= onAuthResult() begin');
 
-        // Initialize text messenger
-        vox.initMessenger(this.onReceiveMessage);
+        // console.log('vox.voxAPI.audioOutputs(): ');
+        // console.log(vox.voxAPI.audioOutputs());
 
-        // Make widget available for user
-        this.setState({chatMode: 'idle'});
+        if (e.result) {
+            // If authorization has been successful - make widget available for user
+            this.setState({chatMode: 'idle'});
+        }
 
-        console.log('           onAuthResult() end =========>');
+        // console.log('           onAuthResult() end =========>');
     }
     // Handling user's response to question about camera & microphone access
     onMicAccessResult(e) {
-        console.log('<+++++++++ onMicAccessResult()');
+        console.log('<========= onMicAccessResult()');
 
         // If user has allowed access to camera & microphone: begin call
         if (e.result) {
+            this.setState({isCamAndMicAllowed: true});
             vox.startCall(this.props.settings.client_app_installed, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
         }
 
-        console.log('           onMicAccessResult() +++++++++>');
+        console.log('           onMicAccessResult() =========>');
     }
     // When call has been connected
     onCallConnected(e) {
-        console.log('<========= onCallConnected() begin');
+        console.log('<========= onCallConnected()');
         console.log('vox.currentCall:');
         console.log(vox.currentCall);
         console.log('e.call._peerConnection.videoEnabled: ' + e.call._peerConnection.videoEnabled);
@@ -260,10 +256,16 @@ class WebchatClient extends Component {
         console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());
 
         // Change state from connecting to calling
-        if (this.state.chatMode === 'connectingVoice') {
-            this.setState({chatMode: 'voice'});
-        } else if (this.state.chatMode === 'connectingVideo') {
-            this.setState({chatMode: 'video'});
+        switch (this.state.chatMode) {
+            case 'connectingVoice':
+                this.setState({chatMode: 'voice'});
+                break;
+            case 'connectingVideo':
+                this.setState({chatMode: 'video'});
+                break;
+            case 'connectingText':
+                this.setState({chatMode: 'text'});
+                break;
         }
         this.setState({isModeChanged: true});
 
@@ -272,26 +274,26 @@ class WebchatClient extends Component {
         this.turnSound(this.state.chatMode !== 'text');
 
         console.log('new chatMode = ' + this.state.chatMode);
-        console.log('             onCallConnected() end =========>');
+        console.log('             onCallConnected() =========>');
     }
     // When call has been disconnected, change state to endCall or to idle
     // (if call was not connected by the moment of 'stop' button click)
     onCallDisconnected() {
-        console.log('<+++++++++ onCallDisconnected()');
+        console.log('<========== onCallDisconnected()');
         vox.currentCall = null; // clear call instance
         this.setState({
             // If chat has been stopped while call connecting, keep 'idle' state,
             // if chat was connected - go to 'endCall' screen
-            chatMode: (this.state.chatMode === 'idle') ? 'idle' : ((this.state.chatMode === 'text') ? 'text' : 'endCall'),
+            chatMode: (this.state.chatMode === 'idle') ? 'idle' : 'endCall',
             isModeChanged: true,
         });
         console.log('new chatMode = ' + this.state.chatMode);
-        console.log('           onCallDisconnected() end +++++++++>');
+        console.log('           onCallDisconnected() =========>');
     }
     // When call fails - fo to 'not available' screen
     onCallFailed(e) {
         console.log('<========= onCallFailed() begin');
-        console.log('Call id: '+vox.currentCall.id()+', code: '+e.code+', reason: '+e.reason);
+        console.log('Call fail code: '+e.code+', reason: '+e.reason);
         vox.currentCall = null;
         this.setState({
                 chatMode: 'notAvailable',
@@ -446,7 +448,7 @@ class WebchatClient extends Component {
                             clientAppInstalled={this.props.settings.client_app_installed}
                             chatMode={this.state.chatMode}
                             stopChat={this.stopChat}
-                            switchMode={this.switchMode}
+                            switchMode={this.startChat}
                             backToInitial={this.backToInitial}
                             onSend={this.onSend}
                             messages={this.state.messages}
