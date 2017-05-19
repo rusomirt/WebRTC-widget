@@ -104,17 +104,21 @@ class WebchatClient extends Component {
         const isDemandedModeChange = (demandedMode !== this.state.chatMode);
         if (isDemandedModeAllowable && isDemandedModeChange) {
 
-            if (demandedMode !== 'text') {              // If this is voice/video call
-                if (!this.state.isCamAndMicAllowed) {   // If cam/mic using was not allowed yet
-                    // Ask about allowing camera & microphone access
-                    vox.askCamAndMic();
-                } else {                                // If cam/mic using was allowed already
-                    // Start call
-                    vox.startCall(demandedMode, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
-                }
-            }
-
             if (!vox.currentCall) {                     // If chat has been started from idle
+
+                if (demandedMode !== 'text') {              // If this is voice/video call
+                    if (!this.state.isCamAndMicAllowed) {   // If cam/mic using was not allowed yet
+                        // Ask about allowing camera & microphone access
+                        vox.askCamAndMic();
+                    } else {                                // If cam/mic using was allowed already
+                        // Start call
+                        console.log('start call without askCamAndMic()');
+                        vox.startCall(demandedMode, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
+                    }
+                } else {                                    // If this is text call
+
+                }
+
                 // Switch UI to connecting state
                 switch (demandedMode) {
                     case 'voice':
@@ -127,13 +131,11 @@ class WebchatClient extends Component {
                         this.setState({chatMode: 'connectingText'});
                         break;
                 }
+
             } else {                                    // If chat has been switched from other mode
                 this.setState({chatMode: demandedMode});
 
-                // In text chat microphone & sound must be disabled,
-                // in voice/video chat they are initially enabled.
-                this.turnMic(demandedMode !== 'text');
-                this.turnSound(demandedMode !== 'text');
+                console.log('this.state.chatMode switched to ' + demandedMode);
 
                 // Switching logic
                 switch (demandedMode) {
@@ -257,6 +259,7 @@ class WebchatClient extends Component {
                     demandedMode = 'text';
                     break;
             }
+            console.log('start call from askCamAndMic()');
             vox.startCall(demandedMode, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
         }
 
@@ -267,7 +270,6 @@ class WebchatClient extends Component {
         console.log('<========= onCallConnected()');
         console.log('vox.currentCall:');
         console.log(vox.currentCall);
-        console.log('e.call._peerConnection.videoEnabled: ' + e.call._peerConnection.videoEnabled);
 
         console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());
 
@@ -418,12 +420,20 @@ class WebchatClient extends Component {
                 messages: []
             });
 
-            // If component rerender was caused by state change from connecting to calling
-            // or by switching between call modes
             if (this.state.chatMode === 'voice' || this.state.chatMode === 'video') {
-                console.log(document.getElementById('video-in'));
-                console.log(document.getElementById('video-out'));
+                // console.log(document.getElementById('video-in'));
+                // console.log(document.getElementById('video-out'));
+
                 vox.videoControl(this.state.chatMode);
+
+                // in voice/video chat microphone & sound are initially enabled.
+                // this.turnMic(true);
+                // this.turnSound(true);
+
+            } else if (this.state.chatMode === 'text') {
+                // In text chat microphone & sound must be disabled
+                this.turnMic(false);
+                this.turnSound(false);
             }
             // if (this.state.chatMode === 'text') {
             //     // Behavior of these elements is not clear: local video is suddenly placed

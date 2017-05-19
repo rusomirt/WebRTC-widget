@@ -90,8 +90,13 @@ export function startCall(demandedMode, onCallConnected, onCallDisconnected, onC
     console.log('demandedMode = ' + demandedMode);
     const useVideo = (demandedMode === 'video');
     console.log('useVideo = ' + useVideo);
-    currentCall = voxAPI.call(dest_username, useVideo, demandedMode);
+    currentCall = voxAPI.call(dest_username, useVideo, 'customData', {'VI-CallMode': demandedMode});
 
+    currentCall.addEventListener(VoxImplant.CallEvents.Updated, (e) => {
+        console.log('<<<<<<<<<< call.onUpdated()');
+        console.log(e);
+        console.log('           call.onUpdated() >>>>>>>>>>');
+    });
     currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, (e) => {
         // console.log('<<<<<<<<<< onMediaElementCreated() begin');
         // console.log(e.element);
@@ -123,11 +128,18 @@ export function turnSound(onOff) {
 }
 // Turn the microphone on/off
 export function turnMic(onOff) {
+    console.log('<<<<<<<<<< turnMic()');
+    console.log('currentCall: ');
+
+    console.log(currentCall);
+
     if (onOff) {
         currentCall.unmuteMicrophone();
     } else {
         currentCall.muteMicrophone();
     }
+
+    console.log('           turnMic() >>>>>>>>>>');
 }
 
 // Hangup call
@@ -158,21 +170,21 @@ export function videoControl(callMode) {
 
     switch (callMode) {
         case 'video':
-            sendVideo(true);
-            showLocalVideo(true);
             showRemoteVideo(true);
+            showLocalVideo(true);
+            sendVideo(true);
             break;
-        case 'voice':
-            sendVideo(false);
+        default:
             showRemoteVideo(false);
             // showLocalVideo(false);
+            sendVideo(false);
             break;
     }
     console.log('          videoControl() end >>>>>>>>>>');
 }
 // Show/hide local video
 function showLocalVideo(onOff) {
-    console.log('<<<<<<<<<< showLocalVideo() begin');
+    console.log('<<<<<<<<<< showLocalVideo(' + onOff + ')');
     console.log('onOff = ' + onOff);
 
     voxAPI.showLocalVideo(onOff);
@@ -186,14 +198,16 @@ function showLocalVideo(onOff) {
         // videoOut.play();
     }
 
-    console.log('          showLocalVideo() end >>>>>>>>>>');
+    console.log('          showLocalVideo(' + onOff + ') >>>>>>>>>>');
 }
 // Show/hide remote video
 function showRemoteVideo(onOff) {
-    console.log('<<<<<<<<<< showRemoteVideo() begin');
-    console.log('onOff = ' + onOff);
+    console.log('<<<<<<<<<< showRemoteVideo(' + onOff + ')');
 
-    currentCall.showRemoteVideo(onOff);
+    console.log('currentCall:');
+    console.log(currentCall);
+
+    // currentCall.showRemoteVideo(onOff);
     console.log('currentCall.getVideoElementId():');
     console.log(currentCall.getVideoElementId());
     const videoIn = document.getElementById(currentCall.getVideoElementId());
@@ -205,11 +219,11 @@ function showRemoteVideo(onOff) {
         videoIn.play();
     }
 
-    console.log('          showRemoteVideo() end >>>>>>>>>>');
+    console.log('          showRemoteVideo(' + onOff + ') >>>>>>>>>>');
 }
 // Start/stop sending video
 function sendVideo(onOff) {
-    voxAPI.sendVideo(onOff);
+    currentCall.sendVideo(onOff);
 }
 
 //
