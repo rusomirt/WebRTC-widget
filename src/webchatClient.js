@@ -383,7 +383,7 @@ class WebchatClient extends Component {
 
     componentDidMount() {
         const hashParams = this.getHashParams();
-        const voxParams = {
+        const initParams = {
             account_name: hashParams.account_name ?
                 hashParams.account_name : this.props.settings.account_name,
             application_name: hashParams.application_name ?
@@ -393,9 +393,10 @@ class WebchatClient extends Component {
             client_password: hashParams.client_password ?
                 hashParams.client_password : this.props.settings.client_password,
             op_username: hashParams.op_username ?
-                hashParams.op_username : this.props.settings.op_username
+                hashParams.op_username : this.props.settings.op_username,
+            client_app_installed: this.props.settings.client_app_installed
         };
-        vox.init(voxParams, this.onAuthResult, this.onMicAccessResult);
+        vox.init(initParams, this.onAuthResult, this.onMicAccessResult);
     }
     componentDidUpdate() {
         if (this.state.isModeChanged) {
