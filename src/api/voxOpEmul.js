@@ -29,9 +29,9 @@ let receivedMessage = null;
 
 // Initialize VoxImplant
 export function init(settings) {
-    // console.log('<<<<<<<<<< init() begin');
-    // console.log('settings:');
-    // console.log(settings);
+    console.log('<<<<<<<<<< init()');
+    console.log('settings:');
+    console.log(settings);
 
     // Create VoxImplant instance
     voxAPI = VoxImplant.getInstance();
@@ -52,11 +52,11 @@ export function init(settings) {
 
     // Initialize SDK
     voxAPI.init({
-        micRequired: true,  // force microphone/camera access request
-        videoSupport: true, // enable video support
-        progressTone: true  // play progress tone
+        micRequired: false, // initially disable microphone/camera access request
+        videoSupport: true  // enable video support
     });
-    // console.log('           init() end >>>>>>>>>>');
+
+    console.log('           init() >>>>>>>>>>');
 }
 // Deinitialize all
 export function uninit() {
