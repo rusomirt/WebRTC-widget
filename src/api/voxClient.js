@@ -30,6 +30,10 @@ export let voxAPI;                  // object for VoxImplant instance
 
 // Initialize VoxImplant
 export function init(settings, onAuthResult, onMicAccessResult) {
+    console.log('<<<<<<<<<< init()');
+    console.log('settings:');
+    console.log(settings);
+
     // Create VoxImplant instance
     voxAPI = VoxImplant.getInstance();
 
@@ -39,7 +43,6 @@ export function init(settings, onAuthResult, onMicAccessResult) {
     username = settings.client_username;
     password = settings.client_password;
     dest_username = settings.op_username;
-    const videoSupport = settings.client_app_installed;
 
     // Assign handlers
     voxAPI.addEventListener(VoxImplant.Events.SDKReady, () => {
@@ -58,6 +61,9 @@ export function init(settings, onAuthResult, onMicAccessResult) {
     voxAPI.addEventListener(VoxImplant.Events.AuthResult, onAuthResult);
     voxAPI.addEventListener(VoxImplant.Events.MicAccessResult, onMicAccessResult);
 
+    const videoSupport = settings.client_app_installed;
+    console.log('videoSupport: ' + videoSupport);
+
     // Initialize SDK
     voxAPI.init({
         micRequired: false, // initially disable microphone/camera access request
@@ -65,6 +71,8 @@ export function init(settings, onAuthResult, onMicAccessResult) {
         videoSupport: videoSupport,
         progressTone: true
     });
+
+    console.log('           init() >>>>>>>>>>');
 }
 // Deinitialize all
 export function uninit() {
