@@ -94,6 +94,7 @@ class WebchatClient extends Component {
 
     // demandedMode allowed values: 'voice', 'video', 'text'.
     startChat(demandedMode) {
+        console.clear();
         console.log('<========= startChat(' + demandedMode + ')');
         console.log('vox.currentCall:');
         console.log(vox.currentCall);
@@ -222,17 +223,17 @@ class WebchatClient extends Component {
 
     // When user has been logged in
     onAuthResult(e) {
-        // console.log('<========= onAuthResult() begin');
-
+        console.clear();
+        console.log('<========= onAuthResult(): ' + e.result);
         // console.log('vox.voxAPI.audioOutputs(): ');
         // console.log(vox.voxAPI.audioOutputs());
 
-        if (e.result) {
-            // If authorization has been successful - make widget available for user
-            this.setState({chatMode: 'idle'});
+        if (e.result) {                         // If authorization has been successful
+            console.log('CLIENT IS READY');
+            this.setState({chatMode: 'idle'});  // Make widget available for user
         }
 
-        // console.log('           onAuthResult() end =========>');
+        console.log('           onAuthResult() =========>');
     }
     // Handling user's response to question about camera & microphone access
     onMicAccessResult(e) {
@@ -241,7 +242,12 @@ class WebchatClient extends Component {
         // If user has allowed access to camera & microphone: begin call
         if (e.result) {
             this.setState({isCamAndMicAllowed: true});
-            vox.startCall(this.props.settings.client_app_installed, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
+
+            console.log('this.state.chatMode: ' + this.state.chatMode);
+
+            // Start call
+            const useVideo = (this.state.chatMode === 'connectingVideo');
+            vox.startCall(useVideo, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
         }
 
         console.log('           onMicAccessResult() =========>');

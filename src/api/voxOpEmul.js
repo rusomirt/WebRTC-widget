@@ -92,7 +92,6 @@ function onConnectionEstablished() {
     voxAPI.login(username + '@' + application_name + '.' + account_name + '.voximplant.com', password);
     // console.log('           onConnectionEstablished() end >>>>>>>>>>');
 }
-
 // Connection with VoxImplant failed
 function onConnectionFailed() {
     console.log('------------------------------');
@@ -101,7 +100,6 @@ function onConnectionFailed() {
         voxAPI.connect();
     }, 1000);
 }
-
 // Connection with VoxImplant closed
 function onConnectionClosed() {
     console.log('<<<<<<<<<< onConnectionClosed()');
@@ -113,13 +111,15 @@ function onConnectionClosed() {
 }
 
 function onAuthResult(e) {
-    console.log('<<<<<<<<<< onAuthResult()');
-    console.log('AuthResult: ' + e.result);
+    console.clear();
+    console.log('<<<<<<<<<< onAuthResult(): ' + e.result);
+    console.log('EMULATOR IS READY');
     console.log('          onAuthResult() >>>>>>>>>>');
 }
 
 // Incoming call
 function onIncomingCall(e) {
+    console.clear();
     console.log('<<<<<<<<<< onIncomingCall()');
     console.log(e);
 
@@ -148,7 +148,8 @@ function onCallConnected() {
 
     // TODO: Check if it's a video or voice call
 
-    voxAPI.sendVideo(true);
+    // voxAPI.sendVideo(true);
+
     console.log('          onCallConnected() >>>>>>>>>>');
 }
 

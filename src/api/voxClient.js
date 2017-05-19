@@ -43,11 +43,9 @@ export function init(settings, onAuthResult, onMicAccessResult) {
 
     // Assign handlers
     voxAPI.addEventListener(VoxImplant.Events.SDKReady, () => {
-        console.log('<<<<<<<<<< onSDKReady() >>>>>>>>>>');
         voxAPI.connect();
     });
     voxAPI.addEventListener(VoxImplant.Events.ConnectionEstablished, () => {
-        console.log('<<<<<<<<<< onConnectionEstablished() >>>>>>>>>>');
         voxAPI.login(username + '@' + application_name + '.' + account_name + '.voximplant.com', password);
     });
     voxAPI.addEventListener(VoxImplant.Events.ConnectionFailed, () => {
@@ -56,7 +54,6 @@ export function init(settings, onAuthResult, onMicAccessResult) {
             voxAPI.connect();
         }, 1000);
     });
-    voxAPI.addEventListener(VoxImplant.Events.ConnectionClosed, () => {});
     // These event listeners get callbacks from Preact because they influence to UI
     voxAPI.addEventListener(VoxImplant.Events.AuthResult, onAuthResult);
     voxAPI.addEventListener(VoxImplant.Events.MicAccessResult, onMicAccessResult);
