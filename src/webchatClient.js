@@ -110,8 +110,7 @@ class WebchatClient extends Component {
                     vox.askCamAndMic();
                 } else {                                // If cam/mic using was allowed already
                     // Start call
-                    const useVideo = (demandedMode === 'video');
-                    vox.startCall(useVideo, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
+                    vox.startCall(demandedMode, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
                 }
             }
 
@@ -246,8 +245,19 @@ class WebchatClient extends Component {
             console.log('this.state.chatMode: ' + this.state.chatMode);
 
             // Start call
-            const useVideo = (this.state.chatMode === 'connectingVideo');
-            vox.startCall(useVideo, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
+            let demandedMode = null;
+            switch (this.state.chatMode) {
+                case 'connectingVoice':
+                    demandedMode = 'voice';
+                    break;
+                case 'connectingVideo':
+                    demandedMode = 'video';
+                    break;
+                case 'connectingText':
+                    demandedMode = 'text';
+                    break;
+            }
+            vox.startCall(demandedMode, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
         }
 
         console.log('           onMicAccessResult() =========>');
