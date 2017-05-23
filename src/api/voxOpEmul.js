@@ -73,6 +73,11 @@ export function stopCall() {
     console.log('          stopCall() >>>>>>>>>>');
 }
 
+//
+function sendMessage(text) {
+    currentCall.sendMessage(text);
+}
+
 //=============================================================================
 // Global VoxImplant instance event handlers
 //=============================================================================
@@ -129,6 +134,7 @@ function onIncomingCall(e) {
     currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
     currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
     currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
+    currentCall.addEventListener(VoxImplant.CallEvents.MessageReceived, onMessageReceived);
     console.log('Incoming call from: ' + currentCall.number());
     // Answer automatically
     setTimeout(function () {
@@ -199,6 +205,10 @@ function onCallFailed(e) {
 }
 
 //
-function sendMessage(text) {
-    currentCall.sendMessage(text);
+function onMessageReceived(e) {
+    console.log('<<<<<<<<<< onMessageReceived');
+    console.log(e);
+    console.log(e.text);
+    sendMessage(e.text);
+    console.log('           onMessageReceived >>>>>>>>>>');
 }
