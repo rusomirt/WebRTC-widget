@@ -395,9 +395,9 @@ class WebchatClient extends Component {
                 // this.turnSound(true);
 
             } else if (this.state.chatMode === 'text') {
-                // // In text chat microphone & sound must be disabled
-                // this.turnMic(false);
-                // this.turnSound(false);
+                // In text chat microphone & sound must be disabled
+                this.turnMic(false);
+                this.turnSound(false);
             }
             // if (this.state.chatMode === 'text') {
             //     // Behavior of these elements is not clear: local video is suddenly placed
