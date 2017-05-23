@@ -1033,6 +1033,12 @@ class ChatInput extends Component {
         // console.log('this.state.chatInput new = ' + this.state.chatInput);
         // console.log('           ChatInput textChangeHandler() =========>');
     }
+
+    componentDidMount() {
+        const textInput = this.textInput;
+        console.log(textInput);
+        textInput.focus();
+    }
     render(props, state) {
         return (
             <form className={cn('msgr__input-form')} onSubmit={this.onSubmit}>
@@ -1042,6 +1048,7 @@ class ChatInput extends Component {
                        onInput={this.textChangeHandler}
                        placeholder="Write a message..."
                        value={this.state.chatInput}
+                       ref={node => this.textInput = node}
                 />
             </form>
         );
