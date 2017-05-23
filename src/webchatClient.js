@@ -267,8 +267,6 @@ class WebchatClient extends Component {
                 break;
             case 'connectingText':
                 this.setState({chatMode: 'text'});
-                console.log('this.state.messages: ');
-                console.log(this.state.messages);
                 break;
         }
         this.setState({isModeChanged: true});
@@ -298,7 +296,7 @@ class WebchatClient extends Component {
     // When call fails - go to 'not available' screen
     onCallFailed(e) {
         console.log('<========= onCallFailed() begin');
-        console.log('Call fail code: '+e.code+', reason: '+e.reason);
+        console.log('Call fail code: ' + e.code + ', reason: ' + e.reason);
         vox.currentCall = null;
         this.setState({
                 chatMode: 'notAvailable',
@@ -312,24 +310,15 @@ class WebchatClient extends Component {
 
     // Send text from input field and add it in the messages list
     onSendMessage(messageText) {
-        // console.log('<========= onSendMessage() in Messenger');
-        // console.log('messageText = ' + messageText);
-
         const message = {
             fromMe: true,
             text: messageText,
             timeStamp: this.getCurrentTimeString()
         };
-        // console.log('message:');
-        // console.log(message);
-
         this.addMessageToList(message);
 
-        // console.log('new state:');
-        // console.log(this.state);
-
-
-        // If this is the first text message (text call is not made yet)
+        // If this is the first message (text call is not made yet): send it in call header.
+        // If this is not first message (text call is already connected): send it in call message.
         if (this.state.chatMode === 'showText') {
             this.setState({chatMode: 'connectingText'});
             vox.startCall('text', messageText, this.onCallConnected, this.onCallDisconnected,
@@ -337,8 +326,6 @@ class WebchatClient extends Component {
         } else {
             vox.sendMessage(messageText);
         }
-
-        // console.log('          onSendMessage() in Messenger =========>');
     }
     // Append the message to the component state
     addMessageToList(message) {
@@ -347,8 +334,8 @@ class WebchatClient extends Component {
         this.setState({ messages });
     }
     onMessageReceived(e) {
-        console.log('<========= onMessageReceived');
-        console.log('e.text: ' + e.text);
+        // console.log('<========= onMessageReceived');
+        // console.log('e.text: ' + e.text);
 
         const message = {
             fromMe: false,
@@ -357,9 +344,9 @@ class WebchatClient extends Component {
         };
         this.addMessageToList(message);
 
-        console.log('this.state.messages:');
-        console.log(this.state.messages);
-        console.log('           onMessageReceived =========>');
+        // console.log('this.state.messages:');
+        // console.log(this.state.messages);
+        // console.log('           onMessageReceived =========>');
     }
     // Get current timestamp in format (h)h:mm + am/pm
     getCurrentTimeString() {
