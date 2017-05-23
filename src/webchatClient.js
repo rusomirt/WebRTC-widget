@@ -61,8 +61,8 @@ class WebchatClient extends Component {
         this.onCallFailed = this.onCallFailed.bind(this);
 
         this.addMessageToList = this.addMessageToList.bind(this);
-        this.onSend = this.onSend.bind(this);
-        this.onReceiveMessage = this.onReceiveMessage.bind(this);
+        this.onSendMessage = this.onSendMessage.bind(this);
+        this.onMessageReceived = this.onMessageReceived.bind(this);
         this.getCurrentTimeString = this.getCurrentTimeString.bind(this);
     }
 
@@ -76,10 +76,10 @@ class WebchatClient extends Component {
             d = function (s) {
                 // console.log('<<< inner func');
                 // console.log(s);
-                let temp = decodeURIComponent(s);//decodeURIComponent(s.replace(a, ' '));
+                // let temp = decodeURIComponent(s);//decodeURIComponent(s.replace(a, ' '));
                 // console.log(temp);
                 // console.log('inner func >>>');
-                return temp;
+                return decodeURIComponent(s);
             },
             q = window.location.hash.substring(1);
 
@@ -114,7 +114,7 @@ class WebchatClient extends Component {
                         // Start call
                         console.log('start call without askCamAndMic()');
                         vox.startCall(demandedMode, this.onCallConnected, this.onCallDisconnected,
-                                                    this.onCallFailed, this.onReceiveMessage);
+                                                    this.onCallFailed, this.onMessageReceived);
                     }
                 }
 
@@ -244,7 +244,7 @@ class WebchatClient extends Component {
             }
             console.log('start call from askCamAndMic()');
             vox.startCall(demandedMode, this.onCallConnected, this.onCallDisconnected,
-                                        this.onCallFailed, this.onReceiveMessage);
+                                        this.onCallFailed, this.onMessageReceived);
         }
 
         console.log('           onMicAccessResult() =========>');
@@ -311,8 +311,8 @@ class WebchatClient extends Component {
     // Functions from Messenger
 
     // Send text from input field and add it in the messages list
-    onSend(messageText) {
-        // console.log('<========= onSend() in Messenger');
+    onSendMessage(messageText) {
+        // console.log('<========= onSendMessage() in Messenger');
         // console.log('messageText = ' + messageText);
 
         const message = {
@@ -333,12 +333,12 @@ class WebchatClient extends Component {
         if (this.state.chatMode === 'showText') {
             this.setState({chatMode: 'connectingText'});
             vox.startCall('text', messageText, this.onCallConnected, this.onCallDisconnected,
-                                               this.onCallFailed, this.onReceiveMessage);
+                                               this.onCallFailed, this.onMessageReceived);
         } else {
             vox.sendMessage(messageText);
         }
 
-        // console.log('          onSend() in Messenger =========>');
+        // console.log('          onSendMessage() in Messenger =========>');
     }
     // Append the message to the component state
     addMessageToList(message) {
@@ -346,8 +346,8 @@ class WebchatClient extends Component {
         messages.push(message);
         this.setState({ messages });
     }
-    onReceiveMessage(e) {
-        console.log('<========= onReceiveMessage');
+    onMessageReceived(e) {
+        console.log('<========= onMessageReceived');
         console.log('e.text: ' + e.text);
 
         const message = {
@@ -359,7 +359,7 @@ class WebchatClient extends Component {
 
         console.log('this.state.messages:');
         console.log(this.state.messages);
-        console.log('           onReceiveMessage =========>');
+        console.log('           onMessageReceived =========>');
     }
     // Get current timestamp in format (h)h:mm + am/pm
     getCurrentTimeString() {
@@ -455,7 +455,7 @@ class WebchatClient extends Component {
                             stopChat={this.stopChat}
                             switchMode={this.startChat}
                             backToInitial={this.backToInitial}
-                            onSend={this.onSend}
+                            onSendMessage={this.onSendMessage}
                             messages={this.state.messages}
                             phoneSentDelay={this.state.phoneSentDelay}
                             phoneSentChangeMode={this.phoneSentChangeMode}
@@ -534,7 +534,7 @@ class SelectMode extends Component {
 }
 
 // Chat block
-// Props: clientAppInstalled, chatMode, stopChat(), switchMode(), backToInitial(), onSend(), messages,
+// Props: clientAppInstalled, chatMode, stopChat(), switchMode(), backToInitial(), onSendMessage(), messages,
 //        phoneSentDelay, phoneSentChangeMode(), isSoundOn, turnSound(), isMicOn, turnMic().
 const Chat = (props) => {
 
@@ -665,7 +665,7 @@ const Chat = (props) => {
                         </div>
                     </div>
                 </div>;
-            messenger = <Messenger onSend={props.onSend} messages={props.messages} />;
+            messenger = <Messenger onSendMessage={props.onSendMessage} messages={props.messages} />;
             // Hidden videoContainer is necessary for switching to video mode
             videoContainer =
                 <div className={cn('chat__video-container', 'chat__video-container--hidden')}>
@@ -690,7 +690,7 @@ const Chat = (props) => {
                         </div>
                     </div>
                 </div>;
-            messenger = <Messenger onSend={props.onSend} messages={props.messages} />;
+            messenger = <Messenger onSendMessage={props.onSendMessage} messages={props.messages} />;
             // Hidden videoContainer is necessary for switching to video mode
             videoContainer =
                 <div className={cn('chat__video-container', 'chat__video-container--hidden')}>
@@ -900,7 +900,7 @@ class InlineForm extends Component {
 }
 
 // Text messenger
-// Props: messages, onSend()
+// Props: messages, onSendMessage()
 class Messenger extends Component {
     constructor(props) {
         super(props);
@@ -916,7 +916,7 @@ class Messenger extends Component {
         return (
             <div className={cn('msgr')}>
                 <Messages messages={props.messages} />
-                <ChatInput onSend={props.onSend} />
+                <ChatInput onSendMessage={props.onSendMessage} />
             </div>
         );
     }
@@ -1015,7 +1015,7 @@ class Message extends Component {
     }
 }
 // Text messenger: input
-// Props: onSend()
+// Props: onSendMessage()
 class ChatInput extends Component {
     constructor(props) {
         super(props);
@@ -1034,8 +1034,8 @@ class ChatInput extends Component {
         event.preventDefault();     // Stop the form from refreshing the page on submit
 
         if (trimmedText !== '') {
-            // Call the onSend callback with the chatInput message
-            this.props.onSend(trimmedText);
+            // Call the onSendMessage callback with the chatInput message
+            this.props.onSendMessage(trimmedText);
             // Clear the input box
             this.setState({chatInput: ''});
         }
