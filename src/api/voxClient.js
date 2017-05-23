@@ -136,16 +136,11 @@ export function turnSound(onOff) {
 }
 // Turn the microphone on/off
 export function turnMic(onOff) {
-    console.log('<<<<<<<<<< turnMic()');
-    console.log('currentCall.stateValue: ' + currentCall.stateValue);
-
     if (onOff) {
         currentCall.unmuteMicrophone();
     } else {
         currentCall.muteMicrophone();
     }
-
-    console.log('           turnMic() >>>>>>>>>>');
 }
 
 // Hangup call
@@ -232,7 +227,7 @@ function sendVideo(onOff) {
     currentCall.sendVideo(onOff);
 }
 
-//
+// Send text message within call
 export function sendMessage(text) {
     currentCall.sendMessage(text);
 }
