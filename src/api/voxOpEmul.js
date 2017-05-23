@@ -122,6 +122,7 @@ function onIncomingCall(e) {
     console.clear();
     console.log('<<<<<<<<<< onIncomingCall()');
     console.log("e.headers['X-CallMode']: " + e.headers['X-CallMode']);
+    console.log("e.headers['X-FirstMsg']: " + e.headers['X-FirstMsg']);
 
     currentCall = e.call;
     // Add handlers
@@ -154,9 +155,14 @@ function onIncomingCall(e) {
 //=============================================================================
 
 // Call connected
-function onCallConnected() {
+function onCallConnected(e) {
     console.log('<<<<<<<<<< onCallConnected()');
+    console.log(e);
 
+    if (e.call._headers['X-CallMode'] === 'text') {
+        console.log('Sending 1st message back');
+        sendMessage(e.call._headers['X-FirstMsg']);
+    }
     // TODO: Check if it's a video or voice call
 
     // voxAPI.sendVideo(true);
@@ -190,4 +196,9 @@ function onCallFailed(e) {
     console.log('VI connected: ' + voxAPI.connected());
     currentCall = null;
     console.log('          onCallFailed() >>>>>>>>>>');
+}
+
+//
+function sendMessage(text) {
+    currentCall.sendMessage(text);
 }

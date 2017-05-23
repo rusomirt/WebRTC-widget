@@ -84,13 +84,18 @@ export function askCamAndMic() {
     voxAPI.attachRecordingDevice().then();
 }
 // Begin video or voice call
-export function startCall(demandedMode, onCallConnected, onCallDisconnected, onCallFailed) {
+export function startCall(demandedMode, firstMsg, onCallConnected,
+                          onCallDisconnected, onCallFailed, onMessageReceived) {
     console.log('<<<<<<<<<< startCall()');
 
     console.log('demandedMode = ' + demandedMode);
     const useVideo = (demandedMode === 'video');
     console.log('useVideo = ' + useVideo);
-    currentCall = voxAPI.call(dest_username, useVideo, 'customData', {'X-CallMode': demandedMode});
+    let extraHeaders = {'X-CallMode': demandedMode};
+    if (demandedMode === 'text') {
+        extraHeaders['X-FirstMsg'] = firstMsg;
+    }
+    currentCall = voxAPI.call(dest_username, useVideo, 'customData', extraHeaders);
 
     if (demandedMode !== 'text') {
         currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
@@ -115,6 +120,7 @@ export function startCall(demandedMode, onCallConnected, onCallDisconnected, onC
     currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
     currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
     currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
+    currentCall.addEventListener(VoxImplant.CallEvents.MessageReceived, onMessageReceived);
 
     console.log('currentCall:');
     console.log(currentCall);

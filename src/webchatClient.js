@@ -33,7 +33,7 @@ class WebchatClient extends Component {
         this.state = {
             // Allowed chatMode values:
             // 'invisible', 'idle', 'connectingVideo', 'video', 'connectingVoice',
-            // 'voice', 'connectingText', 'text', 'endCall', 'notAvailable'.
+            // 'voice', 'showText', 'connectingText', 'text', 'endCall', 'notAvailable'.
             chatMode: 'invisible',
             isModeChanged: false,       // checked in componentDidUpdated()
             isCamAndMicAllowed: false,  // indicates that camera/microphone use was allowed by user
@@ -113,11 +113,9 @@ class WebchatClient extends Component {
                     } else {                                // If cam/mic using was allowed already
                         // Start call
                         console.log('start call without askCamAndMic()');
-                        vox.startCall(demandedMode, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
+                        vox.startCall(demandedMode, this.onCallConnected, this.onCallDisconnected,
+                                                    this.onCallFailed, this.onReceiveMessage);
                     }
-                } else {                                    // If this is text call
-                    console.log('Text chat demanded');
-                    vox.startCall(demandedMode, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
                 }
 
                 // Switch UI to connecting state
@@ -129,27 +127,11 @@ class WebchatClient extends Component {
                         this.setState({chatMode: 'connectingVideo'});
                         break;
                     case 'text':
-                        this.setState({chatMode: 'connectingText'});
+                        this.setState({chatMode: 'showText'});
                         break;
                 }
-
             } else {                                    // If chat has been switched from other mode
                 this.setState({chatMode: demandedMode});
-
-                console.log('this.state.chatMode switched to ' + demandedMode);
-
-                // Switching logic
-                switch (demandedMode) {
-                    case 'voice':
-
-                        break;
-                    case 'video':
-
-                        break;
-                    case 'text':
-
-                        break;
-                }
             }
 
             this.setState({isModeChanged: true});
@@ -261,18 +243,19 @@ class WebchatClient extends Component {
                     break;
             }
             console.log('start call from askCamAndMic()');
-            vox.startCall(demandedMode, this.onCallConnected, this.onCallDisconnected, this.onCallFailed);
+            vox.startCall(demandedMode, this.onCallConnected, this.onCallDisconnected,
+                                        this.onCallFailed, this.onReceiveMessage);
         }
 
         console.log('           onMicAccessResult() =========>');
     }
     // When call has been connected
-    onCallConnected(e) {
+    onCallConnected() {
         console.log('<========= onCallConnected()');
         console.log('vox.currentCall:');
         console.log(vox.currentCall);
 
-        console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());
+        // console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());
 
         // Change state from connecting to calling
         switch (this.state.chatMode) {
@@ -284,6 +267,8 @@ class WebchatClient extends Component {
                 break;
             case 'connectingText':
                 this.setState({chatMode: 'text'});
+                console.log('this.state.messages: ');
+                console.log(this.state.messages);
                 break;
         }
         this.setState({isModeChanged: true});
@@ -292,7 +277,7 @@ class WebchatClient extends Component {
         // this.turnMic(this.state.chatMode !== 'text');
         // this.turnSound(this.state.chatMode !== 'text');
 
-        console.log('new chatMode = ' + this.state.chatMode);
+        // console.log('new chatMode = ' + this.state.chatMode);
         console.log('             onCallConnected() =========>');
     }
     // When call has been disconnected, change state to endCall or to idle
@@ -305,11 +290,12 @@ class WebchatClient extends Component {
             // if chat was connected - go to 'endCall' screen
             chatMode: (this.state.chatMode === 'idle') ? 'idle' : 'endCall',
             isModeChanged: true,
+            messages: []
         });
         console.log('new chatMode = ' + this.state.chatMode);
         console.log('           onCallDisconnected() =========>');
     }
-    // When call fails - fo to 'not available' screen
+    // When call fails - go to 'not available' screen
     onCallFailed(e) {
         console.log('<========= onCallFailed() begin');
         console.log('Call fail code: '+e.code+', reason: '+e.reason);
@@ -329,12 +315,10 @@ class WebchatClient extends Component {
         // console.log('<========= onSend() in Messenger');
         // console.log('messageText = ' + messageText);
 
-        const messageTime = this.getCurrentTimeString();
-
         const message = {
             fromMe: true,
             text: messageText,
-            timeStamp: messageTime
+            timeStamp: this.getCurrentTimeString()
         };
         // console.log('message:');
         // console.log(message);
@@ -344,7 +328,13 @@ class WebchatClient extends Component {
         // console.log('new state:');
         // console.log(this.state);
 
-        vox.sendMessage(messageText);
+
+        // If this is the first text message (text call is not made yet)
+        if (this.state.chatMode === 'showText') {
+            this.setState({chatMode: 'connectingText'});
+            vox.startCall('text', messageText, this.onCallConnected, this.onCallDisconnected,
+                                               this.onCallFailed, this.onReceiveMessage);
+        }
 
         // console.log('          onSend() in Messenger =========>');
     }
@@ -356,28 +346,14 @@ class WebchatClient extends Component {
     }
     onReceiveMessage(e) {
         console.log('<========= onReceiveMessage');
-        console.log('e.message:');
-        console.log(e.message);
-        console.log('e.message.sender: ' + e.message.sender);
-        console.log('e.message.text: ' + e.message.text);
+        console.log('e.text: ' + e.text);
 
-        // If this message has been sent by other user
-        if (e.message.sender !== vox.username + '@' + vox.application_name + '.' + vox.account_name) {
-
-            if (this.state.chatMode === 'connectingText' &&
-                e.message.text === this.props.settings.textAvailCheckMsg) { // availability checking message
-                this.setState({chatMode: 'text'});
-
-            } else {                                                        // regular message
-                const messageTime = this.getCurrentTimeString();
-                const message = {
-                    fromMe: false,
-                    text: e.message.text,
-                    timeStamp: messageTime
-                };
-                this.addMessageToList(message);
-            }
-        }
+        const message = {
+            fromMe: false,
+            text: e.text,
+            timeStamp: this.getCurrentTimeString()
+        };
+        this.addMessageToList(message);
 
         console.log('this.state.messages:');
         console.log(this.state.messages);
@@ -418,7 +394,6 @@ class WebchatClient extends Component {
 
             this.setState({
                 isModeChanged: false,
-                messages: []
             });
 
             if (this.state.chatMode === 'voice' || this.state.chatMode === 'video') {
@@ -671,6 +646,31 @@ const Chat = (props) => {
                     <div id='video-out' className={cn('chat__video-out')}></div>
                 </div>;
             break;
+        case 'showText':
+            chatInfo =
+                <div className={cn('chat__info', 'chat__info--bordered', 'chat__info--short')}>
+                    <img className={cn('chat__logo')} src={lukesLogo}/>
+                    <div className={cn('chat__status')}>
+                        <div className={cn('chat__status-txt-wrapper')}>
+                            <span className={cn('chat__status-hdr')}>
+                                <span className={cn('fa fa-comments', 'icon', 'icon--color', 'icon--xs', 'icon--shifted')}></span>
+                                Chat NOT connected yet
+                            </span>
+                        </div>
+                        {/* Hidden timer is needed to continue time count in text mode */}
+                        <div className={cn('chat__timer-wrapper', 'chat__timer-wrapper--hidden')}>
+                            <Timer/>
+                        </div>
+                    </div>
+                </div>;
+            messenger = <Messenger onSend={props.onSend} messages={props.messages} />;
+            // Hidden videoContainer is necessary for switching to video mode
+            videoContainer =
+                <div className={cn('chat__video-container', 'chat__video-container--hidden')}>
+                    <div id='video-in' className={cn('chat__video-in')}></div>
+                    <div id='video-out' className={cn('chat__video-out')}></div>
+                </div>;
+            break;
         case 'text':
             chatInfo =
                 <div className={cn('chat__info', 'chat__info--bordered', 'chat__info--short')}>
@@ -905,10 +905,10 @@ class Messenger extends Component {
         this.state = {};
     }
     componentDidMount() {
-        console.log('<========= Messenger componentDidMount() =========>');
+        // console.log('<========= Messenger componentDidMount() =========>');
     }
     componentDidUpdate() {
-        console.log('<========= Messenger componentDidUpdate() =========>');
+        // console.log('<========= Messenger componentDidUpdate() =========>');
     }
     render(props, state) {
         return (
@@ -927,28 +927,28 @@ class Messages extends Component {
         this.state = {scrollbarWidth: 0};
     }
     componentDidMount() {
-        console.log('<========= Messages componentDidMount()');
-        console.log('this.props.messages:');
-        console.log(this.props.messages);
-        // Hide the scrollbar:
-        // expand element by the scrollbar width and the scrollbar will be hidden
-        // due to overflow:hidden of parent wrapper.
+        // console.log('<========= Messages componentDidMount()');
+        // console.log('this.props.messages:');
+        // console.log(this.props.messages);
+        // // Hide the scrollbar:
+        // // expand element by the scrollbar width and the scrollbar will be hidden
+        // // due to overflow:hidden of parent wrapper.
         const nodeList = this.nodeList;
         // const nodeList = document.getElementById('msgrList');
-        console.log('nodeList:');
-        console.log(nodeList);
-        console.log('nodeList.offsetWidth = ' + nodeList.offsetWidth);
-        console.log('nodeList.clientWidth = ' + nodeList.clientWidth);
+        // console.log('nodeList:');
+        // console.log(nodeList);
+        // console.log('nodeList.offsetWidth = ' + nodeList.offsetWidth);
+        // console.log('nodeList.clientWidth = ' + nodeList.clientWidth);
         let scrollbarWidth = nodeList.offsetWidth - nodeList.clientWidth;
-        console.log('scrollbarWidth = ' + scrollbarWidth);
+        // console.log('scrollbarWidth = ' + scrollbarWidth);
         this.setState({scrollbarWidth: scrollbarWidth});
         if (nodeList) {
             // nodeList.setAttribute('style', 'width: calc(100% + ' + scrollbarWidth + 'px); background: red;');
             // nodeList.setAttribute('style', '');
             // nodeList.style.background = 'red';
-            console.log(nodeList);
+            // console.log(nodeList);
         }
-        console.log('           Messages componentDidMount() =========>');
+        // console.log('           Messages componentDidMount() =========>');
     }
 
     // There is a new message in the nodeList
@@ -976,6 +976,10 @@ class Messages extends Component {
                     timeStamp={message.timeStamp}/>
             );
         });
+        // console.log('<========= Messages render()');
+        // console.log(this.props.messages);
+        // console.log('           Messages render() =========>');
+
         return (
             <div className={cn('msgr__list-wrapper')}>
                 <div className={cn('msgr__list')} style={listStyle} ref={node => this.nodeList = node} id='msgrList'>
@@ -1161,6 +1165,7 @@ const ChatPanel = (props) => {
                     {micBtn}
                 </div>;
             break;
+        case 'showText':
         case 'text':
             leftGroup =
                 <div className={cn('chat__btns-group')}>
