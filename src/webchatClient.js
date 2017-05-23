@@ -946,9 +946,6 @@ class Messages extends Component {
         // Scroll to bottom of nodeList
         nodeList.scrollTop = nodeList.scrollHeight;
     }
-    componentDidUnmount() {
-        console.log('<========= Messages componentDidUnmount()');
-    }
     render(props, state) {
         let scrollbarWidth = this.state.scrollbarWidth;
         // If the style is applied in componentDidMount(), there is a strange behavior:
