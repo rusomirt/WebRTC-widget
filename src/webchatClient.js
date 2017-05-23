@@ -586,7 +586,7 @@ const Chat = (props) => {
                     <div className={cn('chat__status-txt-wrapper')}>
                         <span className={cn('chat__status-hdr')}>
                             <span className={cn('fa fa-comments', 'icon', 'icon--color', 'icon--xs', 'icon--shifted')}></span>
-                            Connecting to text chat
+                            Paging operator, please wait...
                         </span>
                     </div>
                 </div>
@@ -656,7 +656,7 @@ const Chat = (props) => {
                         <div className={cn('chat__status-txt-wrapper')}>
                             <span className={cn('chat__status-hdr')}>
                                 <span className={cn('fa fa-comments', 'icon', 'icon--color', 'icon--xs', 'icon--shifted')}></span>
-                                Chat NOT connected yet
+                                Text chat
                             </span>
                         </div>
                         {/* Hidden timer is needed to continue time count in text mode */}
@@ -1180,8 +1180,10 @@ const ChatPanel = (props) => {
             break;
     }
 
+    const isChatPanelLow = (props.chatMode === 'text') || (props.chatMode === 'showText');
+
     return (
-        <div className={cn('chat__panel', {'chat__panel--low': props.chatMode === 'text'})}>
+        <div className={cn('chat__panel', {'chat__panel--low': isChatPanelLow})}>
             {leftGroup}
             {stopBtn}
             {rightGroup}
