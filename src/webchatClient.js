@@ -113,7 +113,7 @@ class WebchatClient extends Component {
                     } else {                                // If cam/mic using was allowed already
                         // Start call
                         console.log('start call without askCamAndMic()');
-                        vox.startCall(demandedMode, this.onCallConnected, this.onCallDisconnected,
+                        vox.startCall(demandedMode, null, this.onCallConnected, this.onCallDisconnected,
                                                     this.onCallFailed, this.onMessageReceived);
                     }
                 }
@@ -242,8 +242,7 @@ class WebchatClient extends Component {
                     demandedMode = 'text';
                     break;
             }
-            console.log('start call from askCamAndMic()');
-            vox.startCall(demandedMode, this.onCallConnected, this.onCallDisconnected,
+            vox.startCall(demandedMode, null, this.onCallConnected, this.onCallDisconnected,
                                         this.onCallFailed, this.onMessageReceived);
         }
 
