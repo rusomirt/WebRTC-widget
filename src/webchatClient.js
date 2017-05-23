@@ -334,6 +334,8 @@ class WebchatClient extends Component {
             this.setState({chatMode: 'connectingText'});
             vox.startCall('text', messageText, this.onCallConnected, this.onCallDisconnected,
                                                this.onCallFailed, this.onReceiveMessage);
+        } else {
+            vox.sendMessage(messageText);
         }
 
         // console.log('          onSend() in Messenger =========>');
