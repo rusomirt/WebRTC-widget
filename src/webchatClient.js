@@ -260,10 +260,9 @@ class WebchatClient extends Component {
     // Handling user's response to question about camera & microphone access
     onMicAccessResult(e) {
         console.log('');
-        console.log('<========= onMicAccessResult()');
+        console.log('<========= onMicAccessResult(): ' + e.result);
 
-        // If user has allowed access to camera & microphone: begin call
-        if (e.result) {
+        if (e.result) {     // If user has allowed access to camera & microphone: begin call
             this.setState({isCamAndMicAllowed: true});
 
             console.log('this.state.chatMode: ' + this.state.chatMode);
@@ -295,6 +294,11 @@ class WebchatClient extends Component {
                 this.setState({isModeChanged: true});
                 this.turnSound(true);
                 this.turnMic(true);
+            }
+        } else {            // If user has NOT allowed access to camera & microphone: return to previous mode
+            console.log('ACCESS DENIED');
+            if (this.state.chatMode !== 'text') {
+                this.setState({chatMode: 'idle'});
             }
         }
 
