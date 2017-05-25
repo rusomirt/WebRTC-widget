@@ -138,6 +138,7 @@ class WebchatClient extends Component {
                         // in text mode sound & mic must be disabled
                         this.turnSound(false);
                         this.turnMic(false);
+                        vox.videoControl('text');
                         break;
                 }
 
