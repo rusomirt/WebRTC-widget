@@ -37,6 +37,7 @@ class WebchatClient extends Component {
             chatMode: 'invisible',
             isModeChanged: false,       // checked in componentDidUpdated()
             isCamAndMicAllowed: false,  // indicates that camera/microphone use was allowed by user
+            isVideoDemandedFromText: false, //
             isSoundOn: true,
             isMicOn: true,
             messages: [],
@@ -94,31 +95,24 @@ class WebchatClient extends Component {
 
     // demandedMode allowed values: 'voice', 'video', 'text'.
     startChat(demandedMode) {
-        console.clear();
+        // console.clear();
         console.log('<========= startChat(' + demandedMode + ')');
-        console.log('vox.currentCall:');
-        console.log(vox.currentCall);
 
-        // Protect from requesting of wrong mode or the same mode as already is.
+        // Allowed modes are 'voice', 'video' and 'text'
         const isDemandedModeAllowable = (demandedMode === 'voice' || demandedMode === 'video' || demandedMode === 'text');
+        // Demanded mode must differ from current mode
         const isDemandedModeChange = (demandedMode !== this.state.chatMode);
         if (isDemandedModeAllowable && isDemandedModeChange) {
 
+            // Camera & mic access request is needed if the user launches voice/video mode
+            // and access request was not made yet:
+            const isAccessRequestNeeded = (demandedMode !== 'text') && !this.state.isCamAndMicAllowed;
+
             if (!vox.currentCall) {                     // If chat has been started from idle
 
-                if (demandedMode !== 'text') {              // If this is voice/video call
-                    if (!this.state.isCamAndMicAllowed) {   // If cam/mic using was not allowed yet
-                        // Ask about allowing camera & microphone access
-                        vox.askCamAndMic();
-                    } else {                                // If cam/mic using was allowed already
-                        // Start call
-                        console.log('start call without askCamAndMic()');
-                        vox.startCall(demandedMode, null, this.onCallConnected, this.onCallDisconnected,
-                                                    this.onCallFailed, this.onMessageReceived);
-                    }
+                if (isAccessRequestNeeded) {
+                    vox.askCamAndMic();
                 }
-
-                // Switch UI to connecting state
                 switch (demandedMode) {
                     case 'voice':
                         this.setState({chatMode: 'connectingVoice'});
@@ -130,14 +124,25 @@ class WebchatClient extends Component {
                         this.setState({chatMode: 'showText'});
                         break;
                 }
-            } else {                                    // If chat has been switched from other mode
-                this.setState({chatMode: demandedMode});
-            }
+                this.setState({isModeChanged: true});
 
-            this.setState({isModeChanged: true});
+            } else {                                    // If chat has been switched from other mode
+
+                if (isAccessRequestNeeded) {
+                    vox.askCamAndMic();
+                    this.setState({isVideoDemandedFromText: demandedMode === 'video'});
+                } else {
+                    this.setState({
+                        chatMode: demandedMode,
+                        isModeChanged: true
+                    });
+                }
+                // If switching from text to voice/video and access request was not made yet,
+                // UI will change in onMicAccessResult() event handler.
+                
+            }
         }
 
-        console.log('new chatMode = ' + this.state.chatMode);
         console.log('           startChat(' + demandedMode + ') =========>');
     }
     turnSound(onOff) {
@@ -221,6 +226,7 @@ class WebchatClient extends Component {
     }
     // Handling user's response to question about camera & microphone access
     onMicAccessResult(e) {
+        console.log('');
         console.log('<========= onMicAccessResult()');
 
         // If user has allowed access to camera & microphone: begin call
@@ -229,32 +235,45 @@ class WebchatClient extends Component {
 
             console.log('this.state.chatMode: ' + this.state.chatMode);
 
-            // Start call
-            let demandedMode = null;
-            switch (this.state.chatMode) {
-                case 'connectingVoice':
-                    demandedMode = 'voice';
-                    break;
-                case 'connectingVideo':
-                    demandedMode = 'video';
-                    break;
-                case 'connectingText':
-                    demandedMode = 'text';
-                    break;
+            // Allowable chatMode values: 'connectingVoice', 'connectingVideo', 'text'.
+            if (this.state.chatMode !== 'text') {   // this is starting voice/video call.
+                console.log('this is starting voice/video call');
+                // Start call
+                let demandedMode = null;
+                switch (this.state.chatMode) {
+                    case 'connectingVoice':
+                        demandedMode = 'voice';
+                        break;
+                    case 'connectingVideo':
+                        demandedMode = 'video';
+                        break;
+                }
+                vox.startCall(demandedMode, null, this.onCallConnected, this.onCallDisconnected,
+                    this.onCallFailed, this.onMessageReceived);
+            } else {                                // this is switching from text to voice/video within connected call.
+                console.log('this is switching from text to voice/video within connected call');
+                console.log('this.state.isVideoDemandedFromText: ' + this.state.isVideoDemandedFromText);
+                
+                if (this.state.isVideoDemandedFromText) {
+                    this.setState({chatMode: 'video'});
+                } else {
+                    this.setState({chatMode: 'voice'});
+                }
+                this.setState({isModeChanged: true});
             }
-            vox.startCall(demandedMode, null, this.onCallConnected, this.onCallDisconnected,
-                                        this.onCallFailed, this.onMessageReceived);
         }
 
         console.log('           onMicAccessResult() =========>');
+        console.log('');
     }
     // When call has been connected
     onCallConnected() {
         console.log('<========= onCallConnected()');
-        console.log('vox.currentCall:');
-        console.log(vox.currentCall);
 
-        // console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());
+        console.log('local video:');
+        console.log(document.getElementById('voximplantlocalvideo'));
+        console.log('remote video:');
+        console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());
 
         // Change state from connecting to calling
         switch (this.state.chatMode) {
@@ -377,16 +396,21 @@ class WebchatClient extends Component {
     }
     componentDidUpdate() {
         if (this.state.isModeChanged) {
-            // console.log(`<========= componentDidUpdate()`);
-            // console.log(`Mode has just been changed to  \'${this.state.chatMode}\'`);
+            console.log(`<========= componentDidUpdate()`);
+            console.log(`Mode has just been changed to  \'${this.state.chatMode}\'`);
+
+            console.log('local video:');
+            console.log(document.getElementById('voximplantlocalvideo'));
+            console.log('remote video:');
+            if (vox.currentcall)
+                console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());
+            else console.log('none');
 
             this.setState({
                 isModeChanged: false,
             });
 
             if (this.state.chatMode === 'voice' || this.state.chatMode === 'video') {
-                // console.log(document.getElementById('video-in'));
-                // console.log(document.getElementById('video-out'));
 
                 vox.videoControl(this.state.chatMode);
 
@@ -395,9 +419,12 @@ class WebchatClient extends Component {
                 // this.turnSound(true);
 
             } else if (this.state.chatMode === 'text') {
+
+                // vox.videoControl(this.state.chatMode);
+
                 // In text chat microphone & sound must be disabled
-                this.turnMic(false);
-                this.turnSound(false);
+                // this.turnMic(false);
+                // this.turnSound(false);
             }
             // if (this.state.chatMode === 'text') {
             //     // Behavior of these elements is not clear: local video is suddenly placed
@@ -412,9 +439,7 @@ class WebchatClient extends Component {
             //     }
             // }
 
-            // console.log('this.state.messages:');
-            // console.log(this.state.messages);
-            // console.log('           componentDidUpdate() =========>');
+            console.log('           componentDidUpdate() =========>');
         }
     }
     componentWillUnmount() {
@@ -1036,7 +1061,6 @@ class ChatInput extends Component {
 
     componentDidMount() {
         const textInput = this.textInput;
-        console.log(textInput);
         textInput.focus();
     }
     render(props, state) {
