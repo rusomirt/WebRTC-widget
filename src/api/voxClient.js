@@ -118,7 +118,13 @@ export function startCall(demandedMode, firstMsg, onCallConnected,
         console.log('<<<<<<<<<< onMediaElementCreated() begin');
         console.log(e.element);
         e.element.style.display = 'none';
+
+        // console.log('currentCall:');
+        // console.log(currentCall);
+        // sendVideo(false);
+        // showRemoteVideo(false);
         console.log('           onMediaElementCreated() end >>>>>>>>>>');
+        // debugger;
     });
     // These event listeners get callbacks from Preact because they influence to UI
     currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);

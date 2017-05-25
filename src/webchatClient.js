@@ -129,24 +129,26 @@ class WebchatClient extends Component {
 
             } else {                                    // If chat has been switched from other mode
 
-                switch (demandedMode) {
-                    case 'video':
-                    case 'voice':
-                        // this.turnSound(true);
-                        // this.turnMic(true);
-                        break;
-                    case 'text':
-                        // in text mode sound & mic must be disabled
-                        this.turnSound(false);
-                        this.turnMic(false);
-                        this.turnVideo(false);
-                        break;
-                }
-
                 if (isAccessRequestNeeded) {
                     vox.askCamAndMic();
                     this.setState({isVideoDemandedFromText: demandedMode === 'video'});
                 } else {
+                    switch (demandedMode) {
+                        case 'video':
+                            break;
+                        case 'voice':
+                            // this.turnSound(true);
+                            // this.turnMic(true);
+                            this.turnVideo(false);
+                            break;
+                        case 'text':
+                            // in text mode sound & mic must be disabled
+                            this.turnSound(false);
+                            this.turnMic(false);
+                            this.turnVideo(false);
+                            break;
+                    }
+
                     this.setState({
                         chatMode: demandedMode,
                         isModeChanged: true
@@ -300,6 +302,7 @@ class WebchatClient extends Component {
     // When call has been connected
     onCallConnected() {
         console.log('<========= onCallConnected()');
+        console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
 
         console.log('local video:');
         console.log(document.getElementById('voximplantlocalvideo'));
@@ -310,7 +313,6 @@ class WebchatClient extends Component {
         switch (this.state.chatMode) {
             case 'connectingVoice':
                 this.setState({chatMode: 'voice'});
-                this.turnVideo(false);
                 break;
             case 'connectingVideo':
                 this.setState({chatMode: 'video'});
@@ -440,9 +442,9 @@ class WebchatClient extends Component {
             });
 
             if (this.state.chatMode === 'voice') {
+                this.turnVideo(false);
 
             } else if (this.state.chatMode === 'video') {
-
                 this.turnVideo(true);
 
                 // in voice/video chat microphone & sound are initially enabled.
@@ -450,25 +452,12 @@ class WebchatClient extends Component {
                 // this.turnSound(true);
 
             } else if (this.state.chatMode === 'text') {
-
                 // this.turnVideo(false);
 
                 // In text chat microphone & sound must be disabled
                 // this.turnMic(false);
                 // this.turnSound(false);
             }
-            // if (this.state.chatMode === 'text') {
-            //     // Behavior of these elements is not clear: local video is suddenly placed
-            //     // in some elements of UI after switching from video call to text chat.
-            //     // So manual hiding of local video is needed.
-            //     console.log(document.getElementById('video-in'));
-            //     console.log(document.getElementById('video-out'));
-            //     const videoIn = document.getElementById('voximplantlocalvideo');
-            //     console.log(videoIn);
-            //     if (videoIn) {
-            //         videoIn.style.display = 'none';
-            //     }
-            // }
 
             console.log('           componentDidUpdate() =========>');
         }
