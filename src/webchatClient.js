@@ -51,6 +51,7 @@ class WebchatClient extends Component {
         this.startChat = this.startChat.bind(this);
         this.turnSound = this.turnSound.bind(this);
         this.turnMic = this.turnMic.bind(this);
+        this.turnVideo = this.turnVideo.bind(this);
         this.stopChat = this.stopChat.bind(this);
         this.backToInitial = this.backToInitial.bind(this);
         this.phoneSentChangeMode = this.phoneSentChangeMode.bind(this);
@@ -138,7 +139,7 @@ class WebchatClient extends Component {
                         // in text mode sound & mic must be disabled
                         this.turnSound(false);
                         this.turnMic(false);
-                        vox.videoControl('text');
+                        this.turnVideo(false);
                         break;
                 }
 
@@ -166,6 +167,20 @@ class WebchatClient extends Component {
     turnMic(onOff) {
         vox.turnMic(onOff);
         this.setState({isMicOn: onOff});
+    }
+    turnVideo(onOff) {
+        console.log('<========= turnVideo(' + onOff + ')');
+
+        if (onOff) {
+            vox.showRemoteVideo(true);
+            vox.showLocalVideo(true);
+            vox.sendVideo(true);
+        } else {
+            vox.showRemoteVideo(false);
+            // vox.showLocalVideo(false);
+            vox.sendVideo(false);
+        }
+        console.log('          turnVideo(' + onOff + ') =========>');
     }
     stopChat() {
         console.log('<========= stopChat() begin');
@@ -295,6 +310,7 @@ class WebchatClient extends Component {
         switch (this.state.chatMode) {
             case 'connectingVoice':
                 this.setState({chatMode: 'voice'});
+                this.turnVideo(false);
                 break;
             case 'connectingVideo':
                 this.setState({chatMode: 'video'});
@@ -423,9 +439,11 @@ class WebchatClient extends Component {
                 isModeChanged: false,
             });
 
-            if (this.state.chatMode === 'voice' || this.state.chatMode === 'video') {
+            if (this.state.chatMode === 'voice') {
 
-                vox.videoControl(this.state.chatMode);
+            } else if (this.state.chatMode === 'video') {
+
+                this.turnVideo(true);
 
                 // in voice/video chat microphone & sound are initially enabled.
                 // this.turnMic(true);
@@ -433,7 +451,7 @@ class WebchatClient extends Component {
 
             } else if (this.state.chatMode === 'text') {
 
-                // vox.videoControl(this.state.chatMode);
+                // this.turnVideo(false);
 
                 // In text chat microphone & sound must be disabled
                 // this.turnMic(false);

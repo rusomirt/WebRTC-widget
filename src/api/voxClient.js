@@ -172,27 +172,8 @@ export function stopCall() {
     console.log('           stopChat() end >>>>>>>>>>');
 }
 
-// Video displaying control
-export function videoControl(callMode) {
-    console.log('<<<<<<<<<< videoControl() begin');
-    console.log('callMode = ' + callMode);
-
-    switch (callMode) {
-        case 'video':
-            showRemoteVideo(true);
-            showLocalVideo(true);
-            sendVideo(true);
-            break;
-        default:
-            showRemoteVideo(false);
-            // showLocalVideo(false);
-            sendVideo(false);
-            break;
-    }
-    console.log('          videoControl() end >>>>>>>>>>');
-}
 // Show/hide local video
-function showLocalVideo(onOff) {
+export function showLocalVideo(onOff) {
     console.log('<<<<<<<<<< showLocalVideo(' + onOff + ')');
 
     voxAPI.showLocalVideo(onOff);
@@ -209,11 +190,8 @@ function showLocalVideo(onOff) {
     console.log('          showLocalVideo(' + onOff + ') >>>>>>>>>>');
 }
 // Show/hide remote video
-function showRemoteVideo(onOff) {
+export function showRemoteVideo(onOff) {
     console.log('<<<<<<<<<< showRemoteVideo(' + onOff + ')');
-
-    console.log('currentCall:');
-    console.log(currentCall);
 
     // currentCall.showRemoteVideo(onOff);
     console.log('currentCall.getVideoElementId():');
@@ -230,7 +208,7 @@ function showRemoteVideo(onOff) {
     console.log('          showRemoteVideo(' + onOff + ') >>>>>>>>>>');
 }
 // Start/stop sending video
-function sendVideo(onOff) {
+export function sendVideo(onOff) {
     currentCall.sendVideo(onOff);
 }
 
