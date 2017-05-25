@@ -304,13 +304,12 @@ class WebchatClient extends Component {
     // When call has been connected
     onCallConnected() {
         console.log('<========= onCallConnected()');
-        console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
 
-        console.log('local video:');
-        console.log(document.getElementById('voximplantlocalvideo'));
-        console.log('remote video:');
-        console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());
-
+        // console.log('local video:');
+        // console.log(document.getElementById('voximplantlocalvideo'));
+        // console.log('remote video:');
+        // console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());
+        //
         // Change state from connecting to calling
         switch (this.state.chatMode) {
             case 'connectingVoice':
