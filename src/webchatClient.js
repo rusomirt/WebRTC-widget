@@ -190,10 +190,12 @@ class WebchatClient extends Component {
         // Hangup call
         vox.stopCall();
 
-        // If user stops chat while connecting a call, return to initial idle state.
+        // If user stops chat while connecting a call or showing
+        // initial text UI, return to initial idle state.
         // In other cases go to 'end call' screen.
         const isConnectingMode = (this.state.chatMode === 'connectingVoice' ||
                                   this.state.chatMode === 'connectingVideo' ||
+                                  this.state.chatMode === 'showText' ||
                                   this.state.chatMode === 'connectingText');
         this.setState({
             chatMode: (isConnectingMode) ? 'idle' : 'endCall',
