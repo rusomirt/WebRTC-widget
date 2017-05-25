@@ -97,8 +97,6 @@ class WebchatClient extends Component {
     startChat(demandedMode) {
         // console.clear();
         console.log('<========= startChat(' + demandedMode + ')');
-        console.log('this.state.isSoundOn: ' + this.state.isSoundOn);
-        console.log('this.state.isMicOn: ' + this.state.isMicOn);
 
         // Allowed modes are 'voice', 'video' and 'text'
         const isDemandedModeAllowable = (demandedMode === 'voice' || demandedMode === 'video' || demandedMode === 'text');
@@ -158,8 +156,6 @@ class WebchatClient extends Component {
             }
         }
 
-        console.log('this.state.isSoundOn: ' + this.state.isSoundOn);
-        console.log('this.state.isMicOn: ' + this.state.isMicOn);
         console.log('           startChat(' + demandedMode + ') =========>');
     }
     turnSound(onOff) {
@@ -288,8 +284,6 @@ class WebchatClient extends Component {
     // When call has been connected
     onCallConnected() {
         console.log('<========= onCallConnected()');
-        console.log('this.state.isSoundOn: ' + this.state.isSoundOn);
-        console.log('this.state.isMicOn: ' + this.state.isMicOn);
 
         console.log('local video:');
         console.log(document.getElementById('voximplantlocalvideo'));
@@ -312,12 +306,6 @@ class WebchatClient extends Component {
         }
         this.setState({isModeChanged: true});
 
-        // // Sound & microphone are disabled in text chat
-        // this.turnMic(this.state.chatMode !== 'text');
-        // this.turnSound(this.state.chatMode !== 'text');
-
-        console.log('this.state.isSoundOn: ' + this.state.isSoundOn);
-        console.log('this.state.isMicOn: ' + this.state.isMicOn);
         console.log('             onCallConnected() =========>');
     }
     // When call has been disconnected, change state to endCall or to idle
