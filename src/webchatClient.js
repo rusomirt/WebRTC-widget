@@ -1105,6 +1105,11 @@ class ChatInput extends Component {
 // Props: clientAppInstalled, chatMode, stopChat(), switchMode(),
 //        isSoundOn, turnSound(), isMicOn, turnMic().
 const ChatPanel = (props) => {
+    // Chat modes which deny mode switching (only stop button is enabled)
+    const isModeSwitchingDenied = (props.chatMode === 'connectingVoice') ||
+                                  (props.chatMode === 'connectingVideo') ||
+                                  (props.chatMode === 'connectingText');
+
     const stopBtn =
         <button
             className={cn('chat__btn--stop')}
@@ -1122,33 +1127,33 @@ const ChatPanel = (props) => {
 
     const videoBtn =
         <button className={cn('chat__btn--small')}
-                onClick={switchVideoMode}>
+                onClick={() => {if (!isModeSwitchingDenied) switchVideoMode()}}>
             <span className={cn('fa fa-video-camera', {'icon--crossed': props.chatMode === 'video'},
                 'icon', 'icon--color', 'icon--xs')}></span>
         </button>;
 
     const voiceBtn =
         <button className={cn('chat__btn--small')}
-                onClick={() => props.switchMode('voice')}>
+                onClick={() => {if (!isModeSwitchingDenied) props.switchMode('voice')}}>
             <span className={cn('fa fa-phone', 'icon--arrowed', 'icon', 'icon--color', 'icon--xs')}></span>
         </button>;
 
     const textBtn =
         <button className={cn('chat__btn--small')}
-                onClick={() => props.switchMode('text')}>
+                onClick={() => {if (!isModeSwitchingDenied) props.switchMode('text')}}>
             <span className={cn('fa fa-comments', 'icon', 'icon--color', 'icon--sm')}></span>
         </button>;
 
     const soundBtn =
         <button className={cn('chat__btn--small')}
-                onClick={() => props.turnSound(!props.isSoundOn)}>
+                onClick={() => {if (!isModeSwitchingDenied) props.turnSound(!props.isSoundOn)}}>
             <span className={cn('fa', {'fa-volume-off': props.isSoundOn}, {'fa-volume-up': !props.isSoundOn},
                 'icon', 'icon--color', 'icon--sm')}></span>
         </button>;
 
     const micBtn =
         <button className={cn('chat__btn--small')}
-                onClick={() => props.turnMic(!props.isMicOn)}>
+                onClick={() => {if (!isModeSwitchingDenied) props.turnMic(!props.isMicOn)}}>
             <span className={cn('fa', {'fa-microphone-slash': props.isMicOn}, {'fa-microphone': !props.isMicOn},
                 'icon', 'icon--color', 'icon--sm')}></span>
         </button>;
