@@ -97,6 +97,8 @@ class WebchatClient extends Component {
     startChat(demandedMode) {
         // console.clear();
         console.log('<========= startChat(' + demandedMode + ')');
+        console.log('this.state.isSoundOn: ' + this.state.isSoundOn);
+        console.log('this.state.isMicOn: ' + this.state.isMicOn);
 
         // Allowed modes are 'voice', 'video' and 'text'
         const isDemandedModeAllowable = (demandedMode === 'voice' || demandedMode === 'video' || demandedMode === 'text');
@@ -128,6 +130,19 @@ class WebchatClient extends Component {
 
             } else {                                    // If chat has been switched from other mode
 
+                switch (demandedMode) {
+                    case 'video':
+                    case 'voice':
+                        // this.turnSound(true);
+                        // this.turnMic(true);
+                        break;
+                    case 'text':
+                        // in text mode sound & mic must be disabled
+                        this.turnSound(false);
+                        this.turnMic(false);
+                        break;
+                }
+
                 if (isAccessRequestNeeded) {
                     vox.askCamAndMic();
                     this.setState({isVideoDemandedFromText: demandedMode === 'video'});
@@ -139,10 +154,12 @@ class WebchatClient extends Component {
                 }
                 // If switching from text to voice/video and access request was not made yet,
                 // UI will change in onMicAccessResult() event handler.
-                
+
             }
         }
 
+        console.log('this.state.isSoundOn: ' + this.state.isSoundOn);
+        console.log('this.state.isMicOn: ' + this.state.isMicOn);
         console.log('           startChat(' + demandedMode + ') =========>');
     }
     turnSound(onOff) {
@@ -260,6 +277,8 @@ class WebchatClient extends Component {
                     this.setState({chatMode: 'voice'});
                 }
                 this.setState({isModeChanged: true});
+                this.turnSound(true);
+                this.turnMic(true);
             }
         }
 
@@ -269,6 +288,8 @@ class WebchatClient extends Component {
     // When call has been connected
     onCallConnected() {
         console.log('<========= onCallConnected()');
+        console.log('this.state.isSoundOn: ' + this.state.isSoundOn);
+        console.log('this.state.isMicOn: ' + this.state.isMicOn);
 
         console.log('local video:');
         console.log(document.getElementById('voximplantlocalvideo'));
@@ -285,6 +306,8 @@ class WebchatClient extends Component {
                 break;
             case 'connectingText':
                 this.setState({chatMode: 'text'});
+                this.turnSound(false);
+                // this.turnMic(false);
                 break;
         }
         this.setState({isModeChanged: true});
@@ -293,7 +316,8 @@ class WebchatClient extends Component {
         // this.turnMic(this.state.chatMode !== 'text');
         // this.turnSound(this.state.chatMode !== 'text');
 
-        // console.log('new chatMode = ' + this.state.chatMode);
+        console.log('this.state.isSoundOn: ' + this.state.isSoundOn);
+        console.log('this.state.isMicOn: ' + this.state.isMicOn);
         console.log('             onCallConnected() =========>');
     }
     // When call has been disconnected, change state to endCall or to idle

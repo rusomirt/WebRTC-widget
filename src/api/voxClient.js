@@ -128,19 +128,23 @@ export function startCall(demandedMode, firstMsg, onCallConnected,
 }
 // Turn the sound on/off
 export function turnSound(onOff) {
+    console.log('<<<<<<<<<< turnSound(' + onOff + ')');
     if (onOff) {
         currentCall.unmutePlayback();
     } else {
         currentCall.mutePlayback();
     }
+    console.log('           turnSound(' + onOff + ') >>>>>>>>>>');
 }
 // Turn the microphone on/off
 export function turnMic(onOff) {
+    console.log('<<<<<<<<<< turnMic(' + onOff + ')');
     if (onOff) {
         currentCall.unmuteMicrophone();
     } else {
         currentCall.muteMicrophone();
     }
+    console.log('           turnMic(' + onOff + ') >>>>>>>>>>');
 }
 
 // Hangup call
