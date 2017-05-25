@@ -89,14 +89,18 @@ export function startCall(demandedMode, firstMsg, onCallConnected,
     console.log('<<<<<<<<<< startCall()');
 
     console.log('demandedMode = ' + demandedMode);
-    const useVideo = true;// (demandedMode === 'video');
+    const useVideo = (demandedMode === 'video');
     console.log('useVideo = ' + useVideo);
+    // Other side distinguishes call type by 'X-CallMode' header
     let extraHeaders = {'X-CallMode': demandedMode};
+    // First message of text chat is sent in 'X-FirstMsg' header
     if (demandedMode === 'text') {
         extraHeaders['X-FirstMsg'] = firstMsg;
     }
+    // Initiate a call
     currentCall = voxAPI.call(dest_username, useVideo, 'customData', extraHeaders);
 
+    // Calling tones present when voice/video mode is connecting only
     if (demandedMode !== 'text') {
         currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
             voxAPI.playProgressTone();
