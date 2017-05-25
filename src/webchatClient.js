@@ -986,7 +986,7 @@ class Messages extends Component {
         let scrollbarWidth = this.state.scrollbarWidth;
         // If the style is applied in componentDidMount(), there is a strange behavior:
         // after mode switching from text to other some elements have `width: calc(100% + ${scrollbarWidth}px)`
-        const listStyle = {width: `calc(100% + ${scrollbarWidth}px)`};
+        const listStyle = {width: `calc(100% + ${scrollbarWidth + 1}px)`};
 
         // Loop through all the messages in the state and create a Message component for each
         const messages = this.props.messages.map((message, i) => {
