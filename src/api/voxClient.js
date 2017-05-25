@@ -89,7 +89,7 @@ export function startCall(demandedMode, firstMsg, onCallConnected,
     console.log('<<<<<<<<<< startCall()');
 
     console.log('demandedMode = ' + demandedMode);
-    const useVideo = (demandedMode === 'video');
+    const useVideo = true;// (demandedMode === 'video');
     console.log('useVideo = ' + useVideo);
     let extraHeaders = {'X-CallMode': demandedMode};
     if (demandedMode === 'text') {
@@ -111,10 +111,10 @@ export function startCall(demandedMode, firstMsg, onCallConnected,
         console.log('           call.onUpdated() >>>>>>>>>>');
     });
     currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, (e) => {
-        // console.log('<<<<<<<<<< onMediaElementCreated() begin');
-        // console.log(e.element);
+        console.log('<<<<<<<<<< onMediaElementCreated() begin');
+        console.log(e.element);
         e.element.style.display = 'none';
-        // console.log('           onMediaElementCreated() end >>>>>>>>>>');
+        console.log('           onMediaElementCreated() end >>>>>>>>>>');
     });
     // These event listeners get callbacks from Preact because they influence to UI
     currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
@@ -122,8 +122,8 @@ export function startCall(demandedMode, firstMsg, onCallConnected,
     currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
     currentCall.addEventListener(VoxImplant.CallEvents.MessageReceived, onMessageReceived);
 
-    console.log('currentCall:');
-    console.log(currentCall);
+    // console.log('currentCall:');
+    // console.log(currentCall);
     console.log('           startCall() >>>>>>>>>>');
 }
 // Turn the sound on/off
@@ -186,7 +186,6 @@ export function videoControl(callMode) {
 // Show/hide local video
 function showLocalVideo(onOff) {
     console.log('<<<<<<<<<< showLocalVideo(' + onOff + ')');
-    console.log('onOff = ' + onOff);
 
     voxAPI.showLocalVideo(onOff);
     if (onOff) {
