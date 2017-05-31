@@ -85,7 +85,7 @@ export function askCamAndMic() {
 }
 // Begin video or voice call
 export function startCall(demandedMode, firstMsg, onCallConnected,
-                          onCallDisconnected, onCallFailed, onMessageReceived) {
+                          onCallDisconnected, onCallFailed, onMessageReceived, onCallUpdated) {
     console.log('<<<<<<<<<< startCall()');
 
     console.log('demandedMode = ' + demandedMode);
@@ -109,14 +109,10 @@ export function startCall(demandedMode, firstMsg, onCallConnected,
             voxAPI.stopProgressTone();
         });
     }
-    currentCall.addEventListener(VoxImplant.CallEvents.Updated, (e) => {
-        console.log('<<<<<<<<<< call.onUpdated()');
-        console.log(e);
-        console.log('           call.onUpdated() >>>>>>>>>>');
-    });
     currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, (e) => {
         console.log('<<<<<<<<<< onMediaElementCreated() begin');
         console.log(e.element);
+        // Hide remote video from <body>
         e.element.style.display = 'none';
 
         // console.log('currentCall:');
@@ -131,6 +127,7 @@ export function startCall(demandedMode, firstMsg, onCallConnected,
     currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
     currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
     currentCall.addEventListener(VoxImplant.CallEvents.MessageReceived, onMessageReceived);
+    // currentCall.addEventListener(VoxImplant.CallEvents.Updated, onCallUpdated);
 
     // console.log('currentCall:');
     // console.log(currentCall);
@@ -151,8 +148,10 @@ export function turnMic(onOff) {
     console.log('<<<<<<<<<< turnMic(' + onOff + ')');
     if (onOff) {
         currentCall.unmuteMicrophone();
+        // currentCall.sendAudio(true);
     } else {
         currentCall.muteMicrophone();
+        // currentCall.sendAudio(false);
     }
     console.log('           turnMic(' + onOff + ') >>>>>>>>>>');
 }
@@ -213,10 +212,10 @@ export function showRemoteVideo(onOff) {
 
     console.log('          showRemoteVideo(' + onOff + ') >>>>>>>>>>');
 }
-// Start/stop sending video
-export function sendVideo(onOff) {
-    currentCall.sendVideo(onOff);
-}
+// // Start/stop sending video
+// export function sendVideo(onOff) {
+//     currentCall.sendVideo(onOff);
+// }
 
 // Send text message within call
 export function sendMessage(text) {

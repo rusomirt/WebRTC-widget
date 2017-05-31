@@ -36,6 +36,7 @@ class WebchatClient extends Component {
             // 'voice', 'showText', 'connectingText', 'text', 'endCall', 'notAvailable'.
             chatMode: 'invisible',
             isModeChanged: false,       // checked in componentDidUpdated()
+            muteMicAndSnd: false,
             isCamAndMicAllowed: false,  // indicates that camera/microphone use was allowed by user
             isVideoDemandedFromText: false, //
             isSoundOn: true,
@@ -51,7 +52,8 @@ class WebchatClient extends Component {
         this.startChat = this.startChat.bind(this);
         this.turnSound = this.turnSound.bind(this);
         this.turnMic = this.turnMic.bind(this);
-        this.turnVideo = this.turnVideo.bind(this);
+        this.showVideo = this.showVideo.bind(this);
+        this.sendMedia = this.sendMedia.bind(this);
         this.stopChat = this.stopChat.bind(this);
         this.backToInitial = this.backToInitial.bind(this);
         this.phoneSentChangeMode = this.phoneSentChangeMode.bind(this);
@@ -61,6 +63,7 @@ class WebchatClient extends Component {
         this.onCallConnected = this.onCallConnected.bind(this);
         this.onCallDisconnected = this.onCallDisconnected.bind(this);
         this.onCallFailed = this.onCallFailed.bind(this);
+        this.onCallUpdated = this.onCallUpdated.bind(this);
 
         this.addMessageToList = this.addMessageToList.bind(this);
         this.onSendMessage = this.onSendMessage.bind(this);
@@ -135,17 +138,20 @@ class WebchatClient extends Component {
                 } else {
                     switch (demandedMode) {
                         case 'video':
+                            // this.turnSound(true);
+                            // this.turnMic(true);
+                            this.sendMedia(true, true);
                             break;
                         case 'voice':
                             // this.turnSound(true);
                             // this.turnMic(true);
-                            this.turnVideo(false);
+                            this.sendMedia(true, false);
                             break;
                         case 'text':
-                            // in text mode sound & mic must be disabled
-                            this.turnSound(false);
-                            this.turnMic(false);
-                            this.turnVideo(false);
+                            // this.turnSound(false);
+                            // this.turnMic(false);
+                            this.sendMedia(false, false);
+                            this.setState({muteMicAndSnd: true});
                             break;
                     }
 
@@ -170,19 +176,24 @@ class WebchatClient extends Component {
         vox.turnMic(onOff);
         this.setState({isMicOn: onOff});
     }
-    turnVideo(onOff) {
-        console.log('<========= turnVideo(' + onOff + ')');
+    showVideo(onOff) {
+        console.log('<========= showVideo(' + onOff + ')');
 
         if (onOff) {
             vox.showRemoteVideo(true);
             vox.showLocalVideo(true);
-            vox.sendVideo(true);
+            // vox.sendVideo(true);
         } else {
             vox.showRemoteVideo(false);
             // vox.showLocalVideo(false);
-            vox.sendVideo(false);
+            // vox.sendVideo(false);
         }
-        console.log('          turnVideo(' + onOff + ') =========>');
+        console.log('          showVideo(' + onOff + ') =========>');
+    }
+    sendMedia(audio, video) {
+        console.log('<========= sendMedia(' + audio + ', ' + video + ')');
+        vox.currentCall.sendMedia(audio, video);
+        console.log('           sendMedia(' + audio + ', ' + video + ') =========>');
     }
     stopChat() {
         console.log('<========= stopChat() begin');
@@ -281,22 +292,37 @@ class WebchatClient extends Component {
                         break;
                 }
                 vox.startCall(demandedMode, null, this.onCallConnected, this.onCallDisconnected,
-                    this.onCallFailed, this.onMessageReceived);
+                    this.onCallFailed, this.onMessageReceived, this.onCallUpdated);
             } else {                                // this is switching from text to voice/video within connected call.
                 console.log('this is switching from text to voice/video within connected call');
                 console.log('this.state.isVideoDemandedFromText: ' + this.state.isVideoDemandedFromText);
-                
+
+                console.log('vox.currentCall.peerConnection.impl.getLocalStreams()[0].getTracks().length: ' +
+                    vox.currentCall.peerConnection.impl.getLocalStreams()[0].getTracks().length);
+                console.log('vox.currentCall.peerConnection.impl.getLocalStreams()[0].getAudioTracks().length: ' +
+                    vox.currentCall.peerConnection.impl.getLocalStreams()[0].getAudioTracks().length);
+
                 if (this.state.isVideoDemandedFromText) {
                     this.setState({chatMode: 'video'});
+                    this.sendMedia(true, true);
                 } else {
                     this.setState({chatMode: 'voice'});
+                    this.sendMedia(true, false);
                 }
                 this.setState({isModeChanged: true});
-                this.turnSound(true);
-                this.turnMic(true);
+                // this.turnSound(true);
+                // this.turnMic(true);
             }
         } else {            // If user has NOT allowed access to camera & microphone: return to previous mode
             console.log('ACCESS DENIED');
+
+            if (vox.currentCall) {
+                console.log('vox.currentCall.peerConnection.impl.getLocalStreams()[0].getTracks().length: ' +
+                    vox.currentCall.peerConnection.impl.getLocalStreams()[0].getTracks().length);
+                console.log('vox.currentCall.peerConnection.impl.getLocalStreams()[0].getAudioTracks().length: ' +
+                    vox.currentCall.peerConnection.impl.getLocalStreams()[0].getAudioTracks().length);
+            }
+
             if (this.state.chatMode !== 'text') {
                 this.setState({chatMode: 'idle'});
             }
@@ -318,14 +344,17 @@ class WebchatClient extends Component {
         switch (this.state.chatMode) {
             case 'connectingVoice':
                 this.setState({chatMode: 'voice'});
+                this.sendMedia(true, false);
                 break;
             case 'connectingVideo':
                 this.setState({chatMode: 'video'});
+                this.sendMedia(true, true);
                 break;
             case 'connectingText':
                 this.setState({chatMode: 'text'});
+                // this.sendMedia(false, false);
                 this.turnSound(false);
-                // this.turnMic(false);
+                this.setState({muteMicAndSnd: true});
                 break;
         }
         this.setState({isModeChanged: true});
@@ -360,6 +389,19 @@ class WebchatClient extends Component {
         console.log('           onCallFailed() end =========>');
     }
 
+    onCallUpdated() {
+        console.log('<========= onCallUpdated()');
+        if (this.state.muteMicAndSnd) {
+            this.turnSound(false);
+            // this.turnMic(false);
+        } else {
+            this.turnSound(true);
+            this.turnMic(true);
+        }
+        this.setState({muteMicAndSnd: false});
+        console.log('           onCallUpdated() =========>');
+    }
+
     // Functions from Messenger
 
     // Send text from input field and add it in the messages list
@@ -376,7 +418,7 @@ class WebchatClient extends Component {
         if (this.state.chatMode === 'showText') {
             this.setState({chatMode: 'connectingText'});
             vox.startCall('text', messageText, this.onCallConnected, this.onCallDisconnected,
-                                               this.onCallFailed, this.onMessageReceived);
+                                               this.onCallFailed, this.onMessageReceived, this.onCallUpdated);
         } else {
             vox.sendMessage(messageText);
         }
@@ -447,17 +489,17 @@ class WebchatClient extends Component {
             });
 
             if (this.state.chatMode === 'voice') {
-                this.turnVideo(false);
+                this.showVideo(false);
 
             } else if (this.state.chatMode === 'video') {
-                this.turnVideo(true);
+                this.showVideo(true);
 
                 // in voice/video chat microphone & sound are initially enabled.
                 // this.turnMic(true);
                 // this.turnSound(true);
 
             } else if (this.state.chatMode === 'text') {
-                // this.turnVideo(false);
+                this.showVideo(false);
 
                 // In text chat microphone & sound must be disabled
                 // this.turnMic(false);
@@ -483,7 +525,14 @@ class WebchatClient extends Component {
             );
         } else {                                        // User has chosen chat mode
             return (
-                <div className={cn('modal')}>
+                <div className={cn('modal')} style={{flexDirection: 'column'}}>
+                    <p>{'Call state: ' + ((vox.currentCall) ? vox.currentCall.state() : 'there is no current call')}</p>
+                    <button onClick={() => {
+                        this.turnSound(!this.state.isSoundOn);
+                        this.turnMic(!this.state.isMicOn);
+                    }}>Sound&Mic</button>
+                    <p>{'isSoundOn: ' + this.state.isSoundOn.toString().toUpperCase() +
+                        ', isMicOn: ' + this.state.isMicOn.toString().toUpperCase()}</p>
                     <div className={cn('modal__inner')}>
                         <Chat
                             clientAppInstalled={this.props.settings.client_app_installed}
