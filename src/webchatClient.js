@@ -35,10 +35,9 @@ class WebchatClient extends Component {
             // 'invisible', 'idle', 'connectingVideo', 'video', 'connectingVoice',
             // 'voice', 'showText', 'connectingText', 'text', 'endCall', 'notAvailable'.
             chatMode: 'invisible',
-            isModeChanged: false,       // checked in componentDidUpdated()
+            isModeChanged: false,           // checked in componentDidUpdated()
             muteMicAndSnd: false,
-            isCamAndMicAllowed: false,  // indicates that camera/microphone use was allowed by user
-            isVideoDemandedFromText: false, //
+            initialTextChat: false,         // indicates that text chat was begun from idle state
             isSoundOn: true,
             isMicOn: true,
             messages: [],
@@ -109,10 +108,12 @@ class WebchatClient extends Component {
         const isDemandedModeChange = (demandedMode !== this.state.chatMode);
         if (isDemandedModeAllowable && isDemandedModeChange) {
 
-            if (!vox.currentCall) {                     // If chat has been started from idle
+            if (!vox.currentCall) {             // If chat has been started from idle
 
-                if (demandedMode !== 'text') {          // If this call is video/voice - request cam&mic access
+                if (demandedMode !== 'text') {  // If this call is video/voice - request cam&mic access
                     vox.askCamAndMic();
+                } else {                        // If this call is text - set flag of initial text chat
+                    this.setState({initialTextChat: true});
                 }
                 switch (demandedMode) {
                     case 'voice':
@@ -129,60 +130,73 @@ class WebchatClient extends Component {
 
             } else {                                    // If chat has been switched from other mode
 
-                // Video and audio sending control
-                const isVideoSending = (this.state.chatMode === 'video');
-                const isAudioSending = (this.state.chatMode !== 'text');
-                const isVideoSendingRequired = (demandedMode === 'video');
-                const isAudioSendingRequired = (demandedMode !== 'text');
+                // If current chat is text and it was started from idle state: stop this chat and start a new one
+                // (voice/video). It allows to request mic&cam access properly (before the call).
+                if (this.state.initialTextChat) {
+                    switch (demandedMode) {
+                        case 'voice':
+                            this.setState({chatMode: 'connectingVoice'});
+                            break;
+                        case 'video':
+                            this.setState({chatMode: 'connectingVideo'});
+                            break;
+                    }
+                    vox.stopCall();
 
-                // // If audio/video should not be changed, turnXxx becomes null (video or audio should not
-                // // be started if it already was started and it should not be finished if it already was finished).
-                // const turnAudio = (isAudioSending === isAudioSendingRequired) ? null : (!isAudioSending && isAudioSendingRequired);
-                // const turnVideo = (isVideoSending === isVideoSendingRequired) ? null : (!isVideoSending && isVideoSendingRequired);
+                } else {
 
-                if (isAudioSending !== isAudioSendingRequired) {
-                    console.log('sendAudio(' + (!isAudioSending && isAudioSendingRequired) + ')');
-                    this.sendAudio(!isAudioSending && isAudioSendingRequired);
+                    // Video and audio sending control
+                    const isVideoSending = (this.state.chatMode === 'video');
+                    const isAudioSending = (this.state.chatMode !== 'text');
+                    const isVideoSendingRequired = (demandedMode === 'video');
+                    const isAudioSendingRequired = (demandedMode !== 'text');
+
+                    // // If audio/video should not be changed, turnXxx becomes null (video or audio should not
+                    // // be started if it already was started and it should not be finished if it already was finished).
+                    // const turnAudio = (isAudioSending === isAudioSendingRequired) ? null : (!isAudioSending && isAudioSendingRequired);
+                    // const turnVideo = (isVideoSending === isVideoSendingRequired) ? null : (!isVideoSending && isVideoSendingRequired);
+
+                    if (isAudioSending !== isAudioSendingRequired) {
+                        console.log('sendAudio(' + (!isAudioSending && isAudioSendingRequired) + ')');
+                        this.sendAudio(!isAudioSending && isAudioSendingRequired);
+                    }
+                    if (isVideoSending !== isVideoSendingRequired) {
+                        console.log('sendVideo(' + (!isVideoSending && isVideoSendingRequired) + ')');
+                        this.sendVideo(!isVideoSending && isVideoSendingRequired);
+
+                        // Indicate if the video on remote end should be shown
+                        vox.sendMessage(JSON.stringify({
+                            'op': 'video',
+                            'state': (this.state.chatMode === 'connectingVideo')
+                        }));
+                    }
+
+                    // this.sendMedia(turnAudio, turnVideo);
+                    // switch (demandedMode) {
+                    //     case 'video':
+                    //         // this.turnSound(true);
+                    //         // this.turnMic(true);
+                    //         if (this.state.chatMode === 'text')
+                    //         this.sendMedia(true, true);
+                    //         break;
+                    //     case 'voice':
+                    //         // this.turnSound(true);
+                    //         // this.turnMic(true);
+                    //         this.sendMedia(true, false);
+                    //         break;
+                    //     case 'text':
+                    //         // this.turnSound(false);
+                    //         // this.turnMic(false);
+                    //         this.sendMedia(false, false);
+                    //         this.setState({muteMicAndSnd: true});
+                    //         break;
+                    // }
+
+                    this.setState({
+                        chatMode: demandedMode,
+                        isModeChanged: true
+                    });
                 }
-                if (isVideoSending !== isVideoSendingRequired) {
-                    console.log('sendVideo(' + (!isVideoSending && isVideoSendingRequired) + ')');
-                    this.sendVideo(!isVideoSending && isVideoSendingRequired);
-
-                    // Indicate if the video on remote end should be shown
-                    vox.sendMessage(JSON.stringify({
-                        'op': 'video',
-                        'state': (this.state.chatMode === 'connectingVideo')
-                    }));
-                }
-
-                // this.sendMedia(turnAudio, turnVideo);
-                // switch (demandedMode) {
-                //     case 'video':
-                //         // this.turnSound(true);
-                //         // this.turnMic(true);
-                //         if (this.state.chatMode === 'text')
-                //         this.sendMedia(true, true);
-                //         break;
-                //     case 'voice':
-                //         // this.turnSound(true);
-                //         // this.turnMic(true);
-                //         this.sendMedia(true, false);
-                //         break;
-                //     case 'text':
-                //         // this.turnSound(false);
-                //         // this.turnMic(false);
-                //         this.sendMedia(false, false);
-                //         this.setState({muteMicAndSnd: true});
-                //         break;
-                // }
-
-                this.setState({
-                    chatMode: demandedMode,
-                    isModeChanged: true
-                });
-
-                // If switching from text to voice/video and access request was not made yet,
-                // UI will change in onMicAccessResult() event handler.
 
             }
         }
@@ -298,9 +312,6 @@ class WebchatClient extends Component {
         console.log('<========= onMicAccessResult(): ' + e.result);
 
         if (e.result) {     // If user has allowed access to camera & microphone: begin call
-            this.setState({isCamAndMicAllowed: true});
-
-            console.log('this.state.chatMode: ' + this.state.chatMode);
 
             // Allowable chatMode values: 'connectingVoice', 'connectingVideo'.
             let demandedMode = null;
@@ -314,6 +325,7 @@ class WebchatClient extends Component {
             }
             vox.startCall(demandedMode, null, this.onCallConnected, this.onCallDisconnected,
                 this.onCallFailed, this.onMessageReceived, this.onCallUpdated);
+
         } else {            // If user has NOT allowed access to camera & microphone: return to previous mode
             console.log('ACCESS DENIED');
             this.setState({chatMode: 'idle'});
@@ -363,13 +375,29 @@ class WebchatClient extends Component {
     onCallDisconnected() {
         console.log('<========== onCallDisconnected()');
         vox.currentCall = null; // clear call instance
-        this.setState({
-            // If chat has been stopped while call connecting, keep 'idle' state,
-            // if chat was connected - go to 'endCall' screen
-            chatMode: (this.state.chatMode === 'idle') ? 'idle' : 'endCall',
-            isModeChanged: true,
-            messages: []
-        });
+
+        // If text call was stopped for starting a voice/video call
+        if (this.state.initialTextChat){
+            let demandedMode = null;
+            switch (this.state.chatMode) {
+                case 'connectingVoice':
+                    demandedMode = 'voice';
+                    break;
+                case 'connectingVideo':
+                    demandedMode = 'video';
+                    break;
+            }
+            this.startChat(demandedMode);
+            this.setState({ initialTextChat: false });  // Reset flag of initial text chat
+        } else {
+            this.setState({
+                // If chat has been stopped while call connecting, keep 'idle' state,
+                // if chat was connected - go to 'endCall' screen
+                chatMode: (this.state.chatMode === 'idle') ? 'idle' : 'endCall',
+                isModeChanged: true,
+                messages: []
+            });
+        }
         console.log('new chatMode = ' + this.state.chatMode);
         console.log('           onCallDisconnected() =========>');
     }
