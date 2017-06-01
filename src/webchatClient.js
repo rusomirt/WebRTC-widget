@@ -136,24 +136,55 @@ class WebchatClient extends Component {
                     vox.askCamAndMic();
                     this.setState({isVideoDemandedFromText: demandedMode === 'video'});
                 } else {
-                    switch (demandedMode) {
-                        case 'video':
-                            // this.turnSound(true);
-                            // this.turnMic(true);
-                            this.sendMedia(true, true);
-                            break;
-                        case 'voice':
-                            // this.turnSound(true);
-                            // this.turnMic(true);
-                            this.sendMedia(true, false);
-                            break;
-                        case 'text':
-                            // this.turnSound(false);
-                            // this.turnMic(false);
-                            this.sendMedia(false, false);
-                            this.setState({muteMicAndSnd: true});
-                            break;
+                    const isVideoSending = (this.state.chatMode === 'video');
+                    const isAudioSending = (this.state.chatMode !== 'text');
+                    const isVideoSendingRequired = (demandedMode === 'video');
+                    const isAudioSendingRequired = (demandedMode !== 'text');
+
+                    // // If audio/video should not be changed, turnXxx becomes null (video or audio should not
+                    // // be started if it already was started and it should not be finished if it already was finished).
+                    // const turnAudio = (isAudioSending === isAudioSendingRequired) ? null : (!isAudioSending && isAudioSendingRequired);
+                    // const turnVideo = (isVideoSending === isVideoSendingRequired) ? null : (!isVideoSending && isVideoSendingRequired);
+
+                    if (isAudioSending !== isAudioSendingRequired) {
+                        console.log('sendAudio(' + (!isAudioSending && isAudioSendingRequired) + ')');
+                        vox.currentCall.sendAudio(!isAudioSending && isAudioSendingRequired);
                     }
+                    if (isVideoSending !== isVideoSendingRequired) {
+                        console.log('sendVideo(' + (!isVideoSending && isVideoSendingRequired) + ')');
+                        vox.currentCall.sendVideo(!isVideoSending && isVideoSendingRequired);
+                        
+                        // Indicate if the video on remote end should be shown
+                        vox.sendMessage(JSON.stringify({
+                            'op': 'video',
+                            'state': (this.state.chatMode === 'connectingVideo')
+                        }));
+                    }
+
+                    // console.log('turnAudio: ' + turnAudio);
+                    // console.log('turnVideo: ' + turnVideo);
+                    //
+                    // this.sendMedia(turnAudio, turnVideo);
+
+                    // switch (demandedMode) {
+                    //     case 'video':
+                    //         // this.turnSound(true);
+                    //         // this.turnMic(true);
+                    //         if (this.state.chatMode === 'text')
+                    //         this.sendMedia(true, true);
+                    //         break;
+                    //     case 'voice':
+                    //         // this.turnSound(true);
+                    //         // this.turnMic(true);
+                    //         this.sendMedia(true, false);
+                    //         break;
+                    //     case 'text':
+                    //         // this.turnSound(false);
+                    //         // this.turnMic(false);
+                    //         this.sendMedia(false, false);
+                    //         this.setState({muteMicAndSnd: true});
+                    //         break;
+                    // }
 
                     this.setState({
                         chatMode: demandedMode,
@@ -350,15 +381,15 @@ class WebchatClient extends Component {
         switch (this.state.chatMode) {
             case 'connectingVoice':
                 this.setState({chatMode: 'voice'});
-                this.sendMedia(true, false);
+                this.sendAudio(true);
                 break;
             case 'connectingVideo':
                 this.setState({chatMode: 'video'});
-                this.sendMedia(true, true);
+                this.sendAudio(true);
+                this.sendVideo(true);
                 break;
             case 'connectingText':
                 this.setState({chatMode: 'text'});
-                // this.sendMedia(false, false);
                 this.turnSound(false);
                 this.setState({muteMicAndSnd: true});
                 break;
