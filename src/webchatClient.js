@@ -109,13 +109,9 @@ class WebchatClient extends Component {
         const isDemandedModeChange = (demandedMode !== this.state.chatMode);
         if (isDemandedModeAllowable && isDemandedModeChange) {
 
-            // Camera & mic access request is needed if the user launches voice/video mode
-            // and access request was not made yet:
-            const isAccessRequestNeeded = (demandedMode !== 'text') && !this.state.isCamAndMicAllowed;
-
             if (!vox.currentCall) {                     // If chat has been started from idle
 
-                if (isAccessRequestNeeded) {
+                if (demandedMode !== 'text') {          // If this call is video/voice - request cam&mic access
                     vox.askCamAndMic();
                 }
                 switch (demandedMode) {
@@ -126,72 +122,65 @@ class WebchatClient extends Component {
                         this.setState({chatMode: 'connectingVideo'});
                         break;
                     case 'text':
-                        this.setState({chatMode: 'showText'});
+                        this.setState({chatMode: 'showText'});  // Text call is not connected yet at this moment.
                         break;
                 }
                 this.setState({isModeChanged: true});
 
             } else {                                    // If chat has been switched from other mode
 
-                if (isAccessRequestNeeded) {
-                    vox.askCamAndMic();
-                    this.setState({isVideoDemandedFromText: demandedMode === 'video'});
-                } else {
-                    const isVideoSending = (this.state.chatMode === 'video');
-                    const isAudioSending = (this.state.chatMode !== 'text');
-                    const isVideoSendingRequired = (demandedMode === 'video');
-                    const isAudioSendingRequired = (demandedMode !== 'text');
+                // Video and audio sending control
+                const isVideoSending = (this.state.chatMode === 'video');
+                const isAudioSending = (this.state.chatMode !== 'text');
+                const isVideoSendingRequired = (demandedMode === 'video');
+                const isAudioSendingRequired = (demandedMode !== 'text');
 
-                    // // If audio/video should not be changed, turnXxx becomes null (video or audio should not
-                    // // be started if it already was started and it should not be finished if it already was finished).
-                    // const turnAudio = (isAudioSending === isAudioSendingRequired) ? null : (!isAudioSending && isAudioSendingRequired);
-                    // const turnVideo = (isVideoSending === isVideoSendingRequired) ? null : (!isVideoSending && isVideoSendingRequired);
+                // // If audio/video should not be changed, turnXxx becomes null (video or audio should not
+                // // be started if it already was started and it should not be finished if it already was finished).
+                // const turnAudio = (isAudioSending === isAudioSendingRequired) ? null : (!isAudioSending && isAudioSendingRequired);
+                // const turnVideo = (isVideoSending === isVideoSendingRequired) ? null : (!isVideoSending && isVideoSendingRequired);
 
-                    if (isAudioSending !== isAudioSendingRequired) {
-                        console.log('sendAudio(' + (!isAudioSending && isAudioSendingRequired) + ')');
-                        this.sendAudio(!isAudioSending && isAudioSendingRequired);
-                    }
-                    if (isVideoSending !== isVideoSendingRequired) {
-                        console.log('sendVideo(' + (!isVideoSending && isVideoSendingRequired) + ')');
-                        this.sendVideo(!isVideoSending && isVideoSendingRequired);
-                        
-                        // Indicate if the video on remote end should be shown
-                        vox.sendMessage(JSON.stringify({
-                            'op': 'video',
-                            'state': (this.state.chatMode === 'connectingVideo')
-                        }));
-                    }
-
-                    // console.log('turnAudio: ' + turnAudio);
-                    // console.log('turnVideo: ' + turnVideo);
-                    //
-                    // this.sendMedia(turnAudio, turnVideo);
-
-                    // switch (demandedMode) {
-                    //     case 'video':
-                    //         // this.turnSound(true);
-                    //         // this.turnMic(true);
-                    //         if (this.state.chatMode === 'text')
-                    //         this.sendMedia(true, true);
-                    //         break;
-                    //     case 'voice':
-                    //         // this.turnSound(true);
-                    //         // this.turnMic(true);
-                    //         this.sendMedia(true, false);
-                    //         break;
-                    //     case 'text':
-                    //         // this.turnSound(false);
-                    //         // this.turnMic(false);
-                    //         this.sendMedia(false, false);
-                    //         this.setState({muteMicAndSnd: true});
-                    //         break;
-                    // }
-
-                    this.setState({
-                        chatMode: demandedMode,
-                        isModeChanged: true
-                    });
+                if (isAudioSending !== isAudioSendingRequired) {
+                    console.log('sendAudio(' + (!isAudioSending && isAudioSendingRequired) + ')');
+                    this.sendAudio(!isAudioSending && isAudioSendingRequired);
                 }
+                if (isVideoSending !== isVideoSendingRequired) {
+                    console.log('sendVideo(' + (!isVideoSending && isVideoSendingRequired) + ')');
+                    this.sendVideo(!isVideoSending && isVideoSendingRequired);
+
+                    // Indicate if the video on remote end should be shown
+                    vox.sendMessage(JSON.stringify({
+                        'op': 'video',
+                        'state': (this.state.chatMode === 'connectingVideo')
+                    }));
+                }
+
+                // this.sendMedia(turnAudio, turnVideo);
+                // switch (demandedMode) {
+                //     case 'video':
+                //         // this.turnSound(true);
+                //         // this.turnMic(true);
+                //         if (this.state.chatMode === 'text')
+                //         this.sendMedia(true, true);
+                //         break;
+                //     case 'voice':
+                //         // this.turnSound(true);
+                //         // this.turnMic(true);
+                //         this.sendMedia(true, false);
+                //         break;
+                //     case 'text':
+                //         // this.turnSound(false);
+                //         // this.turnMic(false);
+                //         this.sendMedia(false, false);
+                //         this.setState({muteMicAndSnd: true});
+                //         break;
+                // }
+
+                this.setState({
+                    chatMode: demandedMode,
+                    isModeChanged: true
+                });
+
                 // If switching from text to voice/video and access request was not made yet,
                 // UI will change in onMicAccessResult() event handler.
 
