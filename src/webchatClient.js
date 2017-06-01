@@ -339,7 +339,13 @@ class WebchatClient extends Component {
         // console.log(document.getElementById('voximplantlocalvideo'));
         // console.log('remote video:');
         // console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());
-        //
+
+        // Indicate if the video on remote end should be shown
+        vox.sendMessage(JSON.stringify({
+            'op': 'video',
+            'state': (this.state.chatMode === 'connectingVideo')
+        }));
+
         // Change state from connecting to calling
         switch (this.state.chatMode) {
             case 'connectingVoice':
