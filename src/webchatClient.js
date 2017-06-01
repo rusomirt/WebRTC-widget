@@ -53,7 +53,8 @@ class WebchatClient extends Component {
         this.turnSound = this.turnSound.bind(this);
         this.turnMic = this.turnMic.bind(this);
         this.showVideo = this.showVideo.bind(this);
-        this.sendMedia = this.sendMedia.bind(this);
+        this.sendAudio = this.sendAudio.bind(this);
+        this.sendVideo = this.sendVideo.bind(this);
         this.stopChat = this.stopChat.bind(this);
         this.backToInitial = this.backToInitial.bind(this);
         this.phoneSentChangeMode = this.phoneSentChangeMode.bind(this);
@@ -148,11 +149,11 @@ class WebchatClient extends Component {
 
                     if (isAudioSending !== isAudioSendingRequired) {
                         console.log('sendAudio(' + (!isAudioSending && isAudioSendingRequired) + ')');
-                        vox.currentCall.sendAudio(!isAudioSending && isAudioSendingRequired);
+                        this.sendAudio(!isAudioSending && isAudioSendingRequired);
                     }
                     if (isVideoSending !== isVideoSendingRequired) {
                         console.log('sendVideo(' + (!isVideoSending && isVideoSendingRequired) + ')');
-                        vox.currentCall.sendVideo(!isVideoSending && isVideoSendingRequired);
+                        this.sendVideo(!isVideoSending && isVideoSendingRequired);
                         
                         // Indicate if the video on remote end should be shown
                         vox.sendMessage(JSON.stringify({
@@ -213,18 +214,21 @@ class WebchatClient extends Component {
         if (onOff) {
             vox.showRemoteVideo(true);
             vox.showLocalVideo(true);
-            // vox.sendVideo(true);
         } else {
             vox.showRemoteVideo(false);
             // vox.showLocalVideo(false);
-            // vox.sendVideo(false);
         }
         console.log('          showVideo(' + onOff + ') =========>');
     }
-    sendMedia(audio, video) {
-        console.log('<========= sendMedia(' + audio + ', ' + video + ')');
-        vox.currentCall.sendMedia(audio, video);
-        console.log('           sendMedia(' + audio + ', ' + video + ') =========>');
+    sendAudio(onOff) {
+        console.log('<========= sendAudio(' + onOff + ')');
+        vox.currentCall.sendAudio(onOff);
+        console.log('           sendAudio(' + onOff + ') =========>');
+    }
+    sendVideo(onOff) {
+        console.log('<========= sendVideo(' + onOff + ')');
+        vox.currentCall.sendVideo(onOff);
+        console.log('           sendVideo(' + onOff + ') =========>');
     }
     stopChat() {
         console.log('<========= stopChat() begin');
