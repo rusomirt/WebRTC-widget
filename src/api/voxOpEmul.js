@@ -207,16 +207,20 @@ function onMessageReceived(e) {
     console.log('<<<<<<<<<< onMessageReceived');
     console.log('e.text: ' + e.text);
 
-    const parsedMessage = JSON.parse(e.text);
-    if (parsedMessage.op === 'call-request') {
-        const msg = {
-            "op": 'call-response',
-            "id": parsedMessage.id,
-            "response": true
-        };
-        console.log('Response message:');
-        console.log(JSON.stringify(msg));
-        sendMessage(JSON.stringify(msg));
+    // If this is a service JSON message (not for user)
+    if (e.text.charAt(0) === '{' && e.text.charAt(e.text.length - 1) === '}') {
+        const parsedMessage = JSON.parse(e.text);
+
+        if (parsedMessage.op === 'call-request') {
+            const msg = {
+                "op": 'call-response',
+                "id": parsedMessage.id,
+                "response": true
+            };
+            console.log('Response message:');
+            console.log(JSON.stringify(msg));
+            sendMessage(JSON.stringify(msg));
+        }
 
     } else {
         sendMessage(e.text);
