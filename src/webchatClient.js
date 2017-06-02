@@ -76,7 +76,7 @@ class WebchatClient extends Component {
         this.startTimer = this.startTimer.bind(this);
         this.tickTimer = this.tickTimer.bind(this);
         this.stopTimer = this.stopTimer.bind(this);
-        this.formatTimer = this.formatTimer.bind(this);
+        this.getTimerString = this.getTimerString.bind(this);
 
         this.onAuthResult = this.onAuthResult.bind(this);
         this.onMicAccessResult = this.onMicAccessResult.bind(this);
@@ -342,7 +342,7 @@ class WebchatClient extends Component {
     }
     tickTimer() {
         // console.log('<========= tickTimer()');
-        // console.log('timer: ' + this.formatTimer());
+        // console.log('timer: ' + this.getTimerString());
         this.setState(
             prevState => ({
                 callTime: {
@@ -358,7 +358,7 @@ class WebchatClient extends Component {
         clearInterval(this.intervalID);
         // console.log('           stopTimer() =========>');
     }
-    formatTimer() {
+    getTimerString() {
         function format(n){
             return (n > 9) ? ("" + n) : ('0' + n);
         }
@@ -682,7 +682,7 @@ class WebchatClient extends Component {
                         <Chat
                             clientAppInstalled={this.props.settings.client_app_installed}
                             chatMode={this.state.chatMode}
-                            timerValue={this.formatTimer()}
+                            timerValue={this.getTimerString()}
                             stopChat={this.stopChat}
                             switchMode={this.startChat}
                             switchFromText={this.state.switchFromText}
