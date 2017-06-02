@@ -724,6 +724,7 @@ class WebchatClient extends Component {
                             switchFromText={this.state.switchFromText}
                             switchFromTextDeclined={this.state.switchFromTextDeclined}
                             switchFromTextRequested={this.state.switchFromTextRequested}
+                            requestedMode={this.state.demandedModeFromText}
                             acceptIncomingCall={this.acceptIncomingCall}
                             backToInitial={this.backToInitial}
                             onSendMessage={this.onSendMessage}
@@ -806,7 +807,7 @@ class SelectMode extends Component {
 
 // Chat block
 // Props: clientAppInstalled, chatMode, timerValue, stopChat(), switchMode(), switchFromText, switchFromTextDeclined,
-// switchFromTextRequested, acceptIncomingCall(), backToInitial(), onSendMessage(), messages, phoneSentDelay,
+// switchFromTextRequested, requestedMode, acceptIncomingCall(), backToInitial(), onSendMessage(), messages, phoneSentDelay,
 // phoneSentChangeMode(), isSoundOn, turnSound(), isMicOn, turnMic().
 const Chat = (props) => {
 
@@ -980,7 +981,7 @@ const Chat = (props) => {
                 modalInChat =
                     <div className={cn('chat-modal')}>
                         <div className={cn('chat-modal__inner')}>
-                            <p className={cn('chat-modal__txt')}>Luke's wants to initiate a voice/video call</p>
+                            <p className={cn('chat-modal__txt')}>Luke's wants to initiate a {props.requestedMode} call</p>
                             <button onClick={() => props.acceptIncomingCall(true)}>Accept</button>
                             <button onClick={() => props.acceptIncomingCall(false)}>Decline</button>
                         </div>
