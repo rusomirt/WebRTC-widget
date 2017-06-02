@@ -207,12 +207,6 @@ class WebchatClient extends Component {
                     if (isVideoSending !== isVideoSendingRequired) {
                         console.log('sendVideo(' + (!isVideoSending && isVideoSendingRequired) + ')');
                         this.sendVideo(!isVideoSending && isVideoSendingRequired);
-
-                        // Indicate if the video on remote end should be shown
-                        vox.sendMessage(JSON.stringify({
-                            'op': 'video',
-                            'state': (this.state.chatMode === 'connectingVideo')
-                        }));
                     }
 
                     // this.sendMedia(turnAudio, turnVideo);
@@ -275,6 +269,12 @@ class WebchatClient extends Component {
     sendVideo(onOff) {
         console.log('<========= sendVideo(' + onOff + ')');
         vox.currentCall.sendVideo(onOff);
+
+        // Indicate if the video on remote end should be shown
+        vox.sendMessage(JSON.stringify({
+            'op': 'video',
+            'state': onOff
+        }));
         console.log('           sendVideo(' + onOff + ') =========>');
     }
     stopChat() {
