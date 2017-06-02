@@ -84,7 +84,7 @@ export function askCamAndMic() {
     voxAPI.attachRecordingDevice().then();
 }
 // Begin video or voice call
-export function startCall(demandedMode, firstMsg, onCallConnected,
+export function startCall(demandedMode, callingTones, firstMsg, onCallConnected,
                           onCallDisconnected, onCallFailed, onMessageReceived, onCallUpdated) {
     console.log('<<<<<<<<<< startCall()');
 
@@ -100,8 +100,8 @@ export function startCall(demandedMode, firstMsg, onCallConnected,
     // Initiate a call
     currentCall = voxAPI.call(dest_username, useVideo, 'customData', extraHeaders);
 
-    // Calling tones present when voice/video mode is connecting only
-    if (demandedMode !== 'text') {
+    // Calling tones
+    if (callingTones) {
         currentCall.addEventListener(VoxImplant.CallEvents.ProgressToneStart, () => {
             voxAPI.playProgressTone();
         });

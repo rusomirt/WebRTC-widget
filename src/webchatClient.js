@@ -340,7 +340,9 @@ class WebchatClient extends Component {
                     demandedMode = 'video';
                     break;
             }
-            vox.startCall(demandedMode, null, this.onCallConnected, this.onCallDisconnected,
+            let callingTones = (this.state.chatMode !== 'restartFromText');
+            console.log('Starting a call with callingTones = ' + callingTones);
+            vox.startCall(demandedMode, callingTones, null, this.onCallConnected, this.onCallDisconnected,
                 this.onCallFailed, this.onMessageReceived, this.onCallUpdated);
 
         } else {            // If user has NOT allowed access to camera & microphone: return to previous mode
@@ -398,7 +400,7 @@ class WebchatClient extends Component {
             // Reset flags of initial text chat
             this.startChat(this.state.demandedModeFromText);
             this.setState({
-                initialTextChat: false,
+                // initialTextChat: false,
                 demandedModeFromText: null
             });
         } else {
@@ -454,8 +456,8 @@ class WebchatClient extends Component {
         // If this is not first message (text call is already connected): send it in call message.
         if (this.state.chatMode === 'showText') {
             this.setState({chatMode: 'connectingText'});
-            vox.startCall('text', messageText, this.onCallConnected, this.onCallDisconnected,
-                                               this.onCallFailed, this.onMessageReceived, this.onCallUpdated);
+            vox.startCall('text', false, messageText, this.onCallConnected, this.onCallDisconnected,
+                this.onCallFailed, this.onMessageReceived, this.onCallUpdated);
         } else {
             vox.sendMessage(messageText);
         }
