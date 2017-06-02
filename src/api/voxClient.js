@@ -84,7 +84,7 @@ export function askCamAndMic() {
     voxAPI.attachRecordingDevice().then();
 }
 // Begin video or voice call
-export function startCall(demandedMode, callingTones, firstMsg, onCallConnected,
+export function startCall(demandedMode, requestId, callingTones, firstMsg, onCallConnected,
                           onCallDisconnected, onCallFailed, onMessageReceived, onCallUpdated) {
     console.log('<<<<<<<<<< startCall()');
 
@@ -92,7 +92,10 @@ export function startCall(demandedMode, callingTones, firstMsg, onCallConnected,
     const useVideo = (demandedMode === 'video');
     console.log('useVideo = ' + useVideo);
     // Other side distinguishes call type by 'X-CallMode' header
-    let extraHeaders = {'X-CallMode': demandedMode};
+    let extraHeaders = {
+        'X-CallMode': demandedMode,
+        'X-RequestID': requestId
+    };
     // First message of text chat is sent in 'X-FirstMsg' header
     if (demandedMode === 'text') {
         extraHeaders['X-FirstMsg'] = firstMsg;
