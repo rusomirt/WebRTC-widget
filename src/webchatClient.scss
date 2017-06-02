@@ -346,6 +346,32 @@ $chat-video-out-right: 10px;
   }
 }
 
+.chat-modal {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, $modal-bg-transparency);;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .chat-modal__inner {
+    background: white;
+    padding: 10px;
+
+    .chat-modal__txt {
+      font-family: 'Roboto Medium', sans-serif;
+      font-size: 16px;
+      text-align: center;
+    }
+  }
+}
+
 $chat-btns-group-mx: 3%;
 $temp1: 100% - $chat-btns-group-mx*4;
 

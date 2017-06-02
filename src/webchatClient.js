@@ -32,12 +32,17 @@ class WebchatClient extends Component {
         super();
         this.state = {
             // Allowed chatMode values:
-            // 'invisible', 'idle', 'connectingVideo', 'video', 'connectingVoice',
-            // 'voice', 'showText', 'connectingText', 'text', 'endCall', 'notAvailable'.
+            // 'invisible', 'idle', 'connectingVideo', 'video', 'connectingVoice', 'voice',
+            // 'showText', 'connectingText', 'text', 'restartFromText', 'endCall', 'notAvailable'.
             chatMode: 'invisible',
             isModeChanged: false,           // checked in componentDidUpdated()
+
+            isCamAndMicAllowed: false,      // indicates that cam&mic access was allowed by user
             muteMicAndSnd: false,
+
             initialTextChat: false,         // indicates that text chat was begun from idle state
+            demandedModeFromText: null,
+
             isSoundOn: true,
             isMicOn: true,
             messages: [],
@@ -103,44 +108,55 @@ class WebchatClient extends Component {
         console.log('<========= startChat(' + demandedMode + ')');
 
         // Allowed modes are 'voice', 'video' and 'text'
-        const isDemandedModeAllowable = (demandedMode === 'voice' || demandedMode === 'video' || demandedMode === 'text');
+        const isDemandedModeAllowable =
+            (demandedMode === 'voice' || demandedMode === 'video' || demandedMode === 'text');
         // Demanded mode must differ from current mode
         const isDemandedModeChange = (demandedMode !== this.state.chatMode);
         if (isDemandedModeAllowable && isDemandedModeChange) {
 
-            if (!vox.currentCall) {             // If chat has been started from idle
+            if (!vox.currentCall) {             // if chat has been started from idle
 
-                if (demandedMode !== 'text') {  // If this call is video/voice - request cam&mic access
-                    vox.askCamAndMic();
-                } else {                        // If this call is text - set flag of initial text chat
-                    this.setState({initialTextChat: true});
-                }
                 switch (demandedMode) {
                     case 'voice':
-                        this.setState({chatMode: 'connectingVoice'});
+                        if (this.state.chatMode !== 'restartFromText') {
+                            this.setState({
+                                chatMode: 'connectingVoice',
+                                isModeChanged: true
+                            });
+                        }
+                        if (!this.state.isCamAndMicAllowed) {   // if cam&mic access was not yet allowed - ask the user about it
+                            vox.askCamAndMic();
+                        }
                         break;
                     case 'video':
-                        this.setState({chatMode: 'connectingVideo'});
+                        if (this.state.chatMode !== 'restartFromText') {
+                            this.setState({
+                                chatMode: 'connectingVideo',
+                                isModeChanged: true
+                            });
+                        }
+                        if (!this.state.isCamAndMicAllowed) {   // if cam&mic access was not yet allowed - ask the user about it
+                            vox.askCamAndMic();
+                        }
                         break;
                     case 'text':
-                        this.setState({chatMode: 'showText'});  // Text call is not connected yet at this moment.
+                        this.setState({
+                            chatMode: 'showText',       // text call is not being connected yet at this moment.
+                            initialTextChat: true,      // set flag of initial text chat
+                            isModeChanged: true
+                        });
                         break;
                 }
-                this.setState({isModeChanged: true});
 
             } else {                                    // If chat has been switched from other mode
 
                 // If current chat is text and it was started from idle state: stop this chat and start a new one
                 // (voice/video). It allows to request mic&cam access properly (before the call).
                 if (this.state.initialTextChat) {
-                    switch (demandedMode) {
-                        case 'voice':
-                            this.setState({chatMode: 'connectingVoice'});
-                            break;
-                        case 'video':
-                            this.setState({chatMode: 'connectingVideo'});
-                            break;
-                    }
+                    this.setState({
+                        chatMode: 'restartFromText',
+                        demandedModeFromText: demandedMode
+                    });
                     vox.stopCall();
 
                 } else {
@@ -312,6 +328,7 @@ class WebchatClient extends Component {
         console.log('<========= onMicAccessResult(): ' + e.result);
 
         if (e.result) {     // If user has allowed access to camera & microphone: begin call
+            this.setState({isCamAndMicAllowed: true});
 
             // Allowable chatMode values: 'connectingVoice', 'connectingVideo'.
             let demandedMode = null;
@@ -378,17 +395,12 @@ class WebchatClient extends Component {
 
         // If text call was stopped for starting a voice/video call
         if (this.state.initialTextChat){
-            let demandedMode = null;
-            switch (this.state.chatMode) {
-                case 'connectingVoice':
-                    demandedMode = 'voice';
-                    break;
-                case 'connectingVideo':
-                    demandedMode = 'video';
-                    break;
-            }
-            this.startChat(demandedMode);
-            this.setState({ initialTextChat: false });  // Reset flag of initial text chat
+            // Reset flags of initial text chat
+            this.startChat(this.state.demandedModeFromText);
+            this.setState({
+                initialTextChat: false,
+                demandedModeFromText: null
+            });
         } else {
             this.setState({
                 // If chat has been stopped while call connecting, keep 'idle' state,
@@ -648,9 +660,11 @@ class SelectMode extends Component {
 //        phoneSentDelay, phoneSentChangeMode(), isSoundOn, turnSound(), isMicOn, turnMic().
 const Chat = (props) => {
 
+    let restartFromText = null;
     let chatInfo = null;
     let videoContainer = null;
-    let messenger= null;
+    let messenger = null;
+
     switch (props.chatMode) {
         case 'connectingVoice': chatInfo =
             <div className={cn('chat__info', 'chat__info--bordered')}>
@@ -808,6 +822,38 @@ const Chat = (props) => {
                     <div id='video-out' className={cn('chat__video-out')}></div>
                 </div>;
             break;
+        case 'restartFromText':
+            restartFromText =
+                <div className={cn('chat-modal')}>
+                    <div className={cn('chat-modal__inner')}>
+                        <ConnectingAnimation />
+                        <p className={cn('chat-modal__txt')}>Please Wait...</p>
+                    </div>
+                </div>;
+            chatInfo =
+                <div className={cn('chat__info', 'chat__info--bordered', 'chat__info--short')}>
+                    <img className={cn('chat__logo')} src={lukesLogo}/>
+                    <div className={cn('chat__status')}>
+                        <div className={cn('chat__status-txt-wrapper')}>
+                            <span className={cn('chat__status-hdr')}>
+                                <span className={cn('fa fa-comments', 'icon', 'icon--color', 'icon--xs', 'icon--shifted')}></span>
+                                Chat connected
+                            </span>
+                        </div>
+                        {/* Hidden timer is needed to continue time count in text mode */}
+                        <div className={cn('chat__timer-wrapper', 'chat__timer-wrapper--hidden')}>
+                            <Timer/>
+                        </div>
+                    </div>
+                </div>;
+            messenger = <Messenger onSendMessage={props.onSendMessage} messages={props.messages} />;
+            // Hidden videoContainer is necessary for switching to video mode
+            videoContainer =
+                <div className={cn('chat__video-container', 'chat__video-container--hidden')}>
+                    <div id='video-in' className={cn('chat__video-in')}></div>
+                    <div id='video-out' className={cn('chat__video-out')}></div>
+                </div>;
+            break;
         case 'endCall':
             chatInfo =
                 <div className={cn('chat__info', 'chat__info--short')}>
@@ -912,6 +958,7 @@ const Chat = (props) => {
 
     return (
         <div className={cn('chat')}>
+            {restartFromText}
             {chatInfo}
             {videoContainer}
             {messenger}
@@ -1287,6 +1334,7 @@ const ChatPanel = (props) => {
             break;
         case 'showText':
         case 'text':
+        case 'restartFromText':
             leftGroup =
                 <div className={cn('chat__btns-group')}>
                     {videoBtn}
@@ -1298,7 +1346,8 @@ const ChatPanel = (props) => {
             break;
     }
 
-    const isChatPanelLow = (props.chatMode === 'text') || (props.chatMode === 'showText');
+    const isChatPanelLow = (props.chatMode === 'text') || 
+        (props.chatMode === 'showText') || (props.chatMode === 'restartFromText');
 
     return (
         <div className={cn('chat__panel', {'chat__panel--low': isChatPanelLow})}>
