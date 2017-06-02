@@ -48,6 +48,7 @@ class WebchatClient extends Component {
             requestId: null,
             switchFromText: false,
             switchFromTextDeclined: false,
+            switchFromTextRequested: false,
 
             callTime: {
               min: 0,
@@ -70,6 +71,7 @@ class WebchatClient extends Component {
         this.sendAudio = this.sendAudio.bind(this);
         this.sendVideo = this.sendVideo.bind(this);
         this.stopChat = this.stopChat.bind(this);
+        this.acceptIncomingCall = this.acceptIncomingCall.bind(this);
         this.backToInitial = this.backToInitial.bind(this);
         this.phoneSentChangeMode = this.phoneSentChangeMode.bind(this);
 
@@ -295,6 +297,30 @@ class WebchatClient extends Component {
 
         console.log('new chatMode = ' + this.state.chatMode);
         console.log('           stopChat() end =========>');
+    }
+    acceptIncomingCall(answer) {
+        console.log('<========= acceptIncomingCall(' + answer + ')');
+        if (answer) {
+            this.setState({
+                switchFromTextRequested: false,
+                switchFromText: true
+            });
+            this.startChat(this.state.demandedModeFromText);
+        } else {
+            this.setState({
+                switchFromTextRequested: false,
+                requestId: null,
+                demandedModeFromText: null
+            });
+        }
+
+        const msg = {
+            op: 'call-response',
+            id: this.state.requestId,
+            response: answer
+        };
+        vox.sendMessage(JSON.stringify(msg));
+        console.log('           acceptIncomingCall(' + answer + ') =========>');
     }
     backToInitial() {
         console.log('<========= backToInitial() begin');
@@ -574,6 +600,16 @@ class WebchatClient extends Component {
                 }
             }
 
+            // Request for call mode switch (text -> voice/video)
+            if (parsedMessage.op === 'call-request') {
+                console.log('Luke\'s requests switch to ' + parsedMessage.type);
+                this.setState({
+                    switchFromTextRequested: true,
+                    requestId: parsedMessage.id,
+                    demandedModeFromText: parsedMessage.type
+                });
+            }
+
         // If this is a message for user
         } else {
 
@@ -687,6 +723,8 @@ class WebchatClient extends Component {
                             switchMode={this.startChat}
                             switchFromText={this.state.switchFromText}
                             switchFromTextDeclined={this.state.switchFromTextDeclined}
+                            switchFromTextRequested={this.state.switchFromTextRequested}
+                            acceptIncomingCall={this.acceptIncomingCall}
                             backToInitial={this.backToInitial}
                             onSendMessage={this.onSendMessage}
                             messages={this.state.messages}
@@ -768,8 +806,8 @@ class SelectMode extends Component {
 
 // Chat block
 // Props: clientAppInstalled, chatMode, timerValue, stopChat(), switchMode(), switchFromText, switchFromTextDeclined,
-// backToInitial(), onSendMessage(), messages, phoneSentDelay, phoneSentChangeMode(),
-// isSoundOn, turnSound(), isMicOn, turnMic().
+// switchFromTextRequested, acceptIncomingCall(), backToInitial(), onSendMessage(), messages, phoneSentDelay,
+// phoneSentChangeMode(), isSoundOn, turnSound(), isMicOn, turnMic().
 const Chat = (props) => {
 
     let modalInChat = null;
@@ -935,6 +973,16 @@ const Chat = (props) => {
                         <div className={cn('chat-modal__inner')}>
                             <ConnectingAnimation />
                             <p className={cn('chat-modal__txt')}>Please Wait...</p>
+                        </div>
+                    </div>;
+            }
+            if (props.switchFromTextRequested) {
+                modalInChat =
+                    <div className={cn('chat-modal')}>
+                        <div className={cn('chat-modal__inner')}>
+                            <p className={cn('chat-modal__txt')}>Luke's wants to initiate a voice/video call</p>
+                            <button onClick={() => props.acceptIncomingCall(true)}>Accept</button>
+                            <button onClick={() => props.acceptIncomingCall(false)}>Decline</button>
                         </div>
                     </div>;
             }
