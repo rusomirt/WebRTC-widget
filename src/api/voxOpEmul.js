@@ -169,8 +169,6 @@ function onCallConnected(e) {
         console.log('Sending 1st message back');
         sendMessage(e.call._headers['X-FirstMsg']);
     }
-    // TODO: Check if it's a video or voice call
-
     // voxAPI.sendVideo(true);
 
     console.log('          onCallConnected() >>>>>>>>>>');
@@ -207,8 +205,21 @@ function onCallFailed(e) {
 //
 function onMessageReceived(e) {
     console.log('<<<<<<<<<< onMessageReceived');
-    console.log(e);
-    console.log(e.text);
-    sendMessage(e.text);
+    console.log('e.text: ' + e.text);
+
+    const parsedMessage = JSON.parse(e.text);
+    if (parsedMessage.op === 'call-request') {
+        const msg = {
+            "op": 'call-response',
+            "id": parsedMessage.id,
+            "response": true
+        };
+        console.log('Response message:');
+        console.log(JSON.stringify(msg));
+        sendMessage(JSON.stringify(msg));
+
+    } else {
+        sendMessage(e.text);
+    }
     console.log('           onMessageReceived >>>>>>>>>>');
 }
