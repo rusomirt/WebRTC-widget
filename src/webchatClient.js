@@ -36,7 +36,7 @@ class WebchatClient extends Component {
         this.state = {
             // Allowed chatMode values:
             // 'invisible', 'idle', 'connectingVideo', 'video', 'connectingVoice', 'voice',
-            // 'showText', 'connectingText', 'text', 'restartFromText', 'endCall', 'notAvailable'.
+            // 'showText', 'connectingText', 'text', 'restartFromText', 'declinedFromText', 'endCall', 'notAvailable'.
             chatMode: 'invisible',
             isModeChanged: false,           // checked in componentDidUpdated()
 
@@ -162,6 +162,7 @@ class WebchatClient extends Component {
 
                     const requestId = uuid();
                     this.setState({
+                        chatMode: 'restartFromText',
                         requestId: requestId,
                         demandedModeFromText: demandedMode
                     });
@@ -497,14 +498,20 @@ class WebchatClient extends Component {
         console.log('e.text: ' + e.text);
 
         const parsedMessage = JSON.parse(e.text);
-        if (parsedMessage.op === 'call-response') {
-        // if (parsedMessage.op === 'call-request') {
 
-            console.log('this.state.demandedModeFromText = ' + this.state.demandedModeFromText);
-            this.setState({
-                chatMode: 'restartFromText',
-            });
-            vox.stopCall();
+        // If this is response message to call mode switch request (text -> voice/video)
+        if (parsedMessage.op === 'call-response') {
+
+            if (parsedMessage.response === true) {  // the other side accepted mode switching from text to voice/video
+                console.log('this.state.demandedModeFromText = ' + this.state.demandedModeFromText);
+                vox.stopCall();
+            } else {
+                this.setState({                     // the other side declined mode switching from text to voice/video
+                    chatMode: 'declinedFromText',
+                    demandedModeFromText: null,
+                    requestId: null
+                });
+            }
 
         } else {
 
