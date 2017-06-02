@@ -384,6 +384,18 @@ class WebchatClient extends Component {
                 this.turnSound(false);
                 this.setState({muteMicAndSnd: true});
                 break;
+            case 'restartFromText':
+                this.setState({chatMode: this.state.demandedModeFromText});
+                this.sendAudio(true);
+                if (this.state.demandedModeFromText === 'video') {
+                    this.sendVideo(true);
+                }
+                // Reset flags of initial text mode
+                this.setState({
+                    initialTextChat: false,
+                    demandedModeFromText: null
+                });
+                break;
         }
         this.setState({isModeChanged: true});
 
@@ -397,12 +409,7 @@ class WebchatClient extends Component {
 
         // If text call was stopped for starting a voice/video call
         if (this.state.initialTextChat){
-            // Reset flags of initial text chat
             this.startChat(this.state.demandedModeFromText);
-            this.setState({
-                // initialTextChat: false,
-                demandedModeFromText: null
-            });
         } else {
             this.setState({
                 // If chat has been stopped while call connecting, keep 'idle' state,
