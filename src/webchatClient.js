@@ -11,6 +11,9 @@ import * as vox from 'api/voxClient';
 // Working with AJAX
 import axios from 'axios';
 
+// UUID generation
+import uuid from 'uuid/v4';
+
 // Stylesheets for component
 import styles from './webchatClient.scss';
 
@@ -42,6 +45,7 @@ class WebchatClient extends Component {
 
             initialTextChat: false,         // indicates that text chat was begun from idle state
             demandedModeFromText: null,
+            requestId: null,
 
             isSoundOn: true,
             isMicOn: true,
@@ -153,11 +157,21 @@ class WebchatClient extends Component {
                 // If current chat is text and it was started from idle state: stop this chat and start a new one
                 // (voice/video). It allows to request mic&cam access properly (before the call).
                 if (this.state.initialTextChat) {
+
+                    console.log('SWITCHING FROM INITIAL TEXT MODE. SEND REQUEST');
+
+                    const requestId = uuid();
                     this.setState({
-                        chatMode: 'restartFromText',
+                        requestId: requestId,
                         demandedModeFromText: demandedMode
                     });
-                    vox.stopCall();
+                    console.log('requestId = ' + requestId);
+                    const msg = {"op": "call-request",
+                                 "id": requestId,
+                                 "type": demandedMode};
+                    console.log('Request call message:');
+                    console.log(JSON.stringify(msg));
+                    vox.sendMessage(JSON.stringify(msg));
 
                 } else {
 
@@ -330,7 +344,7 @@ class WebchatClient extends Component {
         if (e.result) {     // If user has allowed access to camera & microphone: begin call
             this.setState({isCamAndMicAllowed: true});
 
-            // Allowable chatMode values: 'connectingVoice', 'connectingVideo'.
+            // Allowable chatMode values: 'connectingVoice', 'connectingVideo', 'restartFromText'.
             let demandedMode = null;
             switch (this.state.chatMode) {
                 case 'connectingVoice':
@@ -338,6 +352,9 @@ class WebchatClient extends Component {
                     break;
                 case 'connectingVideo':
                     demandedMode = 'video';
+                    break;
+                case 'restartFromText':
+                    demandedMode = this.state.demandedModeFromText;
                     break;
             }
             let callingTones = (this.state.chatMode !== 'restartFromText');
@@ -476,19 +493,32 @@ class WebchatClient extends Component {
         this.setState({ messages });
     }
     onMessageReceived(e) {
-        // console.log('<========= onMessageReceived');
-        // console.log('e.text: ' + e.text);
+        console.log('<========= onMessageReceived');
+        console.log('e.text: ' + e.text);
 
-        const message = {
-            fromMe: false,
-            text: e.text,
-            timeStamp: this.getCurrentTimeString()
-        };
-        this.addMessageToList(message);
+        const parsedMessage = JSON.parse(e.text);
+        if (parsedMessage.op === 'call-response') {
+        // if (parsedMessage.op === 'call-request') {
+
+            console.log('this.state.demandedModeFromText = ' + this.state.demandedModeFromText);
+            this.setState({
+                chatMode: 'restartFromText',
+            });
+            vox.stopCall();
+
+        } else {
+
+            const message = {
+                fromMe: false,
+                text: e.text,
+                timeStamp: this.getCurrentTimeString()
+            };
+            this.addMessageToList(message);
+        }
 
         // console.log('this.state.messages:');
         // console.log(this.state.messages);
-        // console.log('           onMessageReceived =========>');
+        console.log('           onMessageReceived =========>');
     }
     // Get current timestamp in format (h)h:mm + am/pm
     getCurrentTimeString() {
