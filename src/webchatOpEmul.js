@@ -1,4 +1,5 @@
 import {h, render, Component} from 'preact';
+import uuid from 'uuid/v4';
 import * as vox from 'api/voxOpEmul';
 
 class WebchatOpEmul extends Component {
@@ -7,6 +8,7 @@ class WebchatOpEmul extends Component {
         // This binding is necessary to make `this` work in the callback
         this.getHashParams = this.getHashParams.bind(this);
         this.stopChat = this.stopChat.bind(this);
+        this.switchFromTextRequest = this.switchFromTextRequest.bind(this);
     }
 
     componentDidMount() {
@@ -44,13 +46,29 @@ class WebchatOpEmul extends Component {
         return hashParams;
     }
 
+    switchFromTextRequest(demandedMode) {
+        console.log('SWITCHING FROM INITIAL TEXT MODE. SEND REQUEST');
+
+        const requestId = uuid();
+        console.log('requestId = ' + requestId);
+        const msg = {"op": "call-request",
+            "id": requestId,
+            "type": demandedMode};
+        console.log('Request call message:');
+        console.log(JSON.stringify(msg));
+        vox.sendMessage(JSON.stringify(msg));
+    }
     stopChat() {
         vox.stopCall();
     }
 
     render(props, state) {
         return (
-            <button onClick={this.stopChat}>CANCEL</button>
+            <div>
+                <button onClick={this.stopChat}>CANCEL</button>
+                <button onClick={() => this.switchFromTextRequest('video')}>Switch from initial text to video</button>
+                <button onClick={() => this.switchFromTextRequest('voice')}>Switch from initial text to voice</button>
+            </div>
         )
     }
 }

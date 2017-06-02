@@ -74,7 +74,7 @@ export function stopCall() {
 }
 
 //
-function sendMessage(text) {
+export function sendMessage(text) {
     currentCall.sendMessage(text);
 }
 
