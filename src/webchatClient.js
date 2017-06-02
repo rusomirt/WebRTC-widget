@@ -49,6 +49,10 @@ class WebchatClient extends Component {
             switchFromText: false,
             switchFromTextDeclined: false,
 
+            callTime: {
+              min: 0,
+              sec: 0
+            },
             isSoundOn: true,
             isMicOn: true,
             messages: [],
@@ -68,6 +72,11 @@ class WebchatClient extends Component {
         this.stopChat = this.stopChat.bind(this);
         this.backToInitial = this.backToInitial.bind(this);
         this.phoneSentChangeMode = this.phoneSentChangeMode.bind(this);
+
+        this.startTimer = this.startTimer.bind(this);
+        this.tickTimer = this.tickTimer.bind(this);
+        this.stopTimer = this.stopTimer.bind(this);
+        this.formatTimer = this.formatTimer.bind(this);
 
         this.onAuthResult = this.onAuthResult.bind(this);
         this.onMicAccessResult = this.onMicAccessResult.bind(this);
@@ -323,6 +332,39 @@ class WebchatClient extends Component {
         console.log('           phoneSentChangeMode() =========>');
     }
 
+    // Timer functions
+
+    startTimer() {
+        // console.log('<========= startTimer()');
+        // Ticks every second
+        this.intervalID = setInterval(this.tickTimer, 1000);
+        // console.log('           startTimer() =========>');
+    }
+    tickTimer() {
+        // console.log('<========= tickTimer()');
+        // console.log('timer: ' + this.formatTimer());
+        this.setState(
+            prevState => ({
+                callTime: {
+                    sec: (prevState.callTime.sec < 59) ? (prevState.callTime.sec + 1) : 0,
+                    min: (prevState.callTime.sec < 59) ? prevState.callTime.min : (prevState.callTime.min + 1)
+                }
+            })
+        );
+        // console.log('           tickTimer() =========>');
+    }
+    stopTimer() {
+        // console.log('<========= stopTimer()');
+        clearInterval(this.intervalID);
+        // console.log('           stopTimer() =========>');
+    }
+    formatTimer() {
+        function format(n){
+            return (n > 9) ? ("" + n) : ('0' + n);
+        }
+        return format(this.state.callTime.min) + ':' + format(this.state.callTime.sec);
+    }
+
     // VoxImplant events handlers
 
     // When user has been logged in
@@ -394,16 +436,19 @@ class WebchatClient extends Component {
             case 'connectingVoice':
                 this.setState({chatMode: 'voice'});
                 this.sendAudio(true);
+                this.startTimer();
                 break;
             case 'connectingVideo':
                 this.setState({chatMode: 'video'});
                 this.sendAudio(true);
                 this.sendVideo(true);
+                this.startTimer();
                 break;
             case 'connectingText':
                 this.setState({chatMode: 'text'});
                 this.turnSound(false);
                 this.setState({muteMicAndSnd: true});
+                this.startTimer();
                 break;
             case 'text':
                 this.setState({chatMode: this.state.demandedModeFromText});
@@ -439,6 +484,7 @@ class WebchatClient extends Component {
                 isModeChanged: true,
                 messages: []
             });
+            this.stopTimer();
         }
         console.log('new chatMode = ' + this.state.chatMode);
         console.log('           onCallDisconnected() =========>');
@@ -636,6 +682,7 @@ class WebchatClient extends Component {
                         <Chat
                             clientAppInstalled={this.props.settings.client_app_installed}
                             chatMode={this.state.chatMode}
+                            timerValue={this.formatTimer()}
                             stopChat={this.stopChat}
                             switchMode={this.startChat}
                             switchFromText={this.state.switchFromText}
@@ -720,7 +767,7 @@ class SelectMode extends Component {
 }
 
 // Chat block
-// Props: clientAppInstalled, chatMode, stopChat(), switchMode(), switchFromText, switchFromTextDeclined,
+// Props: clientAppInstalled, chatMode, timerValue, stopChat(), switchMode(), switchFromText, switchFromTextDeclined,
 // backToInitial(), onSendMessage(), messages, phoneSentDelay, phoneSentChangeMode(),
 // isSoundOn, turnSound(), isMicOn, turnMic().
 const Chat = (props) => {
@@ -729,6 +776,13 @@ const Chat = (props) => {
     let chatInfo = null;
     let videoContainer = null;
     let messenger = null;
+
+    const timer =
+        <div className={cn('chat__timer-wrapper')}>
+            <span className={cn('timer')}>
+                {props.timerValue}
+            </span>
+        </div>;
 
     switch (props.chatMode) {
         case 'connectingVoice': chatInfo =
@@ -797,9 +851,7 @@ const Chat = (props) => {
                             Voice call connected
                         </span>
                     </div>
-                    <div className={cn('chat__timer-wrapper')}>
-                        <Timer/>
-                    </div>
+                    {timer}
                 </div>
                 <img className={cn('chat__logo')} src={lukesLogo}/>
                 <div className={cn('chat__tips')}>
@@ -826,9 +878,7 @@ const Chat = (props) => {
                                 Video call connected
                             </span>
                         </div>
-                        <div className={cn('chat__timer-wrapper')}>
-                            <Timer />
-                        </div>
+                        {timer}
                     </div>
                 </div>;
             videoContainer =
@@ -847,10 +897,6 @@ const Chat = (props) => {
                                 <span className={cn('fa fa-comments', 'icon', 'icon--color', 'icon--xs', 'icon--shifted')}></span>
                                 Text chat
                             </span>
-                        </div>
-                        {/* Hidden timer is needed to continue time count in text mode */}
-                        <div className={cn('chat__timer-wrapper', 'chat__timer-wrapper--hidden')}>
-                            <Timer/>
                         </div>
                     </div>
                 </div>;
@@ -872,10 +918,6 @@ const Chat = (props) => {
                                 <span className={cn('fa fa-comments', 'icon', 'icon--color', 'icon--xs', 'icon--shifted')}></span>
                                 Chat connected
                             </span>
-                        </div>
-                        {/* Hidden timer is needed to continue time count in text mode */}
-                        <div className={cn('chat__timer-wrapper', 'chat__timer-wrapper--hidden')}>
-                            <Timer/>
                         </div>
                     </div>
                 </div>;
@@ -1406,45 +1448,6 @@ const ChatPanel = (props) => {
         </div>
     );
 };
-
-// Timer of call duration
-// Props: none
-class Timer extends Component {
-    constructor() {
-        super();
-        this.state = {
-            min: 0,
-            sec: 0
-        };
-        this.tick = this.tick.bind(this);
-        this.format = this.format.bind(this);
-    }
-    tick() {
-        this.setState(
-            prevState => ({
-                sec: (prevState.sec < 59) ? (prevState.sec + 1) : 0,
-                min: (prevState.sec < 59) ? prevState.min : (prevState.min + 1)
-            })
-        );
-    }
-    format(n){
-        return (n > 9) ? ("" + n) : ('0' + n);
-    }
-    componentDidMount() {
-        // Ticks every second
-        this.intervalID = setInterval(this.tick, 1000);
-    }
-    componentWillUnmount() {
-        clearInterval(this.intervalID);
-    }
-    render() {
-        return (
-            <span className={cn('timer')}>
-                {this.format(this.state.min)}:{this.format(this.state.sec)}
-            </span>
-        );
-    }
-}
 
 // Star rating
 // Props: starsNum, initValue, inputName, clickable
