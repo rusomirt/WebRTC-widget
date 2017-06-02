@@ -36,7 +36,7 @@ class WebchatClient extends Component {
         this.state = {
             // Allowed chatMode values:
             // 'invisible', 'idle', 'connectingVideo', 'video', 'connectingVoice', 'voice',
-            // 'showText', 'connectingText', 'text', 'restartFromText', 'declinedFromText', 'endCall', 'notAvailable'.
+            // 'showText', 'connectingText', 'text', 'endCall', 'notAvailable'.
             chatMode: 'invisible',
             isModeChanged: false,           // checked in componentDidUpdated()
 
@@ -46,6 +46,8 @@ class WebchatClient extends Component {
             initialTextChat: false,         // indicates that text chat was begun from idle state
             demandedModeFromText: null,
             requestId: null,
+            switchFromText: false,
+            switchFromTextDeclined: false,
 
             isSoundOn: true,
             isMicOn: true,
@@ -122,7 +124,7 @@ class WebchatClient extends Component {
 
                 switch (demandedMode) {
                     case 'voice':
-                        if (this.state.chatMode !== 'restartFromText') {
+                        if (!this.state.switchFromText) {
                             this.setState({
                                 chatMode: 'connectingVoice',
                                 isModeChanged: true
@@ -133,7 +135,7 @@ class WebchatClient extends Component {
                         }
                         break;
                     case 'video':
-                        if (this.state.chatMode !== 'restartFromText') {
+                        if (!this.state.switchFromText) {
                             this.setState({
                                 chatMode: 'connectingVideo',
                                 isModeChanged: true
@@ -162,7 +164,7 @@ class WebchatClient extends Component {
 
                     const requestId = uuid();
                     this.setState({
-                        chatMode: 'restartFromText',
+                        switchFromText: true,
                         requestId: requestId,
                         demandedModeFromText: demandedMode
                     });
@@ -345,7 +347,7 @@ class WebchatClient extends Component {
         if (e.result) {     // If user has allowed access to camera & microphone: begin call
             this.setState({isCamAndMicAllowed: true});
 
-            // Allowable chatMode values: 'connectingVoice', 'connectingVideo', 'restartFromText'.
+            // Allowable chatMode values: 'connectingVoice', 'connectingVideo'.
             let demandedMode = null;
             switch (this.state.chatMode) {
                 case 'connectingVoice':
@@ -354,11 +356,12 @@ class WebchatClient extends Component {
                 case 'connectingVideo':
                     demandedMode = 'video';
                     break;
-                case 'restartFromText':
+                case 'text':
                     demandedMode = this.state.demandedModeFromText;
                     break;
             }
-            let callingTones = (this.state.chatMode !== 'restartFromText');
+            let callingTones = ((this.state.chatMode === 'connectingVoice') ||
+                                (this.state.chatMode === 'connectingVideo'));
             console.log('Starting a call with callingTones = ' + callingTones);
             vox.startCall(demandedMode, callingTones, null, this.onCallConnected, this.onCallDisconnected,
                 this.onCallFailed, this.onMessageReceived, this.onCallUpdated);
@@ -402,7 +405,7 @@ class WebchatClient extends Component {
                 this.turnSound(false);
                 this.setState({muteMicAndSnd: true});
                 break;
-            case 'restartFromText':
+            case 'text':
                 this.setState({chatMode: this.state.demandedModeFromText});
                 this.sendAudio(true);
                 if (this.state.demandedModeFromText === 'video') {
@@ -496,23 +499,36 @@ class WebchatClient extends Component {
     onMessageReceived(e) {
         console.log('<========= onMessageReceived');
         console.log('e.text: ' + e.text);
+        
+        // console.log('e.text.charAt(0) = ' + e.text.charAt(0) + ', e.text.charAt(' +
+        //                     (e.text.length - 1) + ') = ' + e.text.charAt(e.text.length - 1));
 
-        const parsedMessage = JSON.parse(e.text);
+        // If this is a service JSON message (not for user)
+        if (e.text.charAt(0) === '{' && e.text.charAt(e.text.length - 1) === '}') {
+            const parsedMessage = JSON.parse(e.text);
 
-        // If this is response message to call mode switch request (text -> voice/video)
-        if (parsedMessage.op === 'call-response') {
+            // Response to call mode switch request (text -> voice/video)
+            if (parsedMessage.op === 'call-response') {
 
-            if (parsedMessage.response === true) {  // the other side accepted mode switching from text to voice/video
-                console.log('this.state.demandedModeFromText = ' + this.state.demandedModeFromText);
-                vox.stopCall();
-            } else {
-                this.setState({                     // the other side declined mode switching from text to voice/video
-                    chatMode: 'declinedFromText',
-                    demandedModeFromText: null,
-                    requestId: null
-                });
+                if (parsedMessage.response === true) {  // the other side accepted mode switching from text to voice/video
+                    console.log('this.state.demandedModeFromText = ' + this.state.demandedModeFromText);
+                    vox.stopCall();
+                } else {                                // the other side declined mode switching from text to voice/video
+                    //
+                    this.setState({
+                        switchFromText: false,
+                        switchFromTextDeclined: true,
+                        demandedModeFromText: null,
+                        requestId: null
+                    });
+                    //
+                    setInterval(() => {
+                        this.setState({switchFromTextDeclined: false});
+                    }, 2000);
+                }
             }
 
+        // If this is a message for user
         } else {
 
             const message = {
@@ -622,6 +638,8 @@ class WebchatClient extends Component {
                             chatMode={this.state.chatMode}
                             stopChat={this.stopChat}
                             switchMode={this.startChat}
+                            switchFromText={this.state.switchFromText}
+                            switchFromTextDeclined={this.state.switchFromTextDeclined}
                             backToInitial={this.backToInitial}
                             onSendMessage={this.onSendMessage}
                             messages={this.state.messages}
@@ -702,11 +720,12 @@ class SelectMode extends Component {
 }
 
 // Chat block
-// Props: clientAppInstalled, chatMode, stopChat(), switchMode(), backToInitial(), onSendMessage(), messages,
-//        phoneSentDelay, phoneSentChangeMode(), isSoundOn, turnSound(), isMicOn, turnMic().
+// Props: clientAppInstalled, chatMode, stopChat(), switchMode(), switchFromText, switchFromTextDeclined,
+// backToInitial(), onSendMessage(), messages, phoneSentDelay, phoneSentChangeMode(),
+// isSoundOn, turnSound(), isMicOn, turnMic().
 const Chat = (props) => {
 
-    let restartFromText = null;
+    let modalInChat = null;
     let chatInfo = null;
     let videoContainer = null;
     let messenger = null;
@@ -867,38 +886,24 @@ const Chat = (props) => {
                     <div id='video-in' className={cn('chat__video-in')}></div>
                     <div id='video-out' className={cn('chat__video-out')}></div>
                 </div>;
-            break;
-        case 'restartFromText':
-            restartFromText =
-                <div className={cn('chat-modal')}>
-                    <div className={cn('chat-modal__inner')}>
-                        <ConnectingAnimation />
-                        <p className={cn('chat-modal__txt')}>Please Wait...</p>
-                    </div>
-                </div>;
-            chatInfo =
-                <div className={cn('chat__info', 'chat__info--bordered', 'chat__info--short')}>
-                    <img className={cn('chat__logo')} src={lukesLogo}/>
-                    <div className={cn('chat__status')}>
-                        <div className={cn('chat__status-txt-wrapper')}>
-                            <span className={cn('chat__status-hdr')}>
-                                <span className={cn('fa fa-comments', 'icon', 'icon--color', 'icon--xs', 'icon--shifted')}></span>
-                                Chat connected
-                            </span>
+            // Hovering message in chat
+            if (props.switchFromText) {
+                modalInChat =
+                    <div className={cn('chat-modal')}>
+                        <div className={cn('chat-modal__inner')}>
+                            <ConnectingAnimation />
+                            <p className={cn('chat-modal__txt')}>Please Wait...</p>
                         </div>
-                        {/* Hidden timer is needed to continue time count in text mode */}
-                        <div className={cn('chat__timer-wrapper', 'chat__timer-wrapper--hidden')}>
-                            <Timer/>
+                    </div>;
+            }
+            if (props.switchFromTextDeclined) {
+                modalInChat =
+                    <div className={cn('chat-modal')}>
+                        <div className={cn('chat-modal__inner')}>
+                            <p className={cn('chat-modal__txt')}>Call declined</p>
                         </div>
-                    </div>
-                </div>;
-            messenger = <Messenger onSendMessage={props.onSendMessage} messages={props.messages} />;
-            // Hidden videoContainer is necessary for switching to video mode
-            videoContainer =
-                <div className={cn('chat__video-container', 'chat__video-container--hidden')}>
-                    <div id='video-in' className={cn('chat__video-in')}></div>
-                    <div id='video-out' className={cn('chat__video-out')}></div>
-                </div>;
+                    </div>;
+            }
             break;
         case 'endCall':
             chatInfo =
@@ -1004,7 +1009,7 @@ const Chat = (props) => {
 
     return (
         <div className={cn('chat')}>
-            {restartFromText}
+            {modalInChat}
             {chatInfo}
             {videoContainer}
             {messenger}
@@ -1330,6 +1335,7 @@ const ChatPanel = (props) => {
 
     let leftGroup = null;
     let rightGroup = null;
+    let isChatPanelLow = false;
     switch (props.chatMode) {
         case 'connectingText':
             leftGroup =
@@ -1380,7 +1386,6 @@ const ChatPanel = (props) => {
             break;
         case 'showText':
         case 'text':
-        case 'restartFromText':
             leftGroup =
                 <div className={cn('chat__btns-group')}>
                     {videoBtn}
@@ -1389,11 +1394,9 @@ const ChatPanel = (props) => {
                 <div className={cn('chat__btns-group')}>
                     {voiceBtn}
                 </div>;
+                isChatPanelLow = true;
             break;
     }
-
-    const isChatPanelLow = (props.chatMode === 'text') || 
-        (props.chatMode === 'showText') || (props.chatMode === 'restartFromText');
 
     return (
         <div className={cn('chat__panel', {'chat__panel--low': isChatPanelLow})}>
