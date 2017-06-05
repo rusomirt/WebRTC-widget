@@ -20,6 +20,7 @@
     "scriptjs": "^2.5.8",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.7",
+    "uuid": "^3.0.1",
     "voximplant-websdk": "^4.0.5438",
     "webpack": "^1.14.0",
     "webpack-dev-server": "^1.16.2"
