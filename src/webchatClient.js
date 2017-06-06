@@ -69,8 +69,6 @@ class WebchatClient extends Component {
         this.turnSound = this.turnSound.bind(this);
         this.turnMic = this.turnMic.bind(this);
         this.showVideo = this.showVideo.bind(this);
-        this.sendAudio = this.sendAudio.bind(this);
-        this.sendVideo = this.sendVideo.bind(this);
         this.sendMedia = this.sendMedia.bind(this);
         this.stopChat = this.stopChat.bind(this);
         this.acceptIncomingRequest = this.acceptIncomingRequest.bind(this);
@@ -255,22 +253,6 @@ class WebchatClient extends Component {
             // vox.showLocalVideo(false);
         }
         console.log('          showVideo(' + onOff + ') =========>');
-    }
-    sendAudio(onOff) {
-        console.log('<========= sendAudio(' + onOff + ')');
-        vox.currentCall.sendAudio(onOff);
-        console.log('           sendAudio(' + onOff + ') =========>');
-    }
-    sendVideo(onOff) {
-        console.log('<========= sendVideo(' + onOff + ')');
-        vox.currentCall.sendVideo(onOff);
-
-        // Indicate if the video on remote end should be shown
-        vox.sendMessage(JSON.stringify({
-            'op': 'video',
-            'state': onOff
-        }));
-        console.log('           sendVideo(' + onOff + ') =========>');
     }
     // audio and video values: null, true, false
     sendMedia(audio, video) {
