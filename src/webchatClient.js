@@ -44,12 +44,12 @@ class WebchatClient extends Component {
             muteMicAndSnd: false,
 
             // Switching from initial text to voice/video
-            initialTextChat: false,             // indicates that current text call is initial (was begun from idle state)
-            demandedModeFromText: null,         // requested mode after initial text
-            requestId: null,                    // ID of request
-            switchFromText: false,              // indicates that voice/video call is switched from initial text, not from idle.
-            switchFromTextDeclined: false,      // displaying modal info: request was declined by other party.
-            switchFromTextRequestShow: false,   // displaying dialog: accept/decline call request from other party.
+            initialTextChat: false,         // indicates that current text call is initial (was begun from idle state)
+            switchingFromText: false,       // modal info 'please wait' while connecting from initial text to voice/video
+            demandedModeFromText: null,     // requested mode after initial text
+            switchFromTextRequestId: null,  // ID of  request
+            switchFromTextDeclined: false,  // modal info: request was declined by other party.
+            switchFromTextRequested: false, // modal dialog: accept/decline call request from other party.
 
             callTime: {                     // timer of call duration
               min: 0,
@@ -136,7 +136,7 @@ class WebchatClient extends Component {
 
                 switch (demandedMode) {
                     case 'voice':
-                        if (!this.state.switchFromText) {
+                        if (!this.state.initialTextChat) {
                             this.setState({
                                 chatMode: 'connectingVoice',
                                 isModeChanged: true
@@ -147,7 +147,7 @@ class WebchatClient extends Component {
                         }
                         break;
                     case 'video':
-                        if (!this.state.switchFromText) {
+                        if (!this.state.initialTextChat) {
                             this.setState({
                                 chatMode: 'connectingVideo',
                                 isModeChanged: true
@@ -172,27 +172,22 @@ class WebchatClient extends Component {
                 // (voice/video). It allows to request mic&cam access properly (before the call).
                 if (this.state.initialTextChat) {
 
-                    if (this.state.switchFromText) {
-                        vox.stopCall();
-                    } else {
-                        console.log('SWITCHING FROM INITIAL TEXT MODE. SEND REQUEST');
+                    console.log('SWITCHING FROM INITIAL TEXT MODE. SEND REQUEST');
 
-                        const requestId = uuid();
-                        this.setState({
-                            switchFromText: true,
-                            requestId: requestId,
-                            demandedModeFromText: demandedMode
-                        });
-                        console.log('requestId = ' + requestId);
-                        const msg = {
-                            'op': 'call-request',
-                            'id': requestId,
-                            'type': demandedMode
-                        };
-                        console.log('Request call message:');
-                        console.log(JSON.stringify(msg));
-                        vox.sendMessage(JSON.stringify(msg));
-                    }
+                    const switchFromTextRequestId = uuid();
+                    this.setState({
+                        switchFromTextRequestId: switchFromTextRequestId,
+                        demandedModeFromText: demandedMode
+                    });
+                    console.log('switchFromTextRequestId = ' + switchFromTextRequestId);
+                    const msg = {
+                        'op': 'call-request',
+                        'id': switchFromTextRequestId,
+                        'type': demandedMode
+                    };
+                    console.log('Request call message:');
+                    console.log(JSON.stringify(msg));
+                    vox.sendMessage(JSON.stringify(msg));
 
                 } else {
 
@@ -310,7 +305,7 @@ class WebchatClient extends Component {
 
         const msg = {
             op: 'call-response',
-            id: this.state.requestId,
+            id: this.state.switchFromTextRequestId,
             response: yesNo
         };
         console.log('Response to request call message:');
@@ -319,16 +314,17 @@ class WebchatClient extends Component {
 
         if (yesNo) {
             this.setState({
-                switchFromTextRequestShow: false,
-                switchFromText: true
+                switchFromTextRequested: false,
+                switchingFromText: true
             });
 
-            this.startChat(this.state.demandedModeFromText);
+            // this.startChat(this.state.demandedModeFromText);
+            vox.stopCall();
 
         } else {
             this.setState({
-                switchFromTextRequestShow: false,
-                requestId: null,
+                switchFromTextRequested: false,
+                switchFromTextRequestId: null,
                 demandedModeFromText: null
             });
         }
@@ -443,7 +439,7 @@ class WebchatClient extends Component {
             }
             let callingTones = ((this.state.chatMode === 'connectingVoice') ||
                                 (this.state.chatMode === 'connectingVideo'));
-            vox.startCall(demandedMode, this.state.requestId, callingTones, null, this.onCallConnected, this.onCallDisconnected,
+            vox.startCall(demandedMode, this.state.switchFromTextRequestId, callingTones, null, this.onCallConnected, this.onCallDisconnected,
                 this.onCallFailed, this.onMessageReceived, this.onCallUpdated);
 
         } else {            // If user has NOT allowed access to camera & microphone: return to previous mode
@@ -484,14 +480,15 @@ class WebchatClient extends Component {
                 this.startTimer();
                 break;
             case 'text':
-                this.setState({chatMode: this.state.demandedModeFromText});
                 this.sendAudio(true);
                 if (this.state.demandedModeFromText === 'video') {
                     this.sendVideo(true);
                 }
-                // Reset flags of initial text mode
                 this.setState({
+                    chatMode: this.state.demandedModeFromText,
                     initialTextChat: false,
+                    switchingFromText: false,
+                    switchFromTextRequestId: null,
                     demandedModeFromText: null
                 });
                 break;
@@ -563,7 +560,7 @@ class WebchatClient extends Component {
         // If this is not first message (text call is already connected): send it in call message.
         if (this.state.chatMode === 'showText') {
             this.setState({chatMode: 'connectingText'});
-            vox.startCall('text', this.state.requestId, false, messageText, this.onCallConnected, this.onCallDisconnected,
+            vox.startCall('text', null, false, messageText, this.onCallConnected, this.onCallDisconnected,
                 this.onCallFailed, this.onMessageReceived, this.onCallUpdated);
         } else {
             vox.sendMessage(messageText);
@@ -592,10 +589,9 @@ class WebchatClient extends Component {
                 } else {                                // the other side declined mode switching from text to voice/video
                     //
                     this.setState({
-                        switchFromText: false,
                         switchFromTextDeclined: true,
                         demandedModeFromText: null,
-                        requestId: null
+                        switchFromTextRequestId: null
                     });
                     //
                     setInterval(() => {
@@ -608,8 +604,8 @@ class WebchatClient extends Component {
             if (parsedMessage.op === 'call-request') {
                 console.log('Luke\'s requests switch to ' + parsedMessage.type);
                 this.setState({
-                    switchFromTextRequestShow: true,
-                    requestId: parsedMessage.id,
+                    switchFromTextRequested: true,
+                    switchFromTextRequestId: parsedMessage.id,
                     demandedModeFromText: parsedMessage.type
                 });
             }
@@ -725,11 +721,13 @@ class WebchatClient extends Component {
                             timerValue={this.getTimerString()}
                             stopChat={this.stopChat}
                             switchMode={this.startChat}
-                            switchFromText={this.state.switchFromText}
+
+                            switchingFromText={this.state.switchingFromText}
                             switchFromTextDeclined={this.state.switchFromTextDeclined}
-                            switchFromTextRequestShow={this.state.switchFromTextRequestShow}
+                            switchFromTextRequested={this.state.switchFromTextRequested}
                             requestedMode={this.state.demandedModeFromText}
                             acceptIncomingRequest={this.acceptIncomingRequest}
+                            
                             backToInitial={this.backToInitial}
                             onSendMessage={this.onSendMessage}
                             messages={this.state.messages}
@@ -810,8 +808,8 @@ class SelectMode extends Component {
 }
 
 // Chat block
-// Props: clientAppInstalled, chatMode, timerValue, stopChat(), switchMode(), switchFromText, switchFromTextDeclined,
-// switchFromTextRequestShow, requestedMode, acceptIncomingRequest(), backToInitial(), onSendMessage(), messages, phoneSentDelay,
+// Props: clientAppInstalled, chatMode, timerValue, stopChat(), switchMode(), switchingFromText, switchFromTextDeclined,
+// switchFromTextRequested, requestedMode, acceptIncomingRequest(), backToInitial(), onSendMessage(), messages, phoneSentDelay,
 // phoneSentChangeMode(), isSoundOn, turnSound(), isMicOn, turnMic().
 const Chat = (props) => {
 
@@ -972,7 +970,7 @@ const Chat = (props) => {
                     <div id='video-out' className={cn('chat__video-out')}></div>
                 </div>;
             // Hovering message in chat
-            if (props.switchFromText) {
+            if (props.switchingFromText) {
                 modalInChat =
                     <div className={cn('chat-modal')}>
                         <div className={cn('chat-modal__inner')}>
@@ -981,7 +979,7 @@ const Chat = (props) => {
                         </div>
                     </div>;
             }
-            if (props.switchFromTextRequestShow) {
+            if (props.switchFromTextRequested) {
                 modalInChat =
                     <div className={cn('chat-modal')}>
                         <div className={cn('chat-modal__inner')}>
