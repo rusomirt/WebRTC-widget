@@ -39,9 +39,7 @@ class WebchatClient extends Component {
             // 'showText', 'connectingText', 'text', 'endCall', 'notAvailable'.
             chatMode: 'invisible',
             isModeChanged: false,           // checked in componentDidUpdated()
-
             isCamAndMicAllowed: false,      // indicates that cam&mic access was allowed by user
-            muteMicAndSnd: false,
 
             // Switching from initial text to voice/video
             initialTextChat: false,         // indicates that current text call is initial (was begun from idle state)
@@ -201,27 +199,9 @@ class WebchatClient extends Component {
                     // and it should not be finished if it already was finished).
                     const turnAudio = (isAudioSending === isAudioSendingRequired) ? null : (!isAudioSending && isAudioSendingRequired);
                     const turnVideo = (isVideoSending === isVideoSendingRequired) ? null : (!isVideoSending && isVideoSendingRequired);
-
                     this.sendMedia(turnAudio, turnVideo);
-                    // switch (demandedMode) {
-                    //     case 'video':
-                    //         // this.turnSound(true);
-                    //         // this.turnMic(true);
-                    //         if (this.state.chatMode === 'text')
-                    //         this.sendMedia(true, true);
-                    //         break;
-                    //     case 'voice':
-                    //         // this.turnSound(true);
-                    //         // this.turnMic(true);
-                    //         this.sendMedia(true, false);
-                    //         break;
-                    //     case 'text':
-                    //         // this.turnSound(false);
-                    //         // this.turnMic(false);
-                    //         this.sendMedia(false, false);
-                    //         this.setState({muteMicAndSnd: true});
-                    //         break;
-                    // }
+
+                    // this.turnSound(demandedMode !== 'text');    // disable sound in text call
 
                     this.setState({
                         chatMode: demandedMode,
@@ -465,7 +445,6 @@ class WebchatClient extends Component {
             case 'connectingText':
                 this.setState({chatMode: 'text'});
                 // this.turnSound(false);
-                // this.setState({muteMicAndSnd: true});
                 this.startTimer();
                 break;
             case 'text':
@@ -524,14 +503,7 @@ class WebchatClient extends Component {
 
     onCallUpdated() {
         console.log('<========= onCallUpdated()');
-        // if (this.state.muteMicAndSnd) {
-        //     this.turnSound(false);
-        //     // this.turnMic(false);
-        // } else {
-        //     this.turnSound(true);
-        //     this.turnMic(true);
-        // }
-        // this.setState({muteMicAndSnd: false});
+        this.turnSound(this.state.chatMode !== 'text');
         console.log('           onCallUpdated() =========>');
     }
 
