@@ -71,6 +71,7 @@ class WebchatClient extends Component {
         this.showVideo = this.showVideo.bind(this);
         this.sendAudio = this.sendAudio.bind(this);
         this.sendVideo = this.sendVideo.bind(this);
+        this.sendMedia = this.sendMedia.bind(this);
         this.stopChat = this.stopChat.bind(this);
         this.acceptIncomingRequest = this.acceptIncomingRequest.bind(this);
         this.backToInitial = this.backToInitial.bind(this);
@@ -197,21 +198,13 @@ class WebchatClient extends Component {
                     const isVideoSendingRequired = (demandedMode === 'video');
                     const isAudioSendingRequired = (demandedMode !== 'text');
 
-                    // // If audio/video should not be changed, turnXxx becomes null (video or audio should not
-                    // // be started if it already was started and it should not be finished if it already was finished).
-                    // const turnAudio = (isAudioSending === isAudioSendingRequired) ? null : (!isAudioSending && isAudioSendingRequired);
-                    // const turnVideo = (isVideoSending === isVideoSendingRequired) ? null : (!isVideoSending && isVideoSendingRequired);
+                    // Audio/video sending values: not to change - null, to turn on - true, to turn off - false
+                    // (video or audio should not be started if it already was started
+                    // and it should not be finished if it already was finished).
+                    const turnAudio = (isAudioSending === isAudioSendingRequired) ? null : (!isAudioSending && isAudioSendingRequired);
+                    const turnVideo = (isVideoSending === isVideoSendingRequired) ? null : (!isVideoSending && isVideoSendingRequired);
 
-                    if (isAudioSending !== isAudioSendingRequired) {
-                        console.log('sendAudio(' + (!isAudioSending && isAudioSendingRequired) + ')');
-                        this.sendAudio(!isAudioSending && isAudioSendingRequired);
-                    }
-                    if (isVideoSending !== isVideoSendingRequired) {
-                        console.log('sendVideo(' + (!isVideoSending && isVideoSendingRequired) + ')');
-                        this.sendVideo(!isVideoSending && isVideoSendingRequired);
-                    }
-
-                    // this.sendMedia(turnAudio, turnVideo);
+                    this.sendMedia(turnAudio, turnVideo);
                     // switch (demandedMode) {
                     //     case 'video':
                     //         // this.turnSound(true);
@@ -278,6 +271,20 @@ class WebchatClient extends Component {
             'state': onOff
         }));
         console.log('           sendVideo(' + onOff + ') =========>');
+    }
+    // audio and video values: null, true, false
+    sendMedia(audio, video) {
+        console.log('<========= sendMedia(' + audio + ', ' + video + ')');
+        vox.currentCall.sendMedia(audio, video);
+
+        if (video !== null) {
+            // Indicate if the video on remote end should be shown
+            vox.sendMessage(JSON.stringify({
+                'op': 'video',
+                'state': video
+            }));
+        }
+        console.log('           sendMedia(' + audio + ', ' + video + ') =========>');
     }
     stopChat() {
         console.log('<========= stopChat() begin');
@@ -464,13 +471,12 @@ class WebchatClient extends Component {
         switch (this.state.chatMode) {
             case 'connectingVoice':
                 this.setState({chatMode: 'voice'});
-                this.sendAudio(true);
+                this.sendMedia(true, false);
                 this.startTimer();
                 break;
             case 'connectingVideo':
                 this.setState({chatMode: 'video'});
-                this.sendAudio(true);
-                this.sendVideo(true);
+                this.sendMedia(true, true);
                 this.startTimer();
                 break;
             case 'connectingText':
@@ -480,9 +486,10 @@ class WebchatClient extends Component {
                 this.startTimer();
                 break;
             case 'text':
-                this.sendAudio(true);
                 if (this.state.demandedModeFromText === 'video') {
-                    this.sendVideo(true);
+                    this.sendMedia(true, true);
+                } else {
+                    this.sendMedia(true, null);
                 }
                 this.setState({
                     chatMode: this.state.demandedModeFromText,
