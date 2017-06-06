@@ -130,7 +130,7 @@ export function startCall(demandedMode, requestId, callingTones, firstMsg, onCal
     currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
     currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
     currentCall.addEventListener(VoxImplant.CallEvents.MessageReceived, onMessageReceived);
-    // currentCall.addEventListener(VoxImplant.CallEvents.Updated, onCallUpdated);
+    currentCall.addEventListener(VoxImplant.CallEvents.Updated, onCallUpdated);
 
     // console.log('currentCall:');
     // console.log(currentCall);
