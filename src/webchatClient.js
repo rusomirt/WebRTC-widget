@@ -194,12 +194,28 @@ class WebchatClient extends Component {
                     const isVideoSendingRequired = (demandedMode === 'video');
                     const isAudioSendingRequired = (demandedMode !== 'text');
 
+                    console.log('isAudioSending = ' + isAudioSending);
+                    console.log('isAudioSendingRequired = ' + isAudioSendingRequired);
+                    console.log('isVideoSending = ' + isVideoSending);
+                    console.log('isVideoSendingRequired = ' + isVideoSendingRequired);
+
                     // Audio/video sending values: not to change - null, to turn on - true, to turn off - false
                     // (video or audio should not be started if it already was started
                     // and it should not be finished if it already was finished).
                     const turnAudio = (isAudioSending === isAudioSendingRequired) ? null : (!isAudioSending && isAudioSendingRequired);
                     const turnVideo = (isVideoSending === isVideoSendingRequired) ? null : (!isVideoSending && isVideoSendingRequired);
-                    this.sendMedia(turnAudio, turnVideo);
+
+                    console.log('turnAudio = ' + turnAudio);
+                    console.log('turnVideo = ' + turnVideo);
+
+                    if (demandedMode !== 'text') {
+                        this.sendMedia(turnAudio, turnVideo);
+                    } else {
+                        // this.sendMedia(turnAudio, turnVideo);
+                        // vox.currentCall.sendAudio(false);
+                        this.turnSound(demandedMode !== 'text');    // disable sound in text call
+                        this.turnMic(demandedMode !== 'text');      // disable microphone in text call
+                    }
 
                     // this.turnSound(demandedMode !== 'text');    // disable sound in text call
 
