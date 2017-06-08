@@ -525,7 +525,10 @@ class WebchatClient extends Component {
         console.log('           onCallUpdated() =========>');
     }
 
-    // Functions from Messenger
+
+    createTextMessage(messageText) {
+        return JSON.stringify({'op': 'text', 'message': messageText});
+    }
 
     // Send text from input field and add it in the messages list
     onSendMessage(messageText) {
@@ -543,7 +546,7 @@ class WebchatClient extends Component {
             vox.startCall('text', null, false, messageText, this.onCallConnected, this.onCallDisconnected,
                 this.onCallFailed, this.onMessageReceived, this.onCallUpdated);
         } else {
-            vox.sendMessage(messageText);
+            vox.sendMessage(this.createTextMessage(messageText));
         }
     }
     // Append the message to the component state
@@ -552,59 +555,64 @@ class WebchatClient extends Component {
         messages.push(message);
         this.setState({ messages });
     }
+
+    handleCallResponse(parsedMessage) {
+        if (parsedMessage.response === true) {  // the other side accepted mode switching from text to voice/video
+            console.log('this.state.demandedModeFromText = ' + this.state.demandedModeFromText);
+            vox.stopCall();
+        } else {                                // the other side declined mode switching from text to voice/video
+            //
+            this.setState({
+                switchFromTextDeclined: true,
+                demandedModeFromText: null,
+                switchFromTextRequestId: null
+            });
+            //
+            setInterval(() => {
+                this.setState({switchFromTextDeclined: false});
+            }, 2000);
+        }
+    }
+
+    handleCallRequest(parsedMessage) {
+        console.log('Luke\'s requests switch to ' + parsedMessage.type);
+        this.setState({
+            switchFromTextRequested: true,
+            switchFromTextRequestId: parsedMessage.id,
+            demandedModeFromText: parsedMessage.type
+        });
+    }
+
+    handleTextMessage(parsedMessage) {
+        const message = {
+            fromMe: false,
+            text: parsedMessage.message,
+            timeStamp: this.getCurrentTimeString()
+        };
+        this.addMessageToList(message);
+    }
+
     onMessageReceived(e) {
         console.log('<========= onMessageReceived');
         console.log('e.text: ' + e.text);
 
-        // If this is a service JSON message (not for user)
-        if (e.text.charAt(0) === '{' && e.text.charAt(e.text.length - 1) === '}') {
-            const parsedMessage = JSON.parse(e.text);
-
-            // Response to call mode switch request (text -> voice/video)
-            if (parsedMessage.op === 'call-response') {
-
-                if (parsedMessage.response === true) {  // the other side accepted mode switching from text to voice/video
-                    console.log('this.state.demandedModeFromText = ' + this.state.demandedModeFromText);
-                    vox.stopCall();
-                } else {                                // the other side declined mode switching from text to voice/video
-                    //
-                    this.setState({
-                        switchFromTextDeclined: true,
-                        demandedModeFromText: null,
-                        switchFromTextRequestId: null
-                    });
-                    //
-                    setInterval(() => {
-                        this.setState({switchFromTextDeclined: false});
-                    }, 2000);
-                }
-            }
-
-            // Request for call mode switch (text -> voice/video)
-            if (parsedMessage.op === 'call-request') {
-                console.log('Luke\'s requests switch to ' + parsedMessage.type);
-                this.setState({
-                    switchFromTextRequested: true,
-                    switchFromTextRequestId: parsedMessage.id,
-                    demandedModeFromText: parsedMessage.type
-                });
-            }
-
-        // If this is a message for user
-        } else {
-
-            const message = {
-                fromMe: false,
-                text: e.text,
-                timeStamp: this.getCurrentTimeString()
-            };
-            this.addMessageToList(message);
+        const parsedMessage = JSON.parse(e.text);
+        switch(parsedMessage.op) {
+        case 'call-request':
+            this.handleCallRequest(parsedMessage);
+            break;
+        case 'call-response':
+            this.handleCallResponse(parsedMessage);
+            break;
+        case 'text':
+            this.handleTextMessage(parsedMessage);
+            break;
+        default:
+            console.log('Unhandled message: ', parsedMessage);
         }
-
-        // console.log('this.state.messages:');
-        // console.log(this.state.messages);
         console.log('           onMessageReceived =========>');
     }
+
     // Get current timestamp in format (h)h:mm + am/pm
     getCurrentTimeString() {
         const now = new Date();
