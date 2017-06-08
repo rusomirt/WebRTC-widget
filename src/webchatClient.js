@@ -484,7 +484,7 @@ class WebchatClient extends Component {
         vox.currentCall = null; // clear call instance
 
         // If text call was stopped for starting a voice/video call
-        if (this.state.initialTextChat){
+        if (this.state.switchingFromText){
             this.startChat(this.state.demandedModeFromText);
         } else {
             this.setState({
