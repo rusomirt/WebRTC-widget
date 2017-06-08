@@ -450,12 +450,14 @@ class WebchatClient extends Component {
             case 'connectingVoice':
                 this.setState({chatMode: 'voice'});
                 // Need to turn video off because of voximplant bug: 'video' parameter in sdk.call() is ignored
-                this.sendMedia(true, false);
+                // this.sendMedia(true, false);
+                // vox.currentCall.sendAudio(false);
+                // vox.currentCall.sendVideo(false);
                 this.startTimer();
                 break;
             case 'connectingVideo':
                 this.setState({chatMode: 'video'});
-                this.sendMedia(true, true);
+                // this.sendMedia(true, true);
                 this.startTimer();
                 break;
             case 'connectingText':
