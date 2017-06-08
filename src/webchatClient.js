@@ -438,39 +438,22 @@ class WebchatClient extends Component {
     // When call has been connected
     onCallConnected() {
         console.log('<========= onCallConnected()');
-        console.log('Call state: ' + vox.currentCall.state());
-
-        // console.log('local video:');
-        // console.log(document.getElementById('voximplantlocalvideo'));
-        // console.log('remote video:');
-        // console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());
 
         // Change state from connecting to calling
         switch (this.state.chatMode) {
             case 'connectingVoice':
                 this.setState({chatMode: 'voice'});
-                // Need to turn video off because of voximplant bug: 'video' parameter in sdk.call() is ignored
-                // this.sendMedia(true, false);
-                // vox.currentCall.sendAudio(false);
-                // vox.currentCall.sendVideo(false);
                 this.startTimer();
                 break;
             case 'connectingVideo':
                 this.setState({chatMode: 'video'});
-                // this.sendMedia(true, true);
                 this.startTimer();
                 break;
             case 'connectingText':
                 this.setState({chatMode: 'text'});
-                // this.turnSound(false);
                 this.startTimer();
                 break;
             case 'text':
-                if (this.state.demandedModeFromText === 'video') {
-                    this.sendMedia(true, true);
-                } else {
-                    this.sendMedia(true, null);
-                }
                 this.setState({
                     chatMode: this.state.demandedModeFromText,
                     initialTextChat: false,
@@ -646,12 +629,12 @@ class WebchatClient extends Component {
             console.log(`<========= componentDidUpdate()`);
             console.log(`Mode has just been changed to  \'${this.state.chatMode}\'`);
 
-            console.log('local video:');
-            console.log(document.getElementById('voximplantlocalvideo'));
-            console.log('remote video:');
-            if (vox.currentcall)
-                console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());
-            else console.log('none');
+            // console.log('local video:');
+            // console.log(document.getElementById('voximplantlocalvideo'));
+            // console.log('remote video:');
+            // if (vox.currentcall)
+            //     console.log('currentCall.getVideoElementId(): ' + vox.currentCall.getVideoElementId());
+            // else console.log('none');
 
             this.setState({
                 isModeChanged: false,
