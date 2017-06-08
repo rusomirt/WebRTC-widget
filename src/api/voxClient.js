@@ -182,38 +182,38 @@ export function stopCall() {
 
 // Show/hide local video
 export function showLocalVideo(onOff) {
-    console.log('<<<<<<<<<< showLocalVideo(' + onOff + ')');
+    // console.log('<<<<<<<<<< showLocalVideo(' + onOff + ')');
 
     voxAPI.showLocalVideo(onOff);
     if (onOff) {
         // Move local video from camera to container
         const videoOut = document.getElementById('voximplantlocalvideo');
-        console.log(videoOut);
+        // console.log(videoOut);
         videoOut.style.width = '100%';    // fit in container with aspect ratio keeping
         videoOut.style.display = 'block'; // remove space under element (initially it is inline)
         document.getElementById('video-out').appendChild(videoOut);
         // videoOut.play();
     }
 
-    console.log('          showLocalVideo(' + onOff + ') >>>>>>>>>>');
+    // console.log('          showLocalVideo(' + onOff + ') >>>>>>>>>>');
 }
 // Show/hide remote video
 export function showRemoteVideo(onOff) {
-    console.log('<<<<<<<<<< showRemoteVideo(' + onOff + ')');
+    // console.log('<<<<<<<<<< showRemoteVideo(' + onOff + ')');
 
     // currentCall.showRemoteVideo(onOff);
-    console.log('currentCall.getVideoElementId():');
-    console.log(currentCall.getVideoElementId());
+    // console.log('currentCall.getVideoElementId():');
+    // console.log(currentCall.getVideoElementId());
     const videoIn = document.getElementById(currentCall.getVideoElementId());
     if (onOff) {
-        console.log(videoIn);
+        // console.log(videoIn);
         videoIn.style.height = '100%';      // fit in container with aspect ratio keeping
         videoIn.style.display = 'block';    // remove space under element (initially it is inline)
         document.getElementById('video-in').appendChild(videoIn);
         videoIn.play();
     }
 
-    console.log('          showRemoteVideo(' + onOff + ') >>>>>>>>>>');
+    // console.log('          showRemoteVideo(' + onOff + ') >>>>>>>>>>');
 }
 // // Start/stop sending video
 // export function sendVideo(onOff) {
@@ -222,5 +222,7 @@ export function showRemoteVideo(onOff) {
 
 // Send text message within call
 export function sendMessage(text) {
+    console.log('<<<<<<<<<< sendMessage(' + text + ')');
     currentCall.sendMessage(text);
+    console.log('           sendMessage() >>>>>>>>>>');
 }
