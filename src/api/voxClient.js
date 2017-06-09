@@ -177,7 +177,7 @@ export function stopCall() {
         }
     }
 
-    console.log('           stopChat() end >>>>>>>>>>');
+    console.log('           stopCall >>>>>>>>>>');
 }
 
 // Show/hide local video
