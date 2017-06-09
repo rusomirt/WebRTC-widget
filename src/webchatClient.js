@@ -601,7 +601,11 @@ class WebchatClient extends Component {
             if (parsedMessage.state) {
                 this.setState({chatMode: 'video'});
             } else {
-                this.setState({chatMode: 'voice'});
+
+                if (this.state.chatMode === 'video') {  // Prevent text -> voice switching on text call init
+                    this.setState({chatMode: 'voice'});
+                }
+
             }
             break;
         case 'text':
