@@ -173,6 +173,7 @@ class WebchatClient extends Component {
 
                     const switchFromTextRequestId = uuid();
                     this.setState({
+                        switchingFromText: true,
                         switchFromTextRequestId: switchFromTextRequestId,
                         demandedModeFromText: demandedMode
                     });
@@ -551,12 +552,12 @@ class WebchatClient extends Component {
 
     handleCallResponse(parsedMessage) {
         if (parsedMessage.response === true) {  // the other side accepted mode switching from text to voice/video
-            console.log('this.state.demandedModeFromText = ' + this.state.demandedModeFromText);
             vox.stopCall();
         } else {                                // the other side declined mode switching from text to voice/video
             //
             this.setState({
                 switchFromTextDeclined: true,
+                switchingFromText: false,
                 demandedModeFromText: null,
                 switchFromTextRequestId: null
             });
