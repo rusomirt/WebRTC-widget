@@ -85,7 +85,8 @@ export function askCamAndMic() {
 }
 // Begin video or voice call
 export function startCall(demandedMode, requestId, callingTones, firstMsg, onCallConnected,
-                          onCallDisconnected, onCallFailed, onMessageReceived, onCallUpdated) {
+                          onCallDisconnected, onCallFailed, onMessageReceived, onCallUpdated,
+                          onMediaElementCreated) {
     console.log('<<<<<<<<<< startCall()');
 
     console.log('demandedMode = ' + demandedMode);
@@ -112,20 +113,8 @@ export function startCall(demandedMode, requestId, callingTones, firstMsg, onCal
             voxAPI.stopProgressTone();
         });
     }
-    currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, (e) => {
-        console.log('<<<<<<<<<< onMediaElementCreated() begin');
-        console.log(e.element);
-        // Hide remote video from <body>
-        e.element.style.display = 'none';
-
-        // console.log('currentCall:');
-        // console.log(currentCall);
-        // sendVideo(false);
-        // showRemoteVideo(false);
-        console.log('           onMediaElementCreated() end >>>>>>>>>>');
-        // debugger;
-    });
     // These event listeners get callbacks from Preact because they influence to UI
+    currentCall.addEventListener(VoxImplant.CallEvents.MediaElementCreated, onMediaElementCreated);
     currentCall.addEventListener(VoxImplant.CallEvents.Connected, onCallConnected);
     currentCall.addEventListener(VoxImplant.CallEvents.Disconnected, onCallDisconnected);
     currentCall.addEventListener(VoxImplant.CallEvents.Failed, onCallFailed);
@@ -199,21 +188,21 @@ export function showLocalVideo(onOff) {
 }
 // Show/hide remote video
 export function showRemoteVideo(onOff) {
-    // console.log('<<<<<<<<<< showRemoteVideo(' + onOff + ')');
+    console.log('<<<<<<<<<< showRemoteVideo(' + onOff + ')');
 
     // currentCall.showRemoteVideo(onOff);
-    // console.log('currentCall.getVideoElementId():');
-    // console.log(currentCall.getVideoElementId());
+    console.log('currentCall.getVideoElementId():');
+    console.log(currentCall.getVideoElementId());
     const videoIn = document.getElementById(currentCall.getVideoElementId());
     if (onOff) {
-        // console.log(videoIn);
+        console.log(videoIn);
         videoIn.style.height = '100%';      // fit in container with aspect ratio keeping
         videoIn.style.display = 'block';    // remove space under element (initially it is inline)
         document.getElementById('video-in').appendChild(videoIn);
         videoIn.play();
     }
 
-    // console.log('          showRemoteVideo(' + onOff + ') >>>>>>>>>>');
+    console.log('          showRemoteVideo(' + onOff + ') >>>>>>>>>>');
 }
 // // Start/stop sending video
 // export function sendVideo(onOff) {
