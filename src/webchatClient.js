@@ -40,6 +40,7 @@ class WebchatClient extends Component {
             chatMode: 'invisible',
             isModeChanged: false,           // checked in componentDidUpdated()
             isCamAndMicAllowed: false,      // indicates that cam&mic access was allowed by user
+            isVideoShowed: false,
 
             // Switching from initial text to voice/video
             initialTextChat: false,         // indicates that current text call is initial (was begun from idle state)
@@ -84,6 +85,7 @@ class WebchatClient extends Component {
         this.onCallDisconnected = this.onCallDisconnected.bind(this);
         this.onCallFailed = this.onCallFailed.bind(this);
         this.onCallUpdated = this.onCallUpdated.bind(this);
+        this.onMediaElementCreated = this.onMediaElementCreated.bind(this);
 
         this.addMessageToList = this.addMessageToList.bind(this);
         this.onSendMessage = this.onSendMessage.bind(this);
@@ -251,6 +253,7 @@ class WebchatClient extends Component {
     }
     showVideo(onOff) {
         console.log('<========= showVideo(' + onOff + ')');
+        this.setState({isVideoShowed: onOff});
 
         if (onOff) {
             vox.showRemoteVideo(true);
@@ -436,7 +439,7 @@ class WebchatClient extends Component {
             let callingTones = ((this.state.chatMode === 'connectingVoice') ||
                                 (this.state.chatMode === 'connectingVideo'));
             vox.startCall(demandedMode, this.state.switchFromTextRequestId, callingTones, null, this.onCallConnected, this.onCallDisconnected,
-                this.onCallFailed, this.onMessageReceived, this.onCallUpdated);
+                this.onCallFailed, this.onMessageReceived, this.onCallUpdated, this.onMediaElementCreated);
 
         } else {            // If user has NOT allowed access to camera & microphone: return to previous mode
             console.log('ACCESS DENIED');
@@ -513,6 +516,23 @@ class WebchatClient extends Component {
         console.log('           onCallFailed() end =========>');
     }
 
+    onMediaElementCreated(e) {
+        console.log('<========= onMediaElementCreated()');
+        console.log(e.element);
+        // Hide remote video from <body>
+
+        if (this.state.chatMode !== 'video') {
+            e.element.style.display = 'none';
+            console.log('Media element is hidden');
+        }
+
+        // console.log('currentCall:');
+        // console.log(currentCall);
+        // sendVideo(false);
+        // showRemoteVideo(false);
+        console.log('           onMediaElementCreated() =========>');
+    }
+
     onCallUpdated() {
         console.log('<========= onCallUpdated()');
         this.turnSound(this.state.chatMode !== 'text');
@@ -538,7 +558,7 @@ class WebchatClient extends Component {
         if (this.state.chatMode === 'showText') {
             this.setState({chatMode: 'connectingText'});
             vox.startCall('text', null, false, messageText, this.onCallConnected, this.onCallDisconnected,
-                this.onCallFailed, this.onMessageReceived, this.onCallUpdated);
+                this.onCallFailed, this.onMessageReceived, this.onCallUpdated, this.onMediaElementCreated);
         } else {
             vox.sendMessage(this.createTextMessage(messageText));
         }
@@ -600,11 +620,17 @@ class WebchatClient extends Component {
             break;
         case 'video':
             if (parsedMessage.state) {
-                this.setState({chatMode: 'video'});
+                this.setState({
+                    chatMode: 'video',
+                    isModeChanged: true
+                });
             } else {
 
                 if (this.state.chatMode === 'video') {  // Prevent text -> voice switching on text call init
-                    this.setState({chatMode: 'voice'});
+                    this.setState({
+                        chatMode: 'voice',
+                        isModeChanged: true
+                    });
                 }
 
             }
@@ -662,18 +688,26 @@ class WebchatClient extends Component {
                 isModeChanged: false,
             });
 
+            console.log('isVideoShowed = ' + this.state.isVideoShowed);
+
             if (this.state.chatMode === 'voice') {
-                this.showVideo(false);
+                if (this.state.isVideoShowed) {
+                    this.showVideo(false);
+                }
 
             } else if (this.state.chatMode === 'video') {
-                this.showVideo(true);
+                if (!this.state.isVideoShowed) {
+                    this.showVideo(true);
+                }
 
                 // in voice/video chat microphone & sound are initially enabled.
                 // this.turnMic(true);
                 // this.turnSound(true);
 
             } else if (this.state.chatMode === 'text') {
-                this.showVideo(false);
+                if (this.state.isVideoShowed) {
+                    this.showVideo(false);
+                }
 
                 // In text chat microphone & sound must be disabled
                 // this.turnMic(false);
