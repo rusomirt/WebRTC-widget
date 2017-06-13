@@ -734,13 +734,13 @@ class WebchatClient extends Component {
         } else {                                        // User has chosen chat mode
             return (
                 <div className={cn('modal')} style={{flexDirection: 'column'}}>
-                    <p>{'Call state: ' + ((vox.currentCall) ? vox.currentCall.state() : 'there is no current call')}</p>
-                    <button onClick={() => {
-                        this.turnSound(!this.state.isSoundOn);
-                        this.turnMic(!this.state.isMicOn);
-                    }}>Sound&Mic</button>
-                    <p>{'isSoundOn: ' + this.state.isSoundOn.toString().toUpperCase() +
-                        ', isMicOn: ' + this.state.isMicOn.toString().toUpperCase()}</p>
+                    {/*<p>{'Call state: ' + ((vox.currentCall) ? vox.currentCall.state() : 'there is no current call')}</p>*/}
+                    {/*<button onClick={() => {*/}
+                        {/*this.turnSound(!this.state.isSoundOn);*/}
+                        {/*this.turnMic(!this.state.isMicOn);*/}
+                    {/*}}>Sound&Mic</button>*/}
+                    {/*<p>{'isSoundOn: ' + this.state.isSoundOn.toString().toUpperCase() +*/}
+                        {/*', isMicOn: ' + this.state.isMicOn.toString().toUpperCase()}</p>*/}
                     <div className={cn('modal__inner')}>
                         <Chat
                             clientAppInstalled={this.props.settings.client_app_installed}
